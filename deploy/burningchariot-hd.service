@@ -1,0 +1,23 @@
+[Unit]
+Description=Burning Chariot HD game server
+After=network.target
+
+[Service]
+Type=simple
+User=bchd
+Group=bchd
+WorkingDirectory=/opt/burningchariot-hd
+ExecStart=/opt/burningchariot-hd/hdserver --listen 127.0.0.1:18180 --assets /opt/burningchariot-hd/assets --data /var/lib/burningchariot-hd --admin-password-file /etc/burningchariot-hd/admin-password
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=10
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+StateDirectory=burningchariot-hd
+ReadWritePaths=/var/lib/burningchariot-hd
+
+[Install]
+WantedBy=multi-user.target

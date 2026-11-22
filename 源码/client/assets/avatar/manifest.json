@@ -1,0 +1,50 @@
+[
+  {
+    "layer": 12,
+    "source": "Layer12/L12_2.spr",
+    "sha256": "7bca75ed2eaf88952a3034c2880a14e6937db4983bfac85a5d9e493373071757",
+    "frames": 1
+  },
+  {
+    "layer": 14,
+    "source": "Layer14/L14_2224.spr",
+    "sha256": "5a603b02cd67414b219e3d084116cee2c0011c59583e79bb22b09aec10681f7c",
+    "frames": 14
+  },
+  {
+    "layer": 16,
+    "source": "Layer16/L16_2.spr",
+    "sha256": "eb76955c01376fbccda9146fa7358b65c29159cac3ffd22bb7e75be71cb6047e",
+    "frames": 1
+  },
+  {
+    "layer": 4,
+    "source": "Layer4/L4_2.spr",
+    "sha256": "e6f2000ed230e3e67f8dcc39a3a74115d9f3edf2945e697af307151a52167f68",
+    "frames": 1
+  },
+  {
+    "layer": 5,
+    "source": "Layer5/L5_2.spr",
+    "sha256": "3a709b8ee0afe2377e4e4ac30562ab60f8856a0010f33cc61b19818cd93dee7d",
+    "frames": 1
+  },
+  {
+    "layer": 6,
+    "source": "Layer6/L6_6.spr",
+    "sha256": "88fa92be2503b2ecdebaec7b398ec910899a240ca807fe5fe17aa79dc5ff05df",
+    "frames": 2
+  },
+  {
+    "layer": 7,
+    "source": "Layer7/L7_2.spr",
+    "sha256": "097f4f7c159bff2a5e642f2b487674659954f6d14b647fc7e93627da6d1509c9",
+    "frames": 1
+  },
+  {
+    "layer": 9,
+    "source": "Layer9/L9_2.spr",
+    "sha256": "e00cb87f4e259f39366479befdbb0b9b83d2f5152611ff3ccc06aea30fe41658",
+    "frames": 1
+  }
+]

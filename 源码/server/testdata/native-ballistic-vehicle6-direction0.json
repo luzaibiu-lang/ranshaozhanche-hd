@@ -1,0 +1,84 @@
+{
+  "source": "Original AvidWheels 270, actual protocol-driven shot on inactive Windows desktop",
+  "reference_sha256": "1a517ff29965f27b42a2c7ed88a04031a4198fdbbbafd8f355d97ec4cff102d6",
+  "private_desktop": true,
+  "silent_assets": true,
+  "projectile": 6,
+  "vehicle": 6,
+  "actor_position": [
+    456,
+    854
+  ],
+  "slope": 0,
+  "native_direction": 0,
+  "raw_charge": 180,
+  "elevation": 60,
+  "wind": 10,
+  "samples": [
+    {
+      "tick": 2,
+      "position": [
+        475.0329895019531,
+        795.39599609375
+      ],
+      "spawn": [
+        463.0,
+        816.0
+      ],
+      "gravity": 0.18000000715255737,
+      "wind_force": 1.100000023841858
+    },
+    {
+      "tick": 4,
+      "position": [
+        487.1099853515625,
+        775.5120239257812
+      ],
+      "spawn": [
+        463.0,
+        816.0
+      ],
+      "gravity": 0.18000000715255737,
+      "wind_force": 1.100000023841858
+    },
+    {
+      "tick": 10,
+      "position": [
+        523.60498046875,
+        720.1799926757812
+      ],
+      "spawn": [
+        463.0,
+        816.0
+      ],
+      "gravity": 0.18000000715255737,
+      "wind_force": 1.100000023841858
+    },
+    {
+      "tick": 13,
+      "position": [
+        542.0009765625,
+        694.9440307617188
+      ],
+      "spawn": [
+        463.0,
+        816.0
+      ],
+      "gravity": 0.18000000715255737,
+      "wind_force": 1.100000023841858
+    },
+    {
+      "tick": 16,
+      "position": [
+        560.4959716796875,
+        671.3280029296875
+      ],
+      "spawn": [
+        463.0,
+        816.0
+      ],
+      "gravity": 0.18000000715255737,
+      "wind_force": 1.100000023841858
+    }
+  ]
+}

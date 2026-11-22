@@ -1,0 +1,132 @@
+{
+  "map": 9,
+  "weapon": 0,
+  "actor_position": [
+    384,
+    809
+  ],
+  "native_wind": -33,
+  "slope": 4,
+  "direction": 1,
+  "raw_charge": 180,
+  "relative_elevation": 35,
+  "initial_units": [
+    {
+      "vehicle": 1,
+      "position": [
+        384,
+        809
+      ],
+      "hp": 300
+    },
+    {
+      "vehicle": 1,
+      "position": [
+        888,
+        827
+      ],
+      "hp": 300
+    }
+  ],
+  "vehicle": 1,
+  "objects": [
+    {
+      "native_projectile": 84,
+      "samples": [
+        {
+          "tick": 4,
+          "position": [
+            366.8599853515625,
+            764.7140502929688
+          ],
+          "mode": 1,
+          "heading": 29.0,
+          "visual": {}
+        },
+        {
+          "tick": 6,
+          "position": [
+            376.719970703125,
+            760.1480712890625
+          ],
+          "mode": 1,
+          "heading": 29.0,
+          "visual": {}
+        },
+        {
+          "tick": 14,
+          "position": [
+            416.159912109375,
+            749.0840454101562
+          ],
+          "mode": 1,
+          "heading": 29.0,
+          "visual": {}
+        },
+        {
+          "tick": 15,
+          "position": [
+            421.08990478515625,
+            748.5110473632812
+          ],
+          "mode": 1,
+          "heading": 29.0,
+          "visual": {}
+        },
+        {
+          "tick": 16,
+          "position": [
+            426.0198974609375,
+            748.1180419921875
+          ],
+          "mode": 1,
+          "heading": 29.0,
+          "visual": {}
+        },
+        {
+          "tick": 23,
+          "position": [
+            460.52984619140625,
+            750.4070434570312
+          ],
+          "mode": 1,
+          "heading": 29.0,
+          "visual": {}
+        },
+        {
+          "tick": 31,
+          "position": [
+            499.96978759765625,
+            763.8230590820312
+          ],
+          "mode": 1,
+          "heading": 29.0,
+          "visual": {}
+        },
+        {
+          "tick": 38,
+          "position": [
+            534.479736328125,
+            785.0120849609375
+          ],
+          "mode": 1,
+          "heading": 29.0,
+          "visual": {}
+        },
+        {
+          "tick": 43,
+          "position": [
+            556.0,
+            803.0
+          ],
+          "mode": 1,
+          "heading": 47.0,
+          "visual": {}
+        }
+      ],
+      "launch_speed": 5.63700008392334
+    }
+  ],
+  "source": "Original AvidWheels 270, actual inactive desktop shot",
+  "reference_sha256": "1a517ff29965f27b42a2c7ed88a04031a4198fdbbbafd8f355d97ec4cff102d6"
+}

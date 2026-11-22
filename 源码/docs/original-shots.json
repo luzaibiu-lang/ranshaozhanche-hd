@@ -1,0 +1,1214 @@
+{
+  "logical_weapons": [
+    {
+      "weapon": 0,
+      "projectiles": [
+        1
+      ],
+      "calls": [
+        "uStack_44,uStack_40,fStack_34,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_34 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_50 = FUN_00530df0(1,uStack_44,uStack_40,fStack_34,fStack_28,0);\n    if (iStack_50 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0;\n    *(int *)(iStack_c + 0x318) = (int)fStack_34;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 1,
+      "projectiles": [
+        13
+      ],
+      "calls": [
+        "uStack_6c,uStack_68,fStack_5c,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_5c = (float)iVar2;\n    FUN_00533ea0();\n    iStack_78 = FUN_00530df0(0xd,uStack_6c,uStack_68,fStack_5c,fStack_28,0);\n    if (iStack_78 != 0) {\n      FUN_00488190();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 1;\n    *(int *)(iStack_c + 0x318) = (int)fStack_5c;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 1;\n  }\n"
+    },
+    {
+      "weapon": 2,
+      "projectiles": [
+        3
+      ],
+      "calls": [
+        "uStack_94,uStack_90,fStack_84,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_84 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_a0 = FUN_00530df0(3,uStack_94,uStack_90,fStack_84,fStack_28,0);\n    if (iStack_a0 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 2;\n    *(int *)(iStack_c + 0x318) = (int)fStack_84;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 3,
+      "projectiles": [
+        6
+      ],
+      "calls": [
+        "uStack_bc,uStack_b8,fStack_ac,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_ac = (float)iVar2;\n    FUN_00533ea0();\n    iStack_c8 = FUN_00530df0(6,uStack_bc,uStack_b8,fStack_ac,fStack_28,0);\n    if (iStack_c8 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 3;\n    *(int *)(iStack_c + 0x318) = (int)fStack_ac;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 4,
+      "projectiles": [
+        19
+      ],
+      "calls": [
+        "uStack_e4,uStack_e0,fStack_d4,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_d4 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_f0 = FUN_00530df0(0x13,uStack_e4,uStack_e0,fStack_d4,fStack_28,0);\n    if (iStack_f0 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 4;\n    *(int *)(iStack_c + 0x318) = (int)fStack_d4;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 5,
+      "projectiles": [
+        5
+      ],
+      "calls": [
+        "uStack_10c,uStack_108,fStack_fc,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_fc = (float)iVar2;\n    FUN_00533ea0();\n    iStack_118 = FUN_00530df0(5,uStack_10c,uStack_108,fStack_fc,fStack_28,0);\n    if (iStack_118 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 5;\n    *(int *)(iStack_c + 0x318) = (int)fStack_fc;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 6,
+      "projectiles": [
+        7
+      ],
+      "calls": [
+        "uStack_134,uStack_130,fStack_124,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_124 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_140 = FUN_00530df0(7,uStack_134,uStack_130,fStack_124,fStack_28,0);\n    if (iStack_140 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 6;\n    *(int *)(iStack_c + 0x318) = (int)fStack_124;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 7,
+      "projectiles": [
+        8
+      ],
+      "calls": [
+        "uStack_15c,uStack_158,fStack_14c,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_14c = (float)iVar2;\n    FUN_00533ea0();\n    iStack_168 = FUN_00530df0(8,uStack_15c,uStack_158,fStack_14c,fStack_28,0);\n    if (iStack_168 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 7;\n    *(int *)(iStack_c + 0x318) = (int)fStack_14c;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 8,
+      "projectiles": [
+        2,
+        2,
+        2
+      ],
+      "calls": [
+        "uStack_184,uStack_180,fStack_190,fStack_28 * _DAT_00bd7ec0 + fStack_28,0",
+        "uStack_184,uStack_180,fStack_19c,fStack_28,0",
+        "uStack_184,uStack_180,fStack_1a8,fStack_28 - fStack_28 * _DAT_00bd7ec0,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_174 = (float)iVar2;\n    FUN_00533ea0();\n    fStack_19c = fStack_174;\n    if ((fStack_174 <= _DAT_00bd8414) || (_DAT_00bd8f58 <= fStack_174)) {\n      fStack_190 = fStack_174 + _DAT_00bdbb8c;\n      fStack_1a8 = fStack_174 - _DAT_00bdbb8c;\n    }\n    else {\n      fStack_190 = fStack_174 - _DAT_00bdbb8c;\n      fStack_1a8 = fStack_174 + _DAT_00bdbb8c;\n    }\n    FUN_00530df0(2,uStack_184,uStack_180,fStack_190,fStack_28 * _DAT_00bd7ec0 + fStack_28,0);\n    iStack_1b4 = FUN_00530df0(2,uStack_184,uStack_180,fStack_19c,fStack_28,0);\n    FUN_00530df0(2,uStack_184,uStack_180,fStack_1a8,fStack_28 - fStack_28 * _DAT_00bd7ec0,0);\n    if (iStack_1b4 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 8;\n    *(int *)(iStack_c + 0x318) = (int)fStack_174;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 9,
+      "projectiles": [
+        9
+      ],
+      "calls": [
+        "uStack_1d0,uStack_1cc,fStack_1c0,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_1c0 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_1dc = FUN_00530df0(9,uStack_1d0,uStack_1cc,fStack_1c0,fStack_28,0);\n    if (iStack_1dc != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 9;\n    *(int *)(iStack_c + 0x318) = (int)fStack_1c0;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 10,
+      "projectiles": [
+        10
+      ],
+      "calls": [
+        "uStack_1f8,uStack_1f4,fStack_1e8,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_1e8 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_204 = FUN_00530df0(10,uStack_1f8,uStack_1f4,fStack_1e8,fStack_28,0);\n    if (iStack_204 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 10;\n    *(int *)(iStack_c + 0x318) = (int)fStack_1e8;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 11,
+      "projectiles": [
+        10
+      ],
+      "calls": [
+        "uStack_220,uStack_21c,fStack_210,fStack_28,1"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_210 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_22c = FUN_00530df0(10,uStack_220,uStack_21c,fStack_210,fStack_28,1);\n    if (iStack_22c != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0xb;\n    *(int *)(iStack_c + 0x318) = (int)fStack_210;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 12,
+      "projectiles": [
+        11
+      ],
+      "calls": [
+        "uStack_248,uStack_244,fStack_238,fStack_28,1"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_238 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_254 = FUN_00530df0(0xb,uStack_248,uStack_244,fStack_238,fStack_28,1);\n    if (iStack_254 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0xc;\n    *(int *)(iStack_c + 0x318) = (int)fStack_238;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 13,
+      "projectiles": [
+        12,
+        12,
+        12
+      ],
+      "calls": [
+        "uStack_270,uStack_26c,fStack_27c,fStack_28 * _DAT_00bd7ec8 + fStack_28,0",
+        "uStack_270,uStack_26c,fStack_288,fStack_28,0",
+        "uStack_270,uStack_26c,fStack_294,fStack_28 - fStack_28 * _DAT_00bd7ec8,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_260 = (float)iVar2;\n    FUN_00533ea0();\n    fStack_288 = fStack_260;\n    if ((fStack_260 <= _DAT_00bd8414) || (_DAT_00bd8f58 <= fStack_260)) {\n      fStack_27c = fStack_260 + _DAT_00bd8580;\n      fStack_294 = fStack_260 - _DAT_00bd8580;\n    }\n    else {\n      fStack_27c = fStack_260 - _DAT_00bd8580;\n      fStack_294 = fStack_260 + _DAT_00bd8580;\n    }\n    FUN_00530df0(0xc,uStack_270,uStack_26c,fStack_27c,fStack_28 * _DAT_00bd7ec8 + fStack_28,0);\n    iStack_2a0 = FUN_00530df0(0xc,uStack_270,uStack_26c,fStack_288,fStack_28,0);\n    FUN_00530df0(0xc,uStack_270,uStack_26c,fStack_294,fStack_28 - fStack_28 * _DAT_00bd7ec8,0);\n    if (iStack_2a0 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0xd;\n    *(int *)(iStack_c + 0x318) = (int)fStack_260;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 14,
+      "projectiles": [
+        12
+      ],
+      "calls": [
+        "uStack_2bc,uStack_2b8,fStack_2ac,fStack_28,1"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_2ac = (float)iVar2;\n    FUN_00533ea0();\n    iStack_2c8 = FUN_00530df0(0xc,uStack_2bc,uStack_2b8,fStack_2ac,fStack_28,1);\n    if (iStack_2c8 != 0) {\n      FUN_00488190();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0xe;\n    *(int *)(iStack_c + 0x318) = (int)fStack_2ac;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 1;\n  }\n"
+    },
+    {
+      "weapon": 15,
+      "projectiles": [
+        14
+      ],
+      "calls": [
+        "uStack_2e4,uStack_2e0,fStack_2d4,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_2d4 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_2f0 = FUN_00530df0(0xe,uStack_2e4,uStack_2e0,fStack_2d4,fStack_28,0);\n    if (iStack_2f0 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0xf;\n    *(int *)(iStack_c + 0x318) = (int)fStack_2d4;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 16,
+      "projectiles": [
+        15
+      ],
+      "calls": [
+        "uStack_30c,uStack_308,fStack_2fc,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_2fc = (float)iVar2;\n    FUN_00533ea0();\n    uStack_318 = FUN_00530df0(0xf,uStack_30c,uStack_308,fStack_2fc,fStack_28,0);\n    *(undefined4 *)(iStack_c + 0x310) = 0x10;\n    *(int *)(iStack_c + 0x318) = (int)fStack_2fc;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 1;\n  }\n"
+    },
+    {
+      "weapon": 17,
+      "projectiles": [
+        16
+      ],
+      "calls": [
+        "uStack_334,uStack_330,fStack_324,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_324 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_340 = FUN_00530df0(0x10,uStack_334,uStack_330,fStack_324,fStack_28,0);\n    if (iStack_340 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x11;\n    *(int *)(iStack_c + 0x318) = (int)fStack_324;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 18,
+      "projectiles": [
+        17
+      ],
+      "calls": [
+        "uStack_35c,uStack_358,fStack_34c,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_34c = (float)iVar2;\n    FUN_00533ea0();\n    iStack_368 = FUN_00530df0(0x11,uStack_35c,uStack_358,fStack_34c,fStack_28,0);\n    if (iStack_368 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x12;\n    *(int *)(iStack_c + 0x318) = (int)fStack_34c;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 19,
+      "projectiles": [
+        6,
+        6,
+        6
+      ],
+      "calls": [
+        "uStack_384,uStack_380,fStack_374,fStack_28,1",
+        "uStack_384,uStack_380,fStack_374,fStack_28,2",
+        "uStack_384,uStack_380,fStack_374,fStack_28,3"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_374 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_390 = FUN_00530df0(6,uStack_384,uStack_380,fStack_374,fStack_28,1);\n    FUN_00530df0(6,uStack_384,uStack_380,fStack_374,fStack_28,2);\n    FUN_00530df0(6,uStack_384,uStack_380,fStack_374,fStack_28,3);\n    if (iStack_390 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x13;\n    *(int *)(iStack_c + 0x318) = (int)fStack_374;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 20,
+      "projectiles": [
+        14
+      ],
+      "calls": [
+        "uStack_3ac,uStack_3a8,fStack_39c,fStack_28,1"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_39c = (float)iVar2;\n    FUN_00533ea0();\n    iStack_3b8 = FUN_00530df0(0xe,uStack_3ac,uStack_3a8,fStack_39c,fStack_28,1);\n    if (iStack_3b8 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x14;\n    *(int *)(iStack_c + 0x318) = (int)fStack_39c;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 21,
+      "projectiles": [
+        18,
+        18,
+        18,
+        18,
+        18
+      ],
+      "calls": [
+        "uStack_3d4,uStack_3d0,fStack_3e0,fStack_28 * _DAT_00bd7ec8 + fStack_28,0",
+        "uStack_3d4,uStack_3d0,fStack_3ec,fStack_28 * _DAT_00bdb964 + fStack_28,0",
+        "uStack_3d4,uStack_3d0,fStack_3f8,fStack_28,0",
+        "uStack_3d4,uStack_3d0,fStack_404,fStack_28 - fStack_28 * _DAT_00bdb964,0",
+        "uStack_3d4,uStack_3d0,fStack_410,fStack_28 - fStack_28 * _DAT_00bd7ec8,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_3c4 = (float)iVar2;\n    FUN_00533ea0();\n    fStack_3f8 = fStack_3c4;\n    if ((fStack_3c4 <= _DAT_00bd8414) || (_DAT_00bd8f58 <= fStack_3c4)) {\n      fStack_3e0 = fStack_3c4 + _DAT_00bd7ed8;\n      fStack_3ec = fStack_3c4 + _DAT_00bd7ed8;\n      fStack_404 = fStack_3c4 - _DAT_00bd7ed8;\n      fStack_410 = fStack_3c4 - _DAT_00bd7ed8;\n    }\n    else {\n      fStack_3e0 = fStack_3c4 - _DAT_00bd7ed8;\n      fStack_3ec = fStack_3c4 - _DAT_00bd7ed8;\n      fStack_404 = fStack_3c4 + _DAT_00bd7ed8;\n      fStack_410 = fStack_3c4 + _DAT_00bd7ed8;\n    }\n    FUN_00530df0(0x12,uStack_3d4,uStack_3d0,fStack_3e0,fStack_28 * _DAT_00bd7ec8 + fStack_28,0);\n    FUN_00530df0(0x12,uStack_3d4,uStack_3d0,fStack_3ec,fStack_28 * _DAT_00bdb964 + fStack_28,0);\n    iStack_41c = FUN_00530df0(0x12,uStack_3d4,uStack_3d0,fStack_3f8,fStack_28,0);\n    FUN_00530df0(0x12,uStack_3d4,uStack_3d0,fStack_404,fStack_28 - fStack_28 * _DAT_00bdb964,0);\n    FUN_00530df0(0x12,uStack_3d4,uStack_3d0,fStack_410,fStack_28 - fStack_28 * _DAT_00bd7ec8,0);\n    if (iStack_41c != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x15;\n    *(int *)(iStack_c + 0x318) = (int)fStack_3c4;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 22,
+      "projectiles": [
+        20
+      ],
+      "calls": [
+        "uStack_438,uStack_434,fStack_428,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_428 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_444 = FUN_00530df0(0x14,uStack_438,uStack_434,fStack_428,fStack_28,0);\n    if (iStack_444 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x16;\n    *(int *)(iStack_c + 0x318) = (int)fStack_428;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 23,
+      "projectiles": [
+        21
+      ],
+      "calls": [
+        "uStack_460,uStack_45c,fStack_450,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_450 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_46c = FUN_00530df0(0x15,uStack_460,uStack_45c,fStack_450,fStack_28,0);\n    if (iStack_46c != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x17;\n    *(int *)(iStack_c + 0x318) = (int)fStack_450;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 24,
+      "projectiles": [
+        24
+      ],
+      "calls": [
+        "uStack_488,uStack_484,fStack_478,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_478 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_494 = FUN_00530df0(0x18,uStack_488,uStack_484,fStack_478,fStack_28,0);\n    if (iStack_494 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x18;\n    *(int *)(iStack_c + 0x318) = (int)fStack_478;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 25,
+      "projectiles": [
+        25
+      ],
+      "calls": [
+        "uStack_4b0,uStack_4ac,fStack_4a0,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_4a0 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_4bc = FUN_00530df0(0x19,uStack_4b0,uStack_4ac,fStack_4a0,fStack_28,0);\n    if (iStack_4bc != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x19;\n    *(int *)(iStack_c + 0x318) = (int)fStack_4a0;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 26,
+      "projectiles": [
+        26
+      ],
+      "calls": [
+        "uStack_4d8,uStack_4d4,fStack_4c8,fStack_28,1"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_4c8 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_4e4 = FUN_00530df0(0x1a,uStack_4d8,uStack_4d4,fStack_4c8,fStack_28,1);\n    if (iStack_4e4 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x1a;\n    *(int *)(iStack_c + 0x318) = (int)fStack_4c8;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 27,
+      "projectiles": [
+        27
+      ],
+      "calls": [
+        "uStack_500,uStack_4fc,fStack_4f0,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_4f0 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_50c = FUN_00530df0(0x1b,uStack_500,uStack_4fc,fStack_4f0,fStack_28,0);\n    if (iStack_50c != 0) {\n      FUN_00488190();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x1b;\n    *(int *)(iStack_c + 0x318) = (int)fStack_4f0;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 1;\n  }\n"
+    },
+    {
+      "weapon": 28,
+      "projectiles": [
+        28
+      ],
+      "calls": [
+        "uStack_528,uStack_524,fStack_518,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_518 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_534 = FUN_00530df0(0x1c,uStack_528,uStack_524,fStack_518,fStack_28,0);\n    if (iStack_534 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x1c;\n    *(int *)(iStack_c + 0x318) = (int)fStack_518;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 29,
+      "projectiles": [
+        29
+      ],
+      "calls": [
+        "uStack_550,uStack_54c,fStack_540,fStack_28,1"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_540 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_55c = FUN_00530df0(0x1d,uStack_550,uStack_54c,fStack_540,fStack_28,1);\n    if (iStack_55c != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x1d;\n    *(int *)(iStack_c + 0x318) = (int)fStack_540;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 30,
+      "projectiles": [
+        3
+      ],
+      "calls": [
+        "uStack_578,uStack_574,fStack_568,fStack_28,1"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_568 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_584 = FUN_00530df0(3,uStack_578,uStack_574,fStack_568,fStack_28,1);\n    if (iStack_584 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x1e;\n    *(int *)(iStack_c + 0x318) = (int)fStack_568;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 42,
+      "projectiles": [
+        42
+      ],
+      "calls": [
+        "uStack_5a0,uStack_59c,fStack_590,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_590 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_5ac = FUN_00530df0(0x2a,uStack_5a0,uStack_59c,fStack_590,fStack_28,0);\n    if (iStack_5ac != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x2a;\n    *(int *)(iStack_c + 0x318) = (int)fStack_590;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 43,
+      "projectiles": [
+        43
+      ],
+      "calls": [
+        "uStack_5c8,uStack_5c4,fStack_5b8,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_5b8 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_5d4 = FUN_00530df0(0x2b,uStack_5c8,uStack_5c4,fStack_5b8,fStack_28,0);\n    if (iStack_5d4 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x2b;\n    *(int *)(iStack_c + 0x318) = (int)fStack_5b8;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 47,
+      "projectiles": [
+        47
+      ],
+      "calls": [
+        "uStack_5f0,uStack_5ec,fStack_5e0,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_5e0 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_5fc = FUN_00530df0(0x2f,uStack_5f0,uStack_5ec,fStack_5e0,fStack_28,0);\n    if (iStack_5fc != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x2f;\n    *(int *)(iStack_c + 0x318) = (int)fStack_5e0;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 48,
+      "projectiles": [
+        48
+      ],
+      "calls": [
+        "uStack_618,uStack_614,fStack_608,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_608 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_624 = FUN_00530df0(0x30,uStack_618,uStack_614,fStack_608,fStack_28,0);\n    if (iStack_624 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x30;\n    *(int *)(iStack_c + 0x318) = (int)fStack_608;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 1;\n  }\n"
+    },
+    {
+      "weapon": 49,
+      "projectiles": [
+        49
+      ],
+      "calls": [
+        "uStack_640,uStack_63c,fStack_630,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_630 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_64c = FUN_00530df0(0x31,uStack_640,uStack_63c,fStack_630,fStack_28,0);\n    if (iStack_64c != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x31;\n    *(int *)(iStack_c + 0x318) = (int)fStack_630;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 1;\n  }\n"
+    },
+    {
+      "weapon": 58,
+      "projectiles": [
+        58
+      ],
+      "calls": [
+        "uStack_668,uStack_664,fStack_658,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_658 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_674 = FUN_00530df0(0x3a,uStack_668,uStack_664,fStack_658,fStack_28,0);\n    if (iStack_674 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x3a;\n    *(int *)(iStack_c + 0x318) = (int)fStack_658;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 59,
+      "projectiles": [
+        59
+      ],
+      "calls": [
+        "uStack_690,uStack_68c,fStack_680,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_680 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_69c = FUN_00530df0(0x3b,uStack_690,uStack_68c,fStack_680,fStack_28,0);\n    if (iStack_69c != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x3b;\n    *(int *)(iStack_c + 0x318) = (int)fStack_680;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 60,
+      "projectiles": [
+        59,
+        59,
+        59
+      ],
+      "calls": [
+        "uStack_6b8,uStack_6b4,fStack_6c4,fStack_28 * _DAT_00be61d8 + fStack_28,0",
+        "uStack_6b8,uStack_6b4,fStack_6a8,fStack_28,0",
+        "uStack_6b8,uStack_6b4,fStack_6d0,fStack_28 - fStack_28 * _DAT_00be61d8,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_6a8 = (float)iVar2;\n    FUN_00533ea0();\n    if ((fStack_6a8 <= _DAT_00bd8414) || (_DAT_00bd8f58 <= fStack_6a8)) {\n      fStack_6c4 = fStack_6a8 + _DAT_00bd7ed8;\n      fStack_6d0 = fStack_6a8 - _DAT_00bd7ed8;\n    }\n    else {\n      fStack_6c4 = fStack_6a8 - _DAT_00bd7ed8;\n      fStack_6d0 = fStack_6a8 + _DAT_00bd7ed8;\n    }\n    FUN_00530df0(0x3b,uStack_6b8,uStack_6b4,fStack_6c4,fStack_28 * _DAT_00be61d8 + fStack_28,0);\n    iStack_6dc = FUN_00530df0(0x3b,uStack_6b8,uStack_6b4,fStack_6a8,fStack_28,0);\n    FUN_00530df0(0x3b,uStack_6b8,uStack_6b4,fStack_6d0,fStack_28 - fStack_28 * _DAT_00be61d8,0);\n    if (iStack_6dc != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x3c;\n    *(int *)(iStack_c + 0x318) = (int)fStack_6a8;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 71,
+      "projectiles": [
+        72
+      ],
+      "calls": [
+        "uStack_6f8,uStack_6f4,fStack_6e8,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_6e8 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_704 = FUN_00530df0(0x48,uStack_6f8,uStack_6f4,fStack_6e8,fStack_28,0);\n    if (iStack_704 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x47;\n    *(int *)(iStack_c + 0x318) = (int)fStack_6e8;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 72,
+      "projectiles": [
+        72
+      ],
+      "calls": [
+        "uStack_720,uStack_71c,fStack_710,fStack_28,1"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_710 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_72c = FUN_00530df0(0x48,uStack_720,uStack_71c,fStack_710,fStack_28,1);\n    if (iStack_72c != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x48;\n    *(int *)(iStack_c + 0x318) = (int)fStack_710;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 81,
+      "projectiles": [
+        81
+      ],
+      "calls": [
+        "uStack_748,uStack_744,fStack_738,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_738 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_754 = FUN_00530df0(0x51,uStack_748,uStack_744,fStack_738,fStack_28,0);\n    if (iStack_754 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x51;\n    *(int *)(iStack_c + 0x318) = (int)fStack_738;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 82,
+      "projectiles": [
+        81
+      ],
+      "calls": [
+        "uStack_770,uStack_76c,fStack_760,fStack_28,1"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_760 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_77c = FUN_00530df0(0x51,uStack_770,uStack_76c,fStack_760,fStack_28,1);\n    if (iStack_77c != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x52;\n    *(int *)(iStack_c + 0x318) = (int)fStack_760;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 78,
+      "projectiles": [
+        78
+      ],
+      "calls": [
+        "uStack_798,uStack_794,fStack_788,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_788 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_7a4 = FUN_00530df0(0x4e,uStack_798,uStack_794,fStack_788,fStack_28,0);\n    if (iStack_7a4 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x4e;\n    *(int *)(iStack_c + 0x318) = (int)fStack_788;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 79,
+      "projectiles": [
+        79
+      ],
+      "calls": [
+        "uStack_7c0,uStack_7bc,fStack_7b0,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_7b0 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_7cc = FUN_00530df0(0x4f,uStack_7c0,uStack_7bc,fStack_7b0,fStack_28,0);\n    if (iStack_7cc != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x4f;\n    *(int *)(iStack_c + 0x318) = (int)fStack_7b0;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 90,
+      "projectiles": [
+        90
+      ],
+      "calls": [
+        "uStack_7e8,uStack_7e4,fStack_7d8,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_7d8 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_7f4 = FUN_00530df0(0x5a,uStack_7e8,uStack_7e4,fStack_7d8,fStack_28,0);\n    if (iStack_7f4 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x5a;\n    *(int *)(iStack_c + 0x318) = (int)fStack_7d8;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 91,
+      "projectiles": [
+        91
+      ],
+      "calls": [
+        "uStack_810,uStack_80c,fStack_800,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_800 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_81c = FUN_00530df0(0x5b,uStack_810,uStack_80c,fStack_800,fStack_28,0);\n    if (iStack_81c != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x5b;\n    *(int *)(iStack_c + 0x318) = (int)fStack_800;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 92,
+      "projectiles": [
+        92,
+        29
+      ],
+      "calls": [
+        "uStack_838,uStack_834,fStack_828,fStack_28,1",
+        "uStack_838,uStack_834,fStack_828,fStack_28,1"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_828 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_844 = 0;\n    if (*(int *)(iStack_c + 0x3c0) == 0) {\n      iStack_844 = FUN_00530df0(0x5c,uStack_838,uStack_834,fStack_828,fStack_28,1);\n    }\n    else {\n      iStack_844 = FUN_00530df0(0x1d,uStack_838,uStack_834,fStack_828,fStack_28,1);\n    }\n    if (iStack_844 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x5c;\n    *(int *)(iStack_c + 0x318) = (int)fStack_828;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 100,
+      "projectiles": [
+        100
+      ],
+      "calls": [
+        "uStack_860,uStack_85c,fStack_850,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_850 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_86c = FUN_00530df0(100,uStack_860,uStack_85c,fStack_850,fStack_28,0);\n    if (iStack_86c != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 100;\n    *(int *)(iStack_c + 0x318) = (int)fStack_850;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 101,
+      "projectiles": [
+        101
+      ],
+      "calls": [
+        "uStack_888,uStack_884,fStack_878,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_878 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_894 = FUN_00530df0(0x65,uStack_888,uStack_884,fStack_878,fStack_28,0);\n    if (iStack_894 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x65;\n    *(int *)(iStack_c + 0x318) = (int)fStack_878;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 102,
+      "projectiles": [
+        102
+      ],
+      "calls": [
+        "uStack_8b0,uStack_8ac,fStack_8a0,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_8a0 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_8bc = FUN_00530df0(0x66,uStack_8b0,uStack_8ac,fStack_8a0,fStack_28,0);\n    if (iStack_8bc != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x66;\n    *(int *)(iStack_c + 0x318) = (int)fStack_8a0;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n"
+    },
+    {
+      "weapon": 103,
+      "projectiles": [
+        104
+      ],
+      "calls": [
+        "uStack_8d8,uStack_8d4,fStack_8c8,fStack_28,0"
+      ],
+      "source": "\n    iVar2 = FUN_00533c60();\n    fStack_8c8 = (float)iVar2;\n    FUN_00533ea0();\n    iStack_8e4 = FUN_00530df0(0x68,uStack_8d8,uStack_8d4,fStack_8c8,fStack_28,0);\n    if (iStack_8e4 != 0) {\n      FUN_004882e0();\n    }\n    *(undefined4 *)(iStack_c + 0x310) = 0x67;\n    *(int *)(iStack_c + 0x318) = (int)fStack_8c8;\n    *(int *)(iStack_c + 0x31c) = param_2;\n    *(undefined4 *)(iStack_c + 0x314) = 0;\n    *(undefined4 *)(iStack_c + 0x30c) = 0;\n  }\n  uVar4 = FUN_005358c0();\n  FUN_00a878b0(uVar4);\n  uStack_14 = 0x53b821;\n  FUN_00a87910();\n  return;\n}"
+    }
+  ],
+  "projectile_initializers": [
+    {
+      "class": 1,
+      "initializers": [
+        {
+          "function": "00541d40",
+          "args": "0",
+          "damage": [
+            62
+          ],
+          "radius": [
+            55
+          ]
+        }
+      ]
+    },
+    {
+      "class": 2,
+      "initializers": [
+        {
+          "function": "00542a20",
+          "args": "",
+          "damage": [
+            28
+          ],
+          "radius": [
+            43
+          ]
+        }
+      ]
+    },
+    {
+      "class": 3,
+      "initializers": [
+        {
+          "function": "005436d0",
+          "args": "param_9",
+          "damage": [
+            65
+          ],
+          "radius": [
+            80
+          ]
+        }
+      ]
+    },
+    {
+      "class": 5,
+      "initializers": [
+        {
+          "function": "00545840",
+          "args": "_DAT_00e78940 + 0x338 + param_3 * 0x4a4",
+          "damage": [
+            40
+          ],
+          "radius": [
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "class": 6,
+      "initializers": [
+        {
+          "function": "00546830",
+          "args": "param_9",
+          "damage": [
+            62,
+            57
+          ],
+          "radius": [
+            53,
+            52
+          ]
+        }
+      ]
+    },
+    {
+      "class": 7,
+      "initializers": [
+        {
+          "function": "00547950",
+          "args": "",
+          "damage": [
+            38
+          ],
+          "radius": [
+            72
+          ]
+        }
+      ]
+    },
+    {
+      "class": 8,
+      "initializers": [
+        {
+          "function": "005485a0",
+          "args": "",
+          "damage": [
+            95
+          ],
+          "radius": [
+            36
+          ]
+        }
+      ]
+    },
+    {
+      "class": 9,
+      "initializers": [
+        {
+          "function": "00549150",
+          "args": "",
+          "damage": [
+            63
+          ],
+          "radius": [
+            55
+          ]
+        }
+      ]
+    },
+    {
+      "class": 10,
+      "initializers": [
+        {
+          "function": "0054a8b0",
+          "args": "param_9",
+          "damage": [
+            25,
+            40
+          ],
+          "radius": [
+            30,
+            65
+          ]
+        }
+      ]
+    },
+    {
+      "class": 11,
+      "initializers": [
+        {
+          "function": "0054b590",
+          "args": "",
+          "damage": [
+            95
+          ],
+          "radius": [
+            130
+          ]
+        }
+      ]
+    },
+    {
+      "class": 12,
+      "initializers": [
+        {
+          "function": "0054c210",
+          "args": "param_9",
+          "damage": [
+            29,
+            30
+          ],
+          "radius": [
+            47,
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "class": 13,
+      "initializers": [
+        {
+          "function": "0054cee0",
+          "args": "",
+          "damage": [
+            16
+          ],
+          "radius": [
+            45
+          ]
+        }
+      ]
+    },
+    {
+      "class": 14,
+      "initializers": [
+        {
+          "function": "0054ddf0",
+          "args": "param_5,param_6,param_7,param_9",
+          "damage": [
+            37,
+            35
+          ],
+          "radius": [
+            50,
+            62
+          ]
+        }
+      ]
+    },
+    {
+      "class": 15,
+      "initializers": [
+        {
+          "function": "0054f660",
+          "args": "",
+          "damage": [
+            25
+          ],
+          "radius": [
+            33
+          ]
+        }
+      ]
+    },
+    {
+      "class": 16,
+      "initializers": [
+        {
+          "function": "00550250",
+          "args": "",
+          "damage": [
+            79
+          ],
+          "radius": [
+            46
+          ]
+        }
+      ]
+    },
+    {
+      "class": 17,
+      "initializers": [
+        {
+          "function": "00550ea0",
+          "args": "",
+          "damage": [
+            60
+          ],
+          "radius": [
+            55
+          ]
+        }
+      ]
+    },
+    {
+      "class": 18,
+      "initializers": [
+        {
+          "function": "00551de0",
+          "args": "",
+          "damage": [
+            26
+          ],
+          "radius": [
+            55
+          ]
+        }
+      ]
+    },
+    {
+      "class": 19,
+      "initializers": [
+        {
+          "function": "00552f90",
+          "args": "",
+          "damage": [
+            63
+          ],
+          "radius": [
+            54
+          ]
+        }
+      ]
+    },
+    {
+      "class": 20,
+      "initializers": [
+        {
+          "function": "00553b90",
+          "args": "",
+          "damage": [
+            41
+          ],
+          "radius": [
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "class": 21,
+      "initializers": [
+        {
+          "function": "00554890",
+          "args": "",
+          "damage": [
+            43
+          ],
+          "radius": [
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "class": 24,
+      "initializers": [
+        {
+          "function": "00556060",
+          "args": "",
+          "damage": [
+            85
+          ],
+          "radius": [
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "class": 25,
+      "initializers": [
+        {
+          "function": "005571d0",
+          "args": "",
+          "damage": [
+            55
+          ],
+          "radius": [
+            40
+          ]
+        }
+      ]
+    },
+    {
+      "class": 26,
+      "initializers": [
+        {
+          "function": "00557ac0",
+          "args": "",
+          "damage": [
+            230
+          ],
+          "radius": [
+            80
+          ]
+        }
+      ]
+    },
+    {
+      "class": 27,
+      "initializers": [
+        {
+          "function": "00558650",
+          "args": "param_9",
+          "damage": [
+            10
+          ],
+          "radius": [
+            20
+          ]
+        }
+      ]
+    },
+    {
+      "class": 28,
+      "initializers": [
+        {
+          "function": "005590f0",
+          "args": "",
+          "damage": [
+            30
+          ],
+          "radius": [
+            30
+          ]
+        }
+      ]
+    },
+    {
+      "class": 29,
+      "initializers": [
+        {
+          "function": "00559c10",
+          "args": "",
+          "damage": [
+            250
+          ],
+          "radius": [
+            25
+          ]
+        }
+      ]
+    },
+    {
+      "class": 42,
+      "initializers": [
+        {
+          "function": "0055a8b0",
+          "args": "1",
+          "damage": [
+            30
+          ],
+          "radius": [
+            60
+          ]
+        }
+      ]
+    },
+    {
+      "class": 43,
+      "initializers": [
+        {
+          "function": "0055bdd0",
+          "args": "1",
+          "damage": [
+            45
+          ],
+          "radius": [
+            80
+          ]
+        }
+      ]
+    },
+    {
+      "class": 47,
+      "initializers": [
+        {
+          "function": "00541d40",
+          "args": "1",
+          "damage": [
+            62
+          ],
+          "radius": [
+            55
+          ]
+        }
+      ]
+    },
+    {
+      "class": 48,
+      "initializers": [
+        {
+          "function": "0055d230",
+          "args": "",
+          "damage": [
+            12
+          ],
+          "radius": [
+            40
+          ]
+        }
+      ]
+    },
+    {
+      "class": 49,
+      "initializers": [
+        {
+          "function": "0055de10",
+          "args": "",
+          "damage": [
+            15
+          ],
+          "radius": [
+            40
+          ]
+        }
+      ]
+    },
+    {
+      "class": 58,
+      "initializers": []
+    },
+    {
+      "class": 59,
+      "initializers": [
+        {
+          "function": "0055fa60",
+          "args": "",
+          "damage": [],
+          "radius": [
+            65
+          ]
+        }
+      ]
+    },
+    {
+      "class": 60,
+      "initializers": [
+        {
+          "function": "0055fa60",
+          "args": "",
+          "damage": [],
+          "radius": [
+            65
+          ]
+        }
+      ]
+    },
+    {
+      "class": 72,
+      "initializers": [
+        {
+          "function": "00562170",
+          "args": "param_9",
+          "damage": [
+            65
+          ],
+          "radius": [
+            80
+          ]
+        }
+      ]
+    },
+    {
+      "class": 78,
+      "initializers": [
+        {
+          "function": "00563500",
+          "args": "",
+          "damage": [
+            105
+          ],
+          "radius": [
+            55
+          ]
+        }
+      ]
+    },
+    {
+      "class": 79,
+      "initializers": [
+        {
+          "function": "00564720",
+          "args": "",
+          "damage": [
+            95
+          ],
+          "radius": [
+            130
+          ]
+        }
+      ]
+    },
+    {
+      "class": 81,
+      "initializers": []
+    },
+    {
+      "class": 90,
+      "initializers": [
+        {
+          "function": "00568190",
+          "args": "0x5a",
+          "damage": [
+            85,
+            55
+          ],
+          "radius": [
+            50,
+            40
+          ]
+        }
+      ]
+    },
+    {
+      "class": 91,
+      "initializers": [
+        {
+          "function": "00568190",
+          "args": "0x5b",
+          "damage": [
+            85,
+            55
+          ],
+          "radius": [
+            50,
+            40
+          ]
+        }
+      ]
+    },
+    {
+      "class": 92,
+      "initializers": [
+        {
+          "function": "00568ab0",
+          "args": "",
+          "damage": [
+            80
+          ],
+          "radius": [
+            60
+          ]
+        }
+      ]
+    },
+    {
+      "class": 100,
+      "initializers": [
+        {
+          "function": "0056e510",
+          "args": "",
+          "damage": [
+            105
+          ],
+          "radius": [
+            55
+          ]
+        }
+      ]
+    },
+    {
+      "class": 101,
+      "initializers": [
+        {
+          "function": "0056f8d0",
+          "args": "",
+          "damage": [
+            55
+          ],
+          "radius": [
+            60
+          ]
+        }
+      ]
+    },
+    {
+      "class": 102,
+      "initializers": [
+        {
+          "function": "00570ed0",
+          "args": "",
+          "damage": [
+            80
+          ],
+          "radius": [
+            60
+          ]
+        }
+      ]
+    },
+    {
+      "class": 104,
+      "initializers": [
+        {
+          "function": "0056dbd0",
+          "args": "",
+          "damage": [
+            58
+          ],
+          "radius": [
+            90
+          ]
+        }
+      ]
+    }
+  ],
+  "source": "Native FUN_005387d0, FUN_00481f20; raw damage at +0xcc, radius +0xd0, native falloff FUN_00481be0"
+}

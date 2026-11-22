@@ -1,0 +1,13 @@
+* text=auto
+*.gd text eol=lf
+*.go text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.service text eol=lf
+*.png binary
+*.ogg binary
+*.wav binary
+*.bin binary
+源码/client/assets/** linguist-vendored
+源码/docs/*.json linguist-vendored

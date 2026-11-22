@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>燃烧战车 · 高清版管理</title>
+<style>
+  * { box-sizing: border-box }
+  body { background: #0d1520; color: #e7edf5; font: 16px/1.6 system-ui; max-width: 1100px; margin: 32px auto; padding: 24px }
+  input, button { font: inherit; padding: 10px 14px; background: #1a293a; color: #fff; border: 1px solid #4b6079; border-radius: 4px }
+  button { cursor: pointer }
+  button:hover { background: #28415c }
+  button:disabled { cursor: wait; opacity: .5 }
+  label { display: grid; gap: 6px }
+  form { display: flex; gap: 14px; align-items: end; flex-wrap: wrap }
+  table { border-collapse: collapse; width: 100%; margin: 20px 0 }
+  td, th { text-align: left; padding: 10px; border-bottom: 1px solid #34495e }
+  .note { color: #a5b6cc }
+  .toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap }
+  .table-wrap { overflow-x: auto }
+  .room { border-top: 1px solid #34495e; padding: 16px 0 }
+  .room button { margin: 6px 12px 6px 0 }
+  #msg { min-height: 26px; color: #f5c377 }
+  [hidden] { display: none !important }
+</style>
+<h1>燃烧战车 · 高清重制版管理</h1>
+<p class="note">此处管理独立高清版的玩家和房间。</p>
+<form id="login-form">
+  <label>管理员账号<input id="username" autocomplete="username" value="admin" required></label>
+  <label>密码<input id="password" type="password" autocomplete="current-password" required></label>
+  <button id="login" type="submit">登录</button>
+</form>
+<div id="session" class="toolbar" hidden>
+  <span>已登录：admin</span><button id="refresh">刷新</button><button id="logout">退出管理</button>
+</div>
+<p id="msg" role="status" aria-live="polite"></p>
+<main id="root"></main>
+<script>
+  'use strict';
+  const $ = id => document.getElementById(id);
+  let credential = '';
+  async function api(path, data) {
+    const response = await fetch('/gm/api/' + path, {
+      method: data ? 'POST' : 'GET', cache: 'no-store',
+      headers: {Authorization: 'Bearer ' + credential, 'Content-Type': 'application/json'},
+      body: data ? JSON.stringify(data) : undefined
+    });
+    const result = await response.json();
+    if (!response.ok) throw Error(result.error || '操作失败');
+    return result;
+  }
+  async function action(data) {
+    try { await api('action', data); await load(); }
+    catch (error) { $('msg').textContent = error.message; }
+  }
+  function button(text, handler) {
+    const value = document.createElement('button');
+    value.textContent = text;
+    value.onclick = handler;
+    return value;
+  }
+  async function load() {
+    try {
+      const state = await api('state');
+      const root = $('root');
+      root.replaceChildren();
+      const title = document.createElement('h2');
+      title.textContent = '玩家'; root.append(title);
+      const wrap = document.createElement('div'); wrap.className = 'table-wrap';
+      const table = document.createElement('table');
+      const heading = document.createElement('tr');
+      for (const text of ['ID', '账号', '金币', '胜场 / 场次', '操作']) {
+        const cell = document.createElement('th'); cell.textContent = text; heading.append(cell);
+      }
+      table.append(heading);
+      for (const player of state.players) {
+        const row = document.createElement('tr'); row.dataset.player = player.id;
+        for (const text of [player.id, player.name, player.gold, player.wins + ' / ' + player.games]) {
+          const cell = document.createElement('td'); cell.textContent = text; row.append(cell);
+        }
+        const cell = document.createElement('td');
+        cell.append(button('增加金币', async () => {
+          const answer = prompt('给「' + player.name + '」增加多少金币？', '1000');
+          if (answer === null) return;
+          const amount = Number(answer);
+          if (!Number.isSafeInteger(amount) || amount < 1 || amount > 10000000) {
+            $('msg').textContent = '请输入 1～10000000 的整数'; return;
+          }
+          await action({action: 'add_gold', player: player.id, amount});
+        }));
+        row.append(cell); table.append(row);
+      }
+      wrap.append(table); root.append(wrap);
+      const rooms = document.createElement('h2'); rooms.textContent = '房间'; root.append(rooms);
+      if (!state.rooms.length) {
+        const empty = document.createElement('p'); empty.textContent = '当前没有房间'; root.append(empty);
+      }
+      for (const room of state.rooms) {
+        const block = document.createElement('section'); block.className = 'room'; block.dataset.room = room.id;
+        const name = document.createElement('p');
+        name.textContent = '#' + room.id + ' · ' + room.name + ' · ' + room.members.length + ' 人'; block.append(name);
+        const end = button('结束对局', async () => {
+          if (confirm('结束房间 #' + room.id + ' 的当前对局？')) await action({action: 'end_match', room: room.id});
+        });
+        end.disabled = !room.battle || !!room.battle.result;
+        block.append(end, button('关闭房间', async () => {
+          if (confirm('关闭房间 #' + room.id + '？房内玩家将返回大厅。')) await action({action: 'close_room', room: room.id});
+        }));
+        root.append(block);
+      }
+      $('msg').textContent = '已刷新';
+    } catch (error) { $('msg').textContent = error.message; }
+  }
+  $('login-form').onsubmit = async event => {
+    event.preventDefault(); $('login').disabled = true;
+    try {
+      const result = await api('login', {name: $('username').value, password: $('password').value});
+      credential = result.token; $('password').value = '';
+      $('login-form').hidden = true; $('session').hidden = false;
+      await load();
+    } catch (error) { $('msg').textContent = error.message; }
+    finally { $('login').disabled = false; }
+  };
+  $('refresh').onclick = load;
+  $('logout').onclick = () => {
+    credential = ''; $('root').replaceChildren(); $('session').hidden = true;
+    $('login-form').hidden = false; $('msg').textContent = '已退出管理';
+  };
+</script>
+</html>

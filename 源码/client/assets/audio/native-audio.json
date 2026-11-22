@@ -1,0 +1,506 @@
+{
+  "sounds": {
+    "0": "start.wav",
+    "1": "myturn.wav",
+    "2": "beep_high.wav",
+    "3": "beep_low.wav",
+    "5": "wpnchange.wav",
+    "6": "dropping.wav",
+    "7": "win.wav",
+    "8": "lose.wav",
+    "9": "draw.wav",
+    "10": "dooropen.wav",
+    "11": "doorclose.wav",
+    "12": "doorshut.wav",
+    "13": "useitem.wav",
+    "14": "getitem.wav",
+    "15": "getmoney.wav",
+    "16": "itembox.wav",
+    "17": "coin.wav",
+    "18": "shot01.wav",
+    "19": "shot02.wav",
+    "20": "shot03.wav",
+    "21": "shot04.wav",
+    "22": "shot05.wav",
+    "23": "shot06.wav",
+    "24": "shot07.wav",
+    "25": "shot08.wav",
+    "26": "shot09.wav",
+    "27": "shot10.wav",
+    "28": "shot11.wav",
+    "29": "shot12.wav",
+    "30": "shot13.wav",
+    "31": "shot14.wav",
+    "32": "shot15.wav",
+    "33": "shot16.wav",
+    "34": "shot17.wav",
+    "35": "shot18.wav",
+    "36": "shot19.wav",
+    "37": "shot20.wav",
+    "38": "exp01.wav",
+    "39": "exp02.wav",
+    "40": "exp03.wav",
+    "41": "exp04.wav",
+    "42": "exp05.wav",
+    "43": "exp06.wav",
+    "44": "exp07.wav",
+    "45": "exp08.wav",
+    "46": "exp09.wav",
+    "47": "exp10.wav",
+    "48": "exp11.wav",
+    "49": "exp12.wav",
+    "50": "move01.wav",
+    "51": "move02.wav",
+    "52": "move03.wav",
+    "53": "move07.wav",
+    "54": "effect01.wav",
+    "55": "effect02.wav",
+    "56": "effect03.wav",
+    "57": "effect04.wav",
+    "58": "effect05.wav",
+    "59": "effect06.wav",
+    "60": "effect07.wav",
+    "61": "effect08.wav",
+    "62": "effect09.wav",
+    "63": "effect10.wav",
+    "64": "invite.wav",
+    "65": "click.wav",
+    "66": "error.wav",
+    "67": "whisper.wav"
+  },
+  "projectiles": {
+    "1": {
+      "fire": "shot01.wav",
+      "impact": "exp01.wav",
+      "routine": "00541e50",
+      "native_sound_ids": [
+        18,
+        38
+      ]
+    },
+    "2": {
+      "fire": "shot07.wav",
+      "impact": "exp02.wav",
+      "routine": "00542b00",
+      "native_sound_ids": [
+        24,
+        39
+      ]
+    },
+    "3": {
+      "fire": "shot03.wav",
+      "impact": "exp03.wav",
+      "routine": "005437b0",
+      "native_sound_ids": [
+        20,
+        40
+      ]
+    },
+    "4": {
+      "fire": "shot04.wav",
+      "impact": "exp04.wav",
+      "routine": "00544cc0",
+      "native_sound_ids": [
+        21,
+        41
+      ]
+    },
+    "5": {
+      "fire": "shot05.wav",
+      "impact": "exp05.wav",
+      "routine": "00545960",
+      "native_sound_ids": [
+        22,
+        42
+      ]
+    },
+    "6": {
+      "fire": "shot06.wav",
+      "impact": "exp06.wav",
+      "routine": "00546930",
+      "native_sound_ids": [
+        23,
+        43
+      ]
+    },
+    "7": {
+      "fire": "shot02.wav",
+      "impact": "exp03.wav",
+      "routine": "00547a20",
+      "native_sound_ids": [
+        19,
+        40
+      ]
+    },
+    "8": {
+      "fire": "shot02.wav",
+      "impact": "exp02.wav",
+      "routine": "00548670",
+      "native_sound_ids": [
+        19,
+        39
+      ]
+    },
+    "9": {
+      "fire": "shot01.wav",
+      "impact": "exp01.wav",
+      "routine": "00549220",
+      "native_sound_ids": [
+        18,
+        38
+      ]
+    },
+    "10": {
+      "fire": "shot05.wav",
+      "impact": "exp10.wav",
+      "routine": "0054a9e0",
+      "native_sound_ids": [
+        22,
+        29,
+        47,
+        46,
+        39,
+        38
+      ]
+    },
+    "11": {
+      "fire": "shot08.wav",
+      "impact": "exp07.wav",
+      "routine": "0054b660",
+      "native_sound_ids": [
+        25,
+        44
+      ]
+    },
+    "12": {
+      "fire": "shot01.wav",
+      "impact": "exp01.wav",
+      "routine": "0054c310",
+      "native_sound_ids": [
+        18,
+        38
+      ]
+    },
+    "13": {
+      "fire": "shot02.wav",
+      "impact": "exp02.wav",
+      "routine": "0054cfb0",
+      "native_sound_ids": [
+        19,
+        39
+      ]
+    },
+    "14": {
+      "fire": "shot09.wav",
+      "impact": "",
+      "routine": "0054e780",
+      "native_sound_ids": [
+        26,
+        28
+      ]
+    },
+    "15": {
+      "fire": "shot10.wav",
+      "impact": "exp02.wav",
+      "routine": "0054f740",
+      "native_sound_ids": [
+        27,
+        39
+      ]
+    },
+    "16": {
+      "fire": "shot03.wav",
+      "impact": "exp05.wav",
+      "routine": "00550320",
+      "native_sound_ids": [
+        20,
+        42
+      ]
+    },
+    "17": {
+      "fire": "shot02.wav",
+      "impact": "exp02.wav",
+      "routine": "00550f70",
+      "native_sound_ids": [
+        19,
+        39
+      ]
+    },
+    "18": {
+      "fire": "shot01.wav",
+      "impact": "exp01.wav",
+      "routine": "00551eb0",
+      "native_sound_ids": [
+        18,
+        54,
+        38
+      ]
+    },
+    "19": {
+      "fire": "shot13.wav",
+      "impact": "exp01.wav",
+      "routine": "00553060",
+      "native_sound_ids": [
+        30,
+        38
+      ]
+    },
+    "20": {
+      "fire": "shot15.wav",
+      "impact": "exp02.wav",
+      "routine": "00553c60",
+      "native_sound_ids": [
+        32,
+        39
+      ]
+    },
+    "21": {
+      "fire": "shot14.wav",
+      "impact": "exp02.wav",
+      "routine": "00554960",
+      "native_sound_ids": [
+        31,
+        39
+      ]
+    },
+    "22": {
+      "fire": "",
+      "impact": "",
+      "routine": "00555770",
+      "native_sound_ids": [
+        56,
+        56
+      ]
+    },
+    "24": {
+      "fire": "shot18.wav",
+      "impact": "exp01.wav",
+      "routine": "00556130",
+      "native_sound_ids": [
+        35,
+        38
+      ]
+    },
+    "25": {
+      "fire": "shot19.wav",
+      "impact": "exp09.wav",
+      "routine": "005572d0",
+      "native_sound_ids": [
+        36,
+        46,
+        38
+      ]
+    },
+    "26": {
+      "fire": "shot20.wav",
+      "impact": "exp07.wav",
+      "routine": "00557b90",
+      "native_sound_ids": [
+        37,
+        44
+      ]
+    },
+    "27": {
+      "fire": "shot01.wav",
+      "impact": "exp02.wav",
+      "routine": "00558720",
+      "native_sound_ids": [
+        18,
+        39
+      ]
+    },
+    "28": {
+      "fire": "shot03.wav",
+      "impact": "exp05.wav",
+      "routine": "005591c0",
+      "native_sound_ids": [
+        20,
+        42
+      ]
+    },
+    "29": {
+      "fire": "shot01.wav",
+      "impact": "exp01.wav",
+      "routine": "00559ce0",
+      "native_sound_ids": [
+        18,
+        38
+      ]
+    },
+    "42": {
+      "fire": "shot03.wav",
+      "impact": "exp03.wav",
+      "routine": "0055a990",
+      "native_sound_ids": [
+        20,
+        40
+      ]
+    },
+    "43": {
+      "fire": "shot03.wav",
+      "impact": "exp03.wav",
+      "routine": "0055beb0",
+      "native_sound_ids": [
+        20,
+        40
+      ]
+    },
+    "48": {
+      "fire": "shot01.wav",
+      "impact": "exp02.wav",
+      "routine": "0055d300",
+      "native_sound_ids": [
+        18,
+        39
+      ]
+    },
+    "49": {
+      "fire": "shot01.wav",
+      "impact": "exp02.wav",
+      "routine": "0055dee0",
+      "native_sound_ids": [
+        18,
+        39
+      ]
+    },
+    "58": {
+      "fire": "shot04.wav",
+      "impact": "exp04.wav",
+      "routine": "0055ea20",
+      "native_sound_ids": [
+        21,
+        41
+      ]
+    },
+    "59": {
+      "fire": "shot03.wav",
+      "impact": "exp02.wav",
+      "routine": "0055fb50",
+      "native_sound_ids": [
+        20,
+        39
+      ]
+    },
+    "60": {
+      "fire": "",
+      "impact": "",
+      "routine": "00560830",
+      "native_sound_ids": [
+        56
+      ]
+    },
+    "71": {
+      "fire": "shot04.wav",
+      "impact": "exp05.wav",
+      "routine": "005612f0",
+      "native_sound_ids": [
+        21,
+        42
+      ]
+    },
+    "72": {
+      "fire": "shot03.wav",
+      "impact": "exp03.wav",
+      "routine": "00562250",
+      "native_sound_ids": [
+        20,
+        40
+      ]
+    },
+    "78": {
+      "fire": "shot16.wav",
+      "impact": "exp01.wav",
+      "routine": "005635f0",
+      "native_sound_ids": [
+        33,
+        60,
+        38
+      ]
+    },
+    "79": {
+      "fire": "shot16.wav",
+      "impact": "exp01.wav",
+      "routine": "00564910",
+      "native_sound_ids": [
+        33,
+        60,
+        38
+      ]
+    },
+    "81": {
+      "fire": "shot10.wav",
+      "impact": "",
+      "routine": "00566720",
+      "native_sound_ids": [
+        27
+      ]
+    },
+    "82": {
+      "fire": "shot01.wav",
+      "impact": "exp01.wav",
+      "routine": "005670f0",
+      "native_sound_ids": [
+        18,
+        38
+      ]
+    },
+    "91": {
+      "fire": "shot19.wav",
+      "impact": "exp09.wav",
+      "routine": "005682b0",
+      "native_sound_ids": [
+        36,
+        46,
+        38
+      ]
+    },
+    "92": {
+      "fire": "shot20.wav",
+      "impact": "exp07.wav",
+      "routine": "00568b80",
+      "native_sound_ids": [
+        37,
+        44
+      ]
+    },
+    "90": {
+      "fire": "shot18.wav",
+      "impact": "exp01.wav",
+      "routine": "00556130",
+      "native_sound_ids": [
+        35,
+        38
+      ]
+    },
+    "47": {
+      "fire": "shot01.wav",
+      "impact": "exp01.wav",
+      "routine": "00541e50",
+      "native_sound_ids": [
+        18,
+        38
+      ]
+    }
+  },
+  "movement": {
+    "1": "move01.wav",
+    "2": "move02.wav",
+    "3": "move03.wav",
+    "4": "move02.wav",
+    "5": "move01.wav",
+    "6": "move02.wav",
+    "7": "move07.wav",
+    "8": "move02.wav",
+    "9": "move02.wav",
+    "10": "move02.wav"
+  },
+  "source_sha256": "1a517ff29965f27b42a2c7ed88a04031a4198fdbbbafd8f355d97ec4cff102d6",
+  "source_routines": [
+    "00524670",
+    "00537390",
+    "weapon vtable update methods"
+  ],
+  "missing_from_reference": [
+    "start.wav"
+  ]
+}

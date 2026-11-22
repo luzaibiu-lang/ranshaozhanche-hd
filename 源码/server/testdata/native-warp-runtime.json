@@ -1,0 +1,267 @@
+{
+  "initial_units": [
+    {
+      "vehicle": 1,
+      "position": [
+        1136,
+        808
+      ],
+      "hp": 300
+    },
+    {
+      "vehicle": 1,
+      "position": [
+        384,
+        809
+      ],
+      "hp": 300
+    }
+  ],
+  "actor_position": [
+    1136,
+    808
+  ],
+  "native_wind": -18,
+  "direction": 0,
+  "slope": 351.0,
+  "raw_charge": 15,
+  "relative_elevation": 270,
+  "map": 9,
+  "source": "Original AvidWheels 270, owned inactive desktop Warp run",
+  "reference_sha256": "1a517ff29965f27b42a2c7ed88a04031a4198fdbbbafd8f355d97ec4cff102d6",
+  "samples": [
+    {
+      "tick": 1,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 1,
+      "frame": 0,
+      "elapsed": 0
+    },
+    {
+      "tick": 9,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 1,
+      "frame": 2,
+      "elapsed": 8
+    },
+    {
+      "tick": 16,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 1,
+      "frame": 4,
+      "elapsed": 15
+    },
+    {
+      "tick": 22,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 1,
+      "frame": 5,
+      "elapsed": 21
+    },
+    {
+      "tick": 23,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 1,
+      "frame": 5,
+      "elapsed": 22
+    },
+    {
+      "tick": 30,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 4
+    },
+    {
+      "tick": 33,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 7
+    },
+    {
+      "tick": 40,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 14
+    },
+    {
+      "tick": 51,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 25
+    },
+    {
+      "tick": 61,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 35
+    },
+    {
+      "tick": 62,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 36
+    },
+    {
+      "tick": 71,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 45
+    },
+    {
+      "tick": 80,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 54
+    },
+    {
+      "tick": 89,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 63
+    },
+    {
+      "tick": 94,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 68
+    },
+    {
+      "tick": 98,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 72
+    },
+    {
+      "tick": 107,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 81
+    },
+    {
+      "tick": 115,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 89
+    },
+    {
+      "tick": 116,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 90
+    },
+    {
+      "tick": 130,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 104
+    },
+    {
+      "tick": 139,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 113
+    },
+    {
+      "tick": 141,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 2,
+      "frame": 6,
+      "elapsed": 115
+    },
+    {
+      "tick": 146,
+      "position": [
+        1137,
+        803
+      ],
+      "mode": 0,
+      "frame": 0,
+      "elapsed": 0
+    }
+  ],
+  "packet_slope": 0,
+  "native_launch_angle": 261.0,
+  "slope_source": "Native projectile launch heading minus the fixture relative elevation; original tank recomputes terrain slope before launch"
+}

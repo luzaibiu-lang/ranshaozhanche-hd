@@ -1,0 +1,475 @@
+{
+  "map": 9,
+  "weapon": 2,
+  "actor_position": [
+    1368,
+    692
+  ],
+  "native_wind": 39,
+  "slope": 0,
+  "direction": 1,
+  "raw_charge": 180,
+  "relative_elevation": 35,
+  "initial_units": [
+    {
+      "vehicle": 25,
+      "position": [
+        1368,
+        692
+      ],
+      "hp": 300
+    },
+    {
+      "vehicle": 1,
+      "position": [
+        1072,
+        819
+      ],
+      "hp": 300
+    }
+  ],
+  "vehicle": 25,
+  "objects": [
+    {
+      "native_projectile": 85,
+      "samples": [
+        {
+          "tick": 2,
+          "position": [
+            1340.4630126953125,
+            649.4140014648438
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 4,
+          "position": [
+            1321.0899658203125,
+            636.5479736328125
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 9,
+          "position": [
+            1273.375,
+            607.5330200195312
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 15,
+          "position": [
+            1217.469970703125,
+            578.6549682617188
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 20,
+          "position": [
+            1172.0098876953125,
+            559.5399780273438
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 21,
+          "position": [
+            1163.0408935546875,
+            556.2569580078125
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 27,
+          "position": [
+            1110.087890625,
+            540.3389892578125
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 32,
+          "position": [
+            1067.0880126953125,
+            532.02392578125
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 33,
+          "position": [
+            1058.6109619140625,
+            530.9009399414062
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 36,
+          "position": [
+            1033.4259033203125,
+            528.6119384765625
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 44,
+          "position": [
+            968.0699462890625,
+            530.4279174804688
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 56,
+          "position": [
+            874.9559326171875,
+            554.7518920898438
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 59,
+          "position": [
+            852.5999145507812,
+            564.8829345703125
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 60,
+          "position": [
+            845.2299194335938,
+            568.6199340820312
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 66,
+          "position": [
+            801.8709106445312,
+            594.8218994140625
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 67,
+          "position": [
+            794.7879028320312,
+            599.8189086914062
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 74,
+          "position": [
+            746.3549194335938,
+            639.837890625
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 81,
+          "position": [
+            699.930908203125,
+            688.6768188476562
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 84,
+          "position": [
+            680.64990234375,
+            712.307861328125
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 94,
+          "position": [
+            619.0447998046875,
+            802.77783203125
+          ],
+          "mode": 1,
+          "heading": 145.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 0
+          }
+        },
+        {
+          "tick": 98,
+          "position": [
+            614.25,
+            801.9419555664062
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 1
+          }
+        },
+        {
+          "tick": 105,
+          "position": [
+            636.125,
+            740.9089965820312
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 1
+          }
+        },
+        {
+          "tick": 113,
+          "position": [
+            661.125,
+            681.95703125
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 1
+          }
+        },
+        {
+          "tick": 114,
+          "position": [
+            664.25,
+            675.3980102539062
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 1
+          }
+        },
+        {
+          "tick": 123,
+          "position": [
+            692.375,
+            624.4669799804688
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 1
+          }
+        },
+        {
+          "tick": 125,
+          "position": [
+            698.625,
+            615.1290283203125
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 1
+          }
+        },
+        {
+          "tick": 130,
+          "position": [
+            714.25,
+            594.9340209960938
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 1
+          }
+        },
+        {
+          "tick": 135,
+          "position": [
+            729.875,
+            579.239013671875
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 1
+          }
+        },
+        {
+          "tick": 136,
+          "position": [
+            733.0,
+            576.6400146484375
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 1
+          }
+        },
+        {
+          "tick": 142,
+          "position": [
+            751.75,
+            564.8259887695312
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 0,
+            "bounces": 1
+          }
+        },
+        {
+          "tick": 150,
+          "position": [
+            776.75,
+            559.1539916992188
+          ],
+          "mode": 1,
+          "heading": 72.0,
+          "visual": {
+            "frozen": 0,
+            "exploding": 1,
+            "bounces": 1
+          }
+        }
+      ]
+    }
+  ],
+  "source": "Original AvidWheels 270, actual inactive desktop shot",
+  "reference_sha256": "1a517ff29965f27b42a2c7ed88a04031a4198fdbbbafd8f355d97ec4cff102d6"
+}

@@ -1,0 +1,1325 @@
+{
+  "source_sha256": "1a517ff29965f27b42a2c7ed88a04031a4198fdbbbafd8f355d97ec4cff102d6",
+  "projectiles": {
+    "1": {
+      "sprite": "1",
+      "source": "Data/Weapon01.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.0,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00541b20",
+      "update": "0x541e50"
+    },
+    "2": {
+      "sprite": "2",
+      "source": "Data/Weapon02.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 0.800000011920929,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00542830",
+      "update": "0x542b00"
+    },
+    "3": {
+      "sprite": "3",
+      "source": "Data/Weapon03.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 5,
+          "ticks": 2,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.5,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00543500",
+      "update": "0x5437b0"
+    },
+    "4": {
+      "sprite": "4",
+      "source": "Data/Weapon04.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.0,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00544a10",
+      "update": "0x544cc0"
+    },
+    "5": {
+      "sprite": "5",
+      "source": "Data/Weapon05.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add",
+          "align_velocity": false,
+          "spin_per_tick": 4
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect05",
+          "scale": 1,
+          "renderer": "orbital_column",
+          "initializer": "004aeff0"
+        }
+      ],
+      "draw": "005456e0",
+      "update": "0x545960",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "6": {
+      "sprite": "6",
+      "source": "Data/Weapon06.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect05",
+          "scale": 1.2000000476837158,
+          "initializer": "004af500"
+        }
+      ],
+      "draw": "00546710",
+      "update": "0x546930",
+      "draw_flags": [
+        1600,
+        1601
+      ]
+    },
+    "7": {
+      "sprite": "7",
+      "source": "Data/Weapon07.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.399999976158142,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00547760",
+      "update": "0x547a20"
+    },
+    "8": {
+      "sprite": "8",
+      "source": "Data/Weapon08.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect02",
+          "scale": 1.0,
+          "initializer": "004ae350"
+        }
+      ],
+      "draw": "005483b0",
+      "update": "0x548670"
+    },
+    "9": {
+      "sprite": "9",
+      "source": "Data/Weapon09.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect06",
+          "scale": 1.2999999523162842,
+          "initializer": "004afa50"
+        }
+      ],
+      "draw": "00549000",
+      "update": "0x549220",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "10": {
+      "sprite": "10",
+      "source": "Data/Weapon10.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 4,
+          "ticks": 5,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect07",
+          "scale": 1,
+          "initializer": "004affb0"
+        }
+      ],
+      "draw": "0054a5e0",
+      "update": "0x54a9e0",
+      "draw_flags": [
+        1088,
+        1089
+      ],
+      "variant_effects": {
+        "firewall": [
+          {
+            "effect": "Effect11",
+            "scale": 1.100000023841858,
+            "initializer": "004b36e0"
+          }
+        ]
+      }
+    },
+    "11": {
+      "sprite": "11",
+      "source": "Data/Weapon11.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect09",
+          "scale": 2.5,
+          "initializer": "004b0a60"
+        }
+      ],
+      "draw": "0054b3a0",
+      "update": "0x54b660"
+    },
+    "12": {
+      "sprite": "12",
+      "source": "Data/Weapon12.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.0,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "0054c020",
+      "update": "0x54c310"
+    },
+    "13": {
+      "sprite": "13",
+      "source": "Data/Weapon13.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 0.800000011920929,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "0054ccf0",
+      "update": "0x54cfb0"
+    },
+    "14": {
+      "sprite": "14",
+      "source": "Data/Weapon14.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "0054dbb0",
+      "update": "0x54e780",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "15": {
+      "sprite": "15",
+      "source": "Data/Weapon15.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect08",
+          "scale": 1.0,
+          "initializer": "004b0510"
+        }
+      ],
+      "draw": "0054f500",
+      "update": "0x54f740",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "16": {
+      "sprite": "16",
+      "source": "Data/Weapon16.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add",
+          "align_velocity": false,
+          "spin_per_tick": 4
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1,
+          "initializer": "004f0750"
+        }
+      ],
+      "draw": "00550100",
+      "update": "0x550320",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "17": {
+      "sprite": "17",
+      "source": "Data/Weapon17.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add",
+          "align_velocity": false,
+          "spin_per_tick": 6
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect10",
+          "scale": 1.0,
+          "initializer": "004b3190"
+        }
+      ],
+      "draw": "00550d50",
+      "update": "0x550f70",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "18": {
+      "sprite": "18",
+      "source": "Data/Weapon18.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.0,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00551910",
+      "update": "0x551eb0"
+    },
+    "19": {
+      "sprite": "19",
+      "source": "Data/Weapon19.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 2,
+          "ticks": 5,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.0,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00552d80",
+      "update": "0x553060"
+    },
+    "20": {
+      "sprite": "20",
+      "source": "Data/Weapon20.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add",
+          "align_velocity": false,
+          "spin_per_tick": 6
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.0,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00553a40",
+      "update": "0x553c60",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "21": {
+      "sprite": "21",
+      "source": "Data/Weapon21.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add",
+          "align_velocity": false,
+          "spin_per_tick": 6
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.0,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00554740",
+      "update": "0x554960",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "22": {
+      "sprite": "22",
+      "source": "Data/Weapon22.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [],
+      "draw": "00555510",
+      "update": "0x555770",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "24": {
+      "sprite": "24",
+      "source": "Data/Weapon24.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 4,
+          "ticks": 5,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect06",
+          "scale": 1.2999999523162842,
+          "initializer": "004afa50"
+        }
+      ],
+      "draw": "00555ef0",
+      "update": "0x556130",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "25": {
+      "sprite": "25",
+      "source": "Data/Weapon25.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 4,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect11",
+          "scale": 1.100000023841858,
+          "initializer": "004b36e0"
+        }
+      ],
+      "draw": "00557060",
+      "update": "0x5572d0",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "26": {
+      "sprite": "26",
+      "source": "Data/Weapon26.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 4,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 2.700000047683716,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00557950",
+      "update": "0x557b90",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "27": {
+      "sprite": "27",
+      "source": "Data/Weapon27.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect10",
+          "scale": 0.4000000059604645,
+          "initializer": "004b3190"
+        }
+      ],
+      "draw": "00558530",
+      "update": "0x558720",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "28": {
+      "sprite": "28",
+      "source": "Data/Weapon28.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 3,
+          "ticks": 3,
+          "blend": "add",
+          "align_velocity": false,
+          "spin_per_tick": 4
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect16",
+          "scale": 1,
+          "initializer": "004b51e0"
+        }
+      ],
+      "draw": "00558f70",
+      "update": "0x5591c0",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "29": {
+      "sprite": "29",
+      "source": "Data/Weapon29.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "mix",
+          "align_velocity": false,
+          "spin_per_tick": 10
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect10",
+          "scale": 0.800000011920929,
+          "initializer": "004b3190"
+        }
+      ],
+      "draw": "00559ac0",
+      "update": "0x559ce0"
+    },
+    "42": {
+      "sprite": "3",
+      "source": "Data/Weapon03.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 5,
+          "ticks": 2,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.5,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "0055a6e0",
+      "update": "0x55a990"
+    },
+    "43": {
+      "sprite": "3",
+      "source": "Data/Weapon03.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 5,
+          "ticks": 2,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.5,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "0055bc00",
+      "update": "0x55beb0"
+    },
+    "48": {
+      "sprite": "27",
+      "source": "Data/Weapon27.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect10",
+          "scale": 0.4000000059604645,
+          "initializer": "004b3190"
+        }
+      ],
+      "draw": "0055d0f0",
+      "update": "0x55d300",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "49": {
+      "sprite": "27",
+      "source": "Data/Weapon27.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect10",
+          "scale": 0.4000000059604645,
+          "initializer": "004b3190"
+        }
+      ],
+      "draw": "0055dcc0",
+      "update": "0x55dee0",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "58": {
+      "sprite": "44",
+      "source": "New/weapon44.spr",
+      "layers": [
+        {
+          "first": 6,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 7,
+          "count": 5,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.0,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "0055e760",
+      "update": "0x55ea20"
+    },
+    "59": {
+      "sprite": "49",
+      "source": "New/weapon49.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add",
+          "align_velocity": false,
+          "spin_per_tick": 12
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1,
+          "initializer": "004f0750"
+        }
+      ],
+      "draw": "0055f910",
+      "update": "0x55fb50",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "60": {
+      "sprite": "22",
+      "source": "Data/Weapon22.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add",
+          "align_velocity": false,
+          "spin_per_tick": 6
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect03",
+          "scale": 1,
+          "initializer": "004ae920"
+        }
+      ],
+      "draw": "005605e0",
+      "update": "0x560830",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "71": {
+      "sprite": "64",
+      "source": "New/weapon64.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [],
+      "draw": "00561010",
+      "update": "0x5612f0"
+    },
+    "72": {
+      "sprite": "63",
+      "source": "New/weapon63.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 5,
+          "ticks": 2,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.5,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00561fa0",
+      "update": "0x562250"
+    },
+    "78": {
+      "sprite": "native/data_witem_grenade",
+      "source": "Data/WItem_Grenade.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix",
+          "spin_per_tick": 10
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.2000000476837158,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00563300",
+      "update": "0x5635f0"
+    },
+    "79": {
+      "sprite": "native/data_witem_grenade",
+      "source": "Data/WItem_Grenade.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix",
+          "spin_per_tick": 10
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect09",
+          "scale": 2.5,
+          "initializer": "004b0a60"
+        }
+      ],
+      "draw": "005644b0",
+      "update": "0x564910"
+    },
+    "81": {
+      "sprite": "15",
+      "source": "Data/Weapon15.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect08",
+          "scale": 1.0,
+          "initializer": "004b0510"
+        }
+      ],
+      "draw": "0x565b70",
+      "update": "0x565fe0",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "82": {
+      "sprite": "29",
+      "source": "Data/Weapon29.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 3,
+          "blend": "mix",
+          "align_velocity": false,
+          "spin_per_tick": 10
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect10",
+          "scale": 0.800000011920929,
+          "initializer": "004b3190"
+        }
+      ],
+      "draw": "00566ed0",
+      "update": "0x5670f0"
+    },
+    "91": {
+      "sprite": "84",
+      "source": "New/weapon84.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 4,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect11",
+          "scale": 1.100000023841858,
+          "initializer": "004b36e0"
+        }
+      ],
+      "draw": "00568020",
+      "update": "0x5682b0",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "92": {
+      "sprite": "native/new_weapon86b",
+      "source": "New/weapon86B.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 4,
+          "ticks": 3,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 2.700000047683716,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00568940",
+      "update": "0x568b80",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "100": {
+      "sprite": "native/data_witem_grenade",
+      "source": "Data/WItem_Grenade.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix",
+          "spin_per_tick": 10
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.2000000476837158,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "0056e310",
+      "update": "0x56e600"
+    },
+    "101": {
+      "sprite": "native/data_witem_hmissile",
+      "source": "Data/WItem_HMissile.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.0,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "0056f420",
+      "update": "0x56f9a0"
+    },
+    "102": {
+      "sprite": "native/data_witem_warp",
+      "source": "Data/WItem_Warp.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [],
+      "draw": "00570890",
+      "update": "0x570fa0"
+    },
+    "104": {
+      "sprite": "native/data_witem_eshock",
+      "source": "Data/WItem_EShock.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 4,
+          "ticks": 4,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect15",
+          "scale": 1.5,
+          "initializer": "004b4c80"
+        }
+      ],
+      "draw": "0056da50",
+      "update": "0x56dca0",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "47": {
+      "sprite": "44",
+      "source": "New/Weapon44.spr",
+      "layers": [
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect01",
+          "scale": 1.0,
+          "initializer": "004addb0"
+        }
+      ],
+      "draw": "00541b20",
+      "update": "0x541e50"
+    },
+    "90": {
+      "sprite": "24",
+      "source": "Data/Weapon24.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 4,
+          "ticks": 5,
+          "blend": "add"
+        }
+      ],
+      "effects": [
+        {
+          "effect": "Effect06",
+          "scale": 1.2999999523162842,
+          "initializer": "004afa50"
+        }
+      ],
+      "draw": "00555ef0",
+      "update": "0x556130",
+      "draw_flags": [
+        1088,
+        1089
+      ]
+    },
+    "105": {
+      "sprite": "native/data_witem_health",
+      "source": "Data/WItem_Health.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": []
+    },
+    "106": {
+      "sprite": "native/data_witem_blind",
+      "source": "Data/WItem_Blind.spr",
+      "layers": [
+        {
+          "first": 0,
+          "count": 1,
+          "ticks": 1,
+          "blend": "add"
+        },
+        {
+          "first": 1,
+          "count": 1,
+          "ticks": 1,
+          "blend": "mix"
+        }
+      ],
+      "effects": []
+    }
+  }
+}

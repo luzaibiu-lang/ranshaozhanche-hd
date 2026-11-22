@@ -1,0 +1,37 @@
+{
+  "map": 9,
+  "units": [
+    1,
+    1
+  ],
+  "weapon": 0,
+  "actor_position": [
+    1272,
+    760
+  ],
+  "initial_units": [
+    {
+      "vehicle": 1,
+      "position": [
+        1272,
+        760
+      ],
+      "hp": 300
+    },
+    {
+      "vehicle": 1,
+      "position": [
+        400,
+        808
+      ],
+      "hp": 300
+    }
+  ],
+  "native_wind": 36,
+  "slope": 4,
+  "direction": 1,
+  "raw_charge": 180,
+  "relative_elevation": 65,
+  "terrain_before": "3905d60d1a28ad16d2f97438cba04914c8cbea44306a08799845f8abe48ed1ff",
+  "terrain_after": "821722d6e45e76d013095c6dcd8bb1d521c36229e3c91969f8da5e634d4a2842"
+}

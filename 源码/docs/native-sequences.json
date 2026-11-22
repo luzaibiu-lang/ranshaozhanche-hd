@@ -1,0 +1,1626 @@
+[
+  {
+    "source": "Interface/AbilityInfo.spr",
+    "sha256": "9edd98fd109cda31516c5d29babfdae4c31683d392fa18a0ba946fd21892b9bd",
+    "output": "icons/AbilityInfo",
+    "frames": 10,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/AllChatBtn.spr",
+    "sha256": "44c7e0989b34e70e01d2d796a1d39f4b1b464486896bc8cd7575f722550a394b",
+    "output": "icons/AllChatBtn",
+    "frames": 4,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/CharBack.spr",
+    "sha256": "7d8a9a15c15ffb770460c1f9caaf89cf294b8d3abd960678bf3b4c57d61372b2",
+    "output": "icons/CharBack",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/Cursor.spr",
+    "sha256": "2db04e4aa320a95807254b2d6c6f5d8507fc67a949c720e73ba51e940dfba5dd",
+    "output": "icons/Cursor",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/EnergyGage.spr",
+    "sha256": "9bcb6e66c91bc0a641d032aad34ffb87450a2d8d4db9202201ebb138c43db23d",
+    "output": "icons/EnergyGage",
+    "frames": 4,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/F1Btn.spr",
+    "sha256": "2ac513517d51b894857c5745ae0aa76030bd840646cfc4519c24dd6831d3c67d",
+    "output": "icons/F1Btn",
+    "frames": 5,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/F2Btn.spr",
+    "sha256": "0b47beb0ce1ac73183649cfba6189aa5706c4e18b6fb6237411cab6746a777a0",
+    "output": "icons/F2Btn",
+    "frames": 5,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/F3Btn.spr",
+    "sha256": "af2cdfd064e02ec745c410a10b053c90e757a6b9212ea506fd5f095ce24dbd9b",
+    "output": "icons/F3Btn",
+    "frames": 5,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/F4Btn.spr",
+    "sha256": "12cd2d4888783289ae28397135527f87423543de1fd19960d0d6325811827f67",
+    "output": "icons/F4Btn",
+    "frames": 5,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/F5Btn.spr",
+    "sha256": "6afbc1e62f837f6f9c498b8a85fde5d80ad2f4412b7aec0bf76ac4238d3fffcb",
+    "output": "icons/F5Btn",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/F6Btn.spr",
+    "sha256": "6665197441b2eefe0aa4a4130259dc1fac7c278aac457ef0fdcca84ab8fd4da1",
+    "output": "icons/F6Btn",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/F7Btn.spr",
+    "sha256": "c62f7da18b7afab1b43484908fdbc293e1b153d09fbf28559b0e977dfc3acee1",
+    "output": "icons/F7Btn",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/F8Btn.spr",
+    "sha256": "d4cb8cb42ec8aa4c76ef06cc7dba2d81901ff6a9750dc51b61b5007a5250dae5",
+    "output": "icons/F8Btn",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/FuelGage.spr",
+    "sha256": "b11e6834e4a49155de060f4ba8b4ee2c15660d08c30ea4012f46a33acdeb468d",
+    "output": "icons/FuelGage",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/Interface.spr",
+    "sha256": "66253089ba3cbb21773fd06085f03381e1cc10a6498f748a589045cb0f0113fb",
+    "output": "icons/Interface",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/InterfaceEtc.spr",
+    "sha256": "1dc92e9237b6c1bab56cfda42c1e47a48e11f6e79f3f4c1cb53529e99b5d4c90",
+    "output": "icons/InterfaceEtc",
+    "frames": 7,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ItemIcon.spr",
+    "sha256": "c12d11861aa091c57858a9500bb1d40dce7f7254a69dca9cb86c36a80eaa02a8",
+    "output": "icons/ItemIcon",
+    "frames": 18,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/JumpGage.spr",
+    "sha256": "10efce79349956e7386d605dad23d2b164075645146674deda5b530611aa1a2e",
+    "output": "icons/JumpGage",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/Level.spr",
+    "sha256": "54b8670fe63704484b78977d36b8eab768482d532b7a9babe4087be5aa1c0bc8",
+    "output": "icons/Level",
+    "frames": 22,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/MenuBox.spr",
+    "sha256": "e8f6d6a95c146f103f36e83eea04df3d82cf90938477978383c22240449c1e4b",
+    "output": "icons/MenuBox",
+    "frames": 4,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/MenuBtn.spr",
+    "sha256": "3dbf3880e8521cf3644425c70c5a1457ed1a478ad072a8c5858b06474176e5d7",
+    "output": "icons/MenuBtn",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/Number1.spr",
+    "sha256": "9a0557b97887a1c707ee207e8b7a92438a7a0eddfa5f16320432a3ebc02e39e4",
+    "output": "icons/Number1",
+    "frames": 12,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/Number2.spr",
+    "sha256": "00dfbd9eeba139bd534449df062775ea320fb54cb2d8171580392b9d8a8ff8b9",
+    "output": "icons/Number2",
+    "frames": 12,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ObvBtn.spr",
+    "sha256": "c834a8265500a35aad34e4fa9fe48c2cc76a40feb82410cb0879fa466e1c34e4",
+    "output": "icons/ObvBtn",
+    "frames": 4,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/OpGirl1.spr",
+    "sha256": "3c3d50e7872c8eb5c56873b541a3a127f74ab1b6d9697bda6076a7d873328ac0",
+    "output": "icons/OpGirl1",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/OpGirl2.spr",
+    "sha256": "57591cd659cb2bee072088a4d887eb1b2d5ffd16fa93077e476df16db492a682",
+    "output": "icons/OpGirl2",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/OpGirl3.spr",
+    "sha256": "9b55ba895012816477935c9ca8d7df14824644997bbfee9ca62a0614516a58e4",
+    "output": "icons/OpGirl3",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/OpGirl4.spr",
+    "sha256": "608380a59e4074cfd8bf2ed93c207f20a2a8ab2b3ac751498f633b87779c2ae2",
+    "output": "icons/OpGirl4",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/PlayState.spr",
+    "sha256": "e01cb8c1031e6ee3618b0679d4026910a881467ed1478022c203a7bdee679038",
+    "output": "icons/PlayState",
+    "frames": 4,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/PowerGage.spr",
+    "sha256": "4860e8781aa929b3bd1657f4c63ddba9d17ac4a106d0d49fe132bfadc29774bd",
+    "output": "icons/PowerGage",
+    "frames": 26,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/PrevMap.spr",
+    "sha256": "492abaaebfdbcf87358cebf8beb2fe22d4b29674c12482aded563c76583f2ac8",
+    "output": "icons/PrevMap",
+    "frames": 19,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ResultBox.spr",
+    "sha256": "f657db74fa310b3c9be0bc0f935921a3db8cf930b2884053513d3b3d4c5cac86",
+    "output": "icons/ResultBox",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ResultCloseBtn.spr",
+    "sha256": "d0ff77461771bb412df86847639c2cbe2afcd3d0e3b5bffdb7e8de5576867598",
+    "output": "icons/ResultCloseBtn",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/RMaster.spr",
+    "sha256": "4084f57d194f907852167419c6d18687653a61e46a459f437800d821000b389d",
+    "output": "icons/RMaster",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/Shop.spr",
+    "sha256": "fb3a7671cc82c5ef245e73ed25ce39b255b9c33efefa5bf9a4809fc45782abf6",
+    "output": "icons/Shop",
+    "frames": 10,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ShopBuyBtn.spr",
+    "sha256": "d494fd9dc706f6e565df61fecd66a09b7152d91c5655889b8a119db4c5e6d9ae",
+    "output": "icons/ShopBuyBtn",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ShopLBtn1.spr",
+    "sha256": "5e0d12f4be0ffc800d014f9edf7f356bcd099d4d07497e9c804c37eb0a69ab96",
+    "output": "icons/ShopLBtn1",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ShopLBtn2.spr",
+    "sha256": "c84b5e4287a055bede775efa950dcd816cb59611b28782034cf1d85317f4b175",
+    "output": "icons/ShopLBtn2",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ShopLBtn3.spr",
+    "sha256": "ddeaa1d2af3b0ba901545af3d7f9bdd5301b426ef1929478746d24b0bf49341f",
+    "output": "icons/ShopLBtn3",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ShopRBtn1.spr",
+    "sha256": "747107d891b5bdf42d51d8a6bb37c389c549afe3b001b187b993b60a5d7a105e",
+    "output": "icons/ShopRBtn1",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ShopRBtn2.spr",
+    "sha256": "1b7a34b481fc828dac1a4e6b915b26f7f2afc630d275a61d6e8de34a5ca60200",
+    "output": "icons/ShopRBtn2",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ShopRBtn3.spr",
+    "sha256": "f36309c3a366836e05cb61a957dc50ec127a0ae2a06c077a90f85a5c83579dc1",
+    "output": "icons/ShopRBtn3",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/ShopSellBtn.spr",
+    "sha256": "71b19225735d87a97d10efeaf31157992a706e633a473b1b711888a3e6fdb0cd",
+    "output": "icons/ShopSellBtn",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/SkipBtn.spr",
+    "sha256": "035bbda358911411e1b122d8a2c26913435189709774f21a9aca72f6ab572084",
+    "output": "icons/SkipBtn",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/TeamChatBtn.spr",
+    "sha256": "bb65fca5e4ceeca2517e27c5f7434397124f39183441f1ad57a4735406cdb5c5",
+    "output": "icons/TeamChatBtn",
+    "frames": 4,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/TeamIcon.spr",
+    "sha256": "e61e03e69cdd5e2abfb63fcdd12e673ea28b8100be0fdc1df550a12033682fcf",
+    "output": "icons/TeamIcon",
+    "frames": 4,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/TotUnit.spr",
+    "sha256": "49f13dd5aaf0c1d2557c70e50e2f84acca21173e79e70a4329648f9ff9f92921",
+    "output": "icons/TotUnit",
+    "frames": 11,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/UserBox.spr",
+    "sha256": "81628f54689e23ea8ce139adf1d6124f7e119b374032bdcc51b4099bf5010bff",
+    "output": "icons/UserBox",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/UserPower1Btn.spr",
+    "sha256": "e630e0db1d708742163760f607aaa3d164256a6e14bc286e546e447949fae538",
+    "output": "icons/UserPower1Btn",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/UserPower2Btn.spr",
+    "sha256": "ea188ad0c075e9be5e3a34061c209fce6fc201528fadc4698766e8d8283b3bfd",
+    "output": "icons/UserPower2Btn",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/UserPower3Btn.spr",
+    "sha256": "1356f000959acbf8dc497556a6fa4aaeddbe9a8e6548113ab7ca0f38e6f9529e",
+    "output": "icons/UserPower3Btn",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/UserPower4Btn.spr",
+    "sha256": "a820603726f5ba7a8a6fe0867c8d76ec6f872a5d6fc3515faf349feca9516abe",
+    "output": "icons/UserPower4Btn",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/weapon_barlog.spr",
+    "sha256": "c8d5a23b6d4f0b9eec9455610e3b3c214ba8c72d932b246bb8de94c5d4b5455d",
+    "output": "icons/weapon_barlog",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/weapon_fireazer.spr",
+    "sha256": "c7f91fa3919afcac769efd923f61a5ab548aa5f095c37431c84df0c0f2115254",
+    "output": "icons/weapon_fireazer",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/weapon_fury.spr",
+    "sha256": "99c021b9bdfb7867ae2a8c340721277a9c0969158ac58c36e26e249864b1bc86",
+    "output": "icons/weapon_fury",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/weapon_hoversirene.spr",
+    "sha256": "60ba17ada23e01985071bd3ec559f7bec2fdb2e554ba971ef05120e7093bfcdf",
+    "output": "icons/weapon_hoversirene",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/weapon_ladon.spr",
+    "sha256": "51eee8e247084323448284c2a0a22886bc3e5dbd914c67bc0d8d3aa0e6df2ff2",
+    "output": "icons/weapon_ladon",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/weapon_Obit.spr",
+    "sha256": "435d0757e189d0881345c0e27012f086df1c8a48a2116e0dca71077f98b522f6",
+    "output": "icons/weapon_Obit",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/weapon_odin.spr",
+    "sha256": "ef96dc42cd2687f4833bde92fe156dad825ca0076422a648bfad983eec66bda7",
+    "output": "icons/weapon_odin",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/weapon_RedDragon.spr",
+    "sha256": "9e7b32ee23baf895757a5b784f621b17e35a58fbb43592eac8d4f1ce702aaa72",
+    "output": "icons/weapon_RedDragon",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/weapon_spider.spr",
+    "sha256": "c7dc26d864a6efb0c5575173a221336e0bdb50d43d4031402a24a4182ca4e847",
+    "output": "icons/weapon_spider",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/weapon_thor.spr",
+    "sha256": "eb8c0787c1f33e99d1f136ad383871b0ba64d79bb4c96f0474ccf3e033a508b6",
+    "output": "icons/weapon_thor",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/WeaponTab.spr",
+    "sha256": "65c1da7d2b3c3853c3de5f0828297370aa53249bb79881232b745e4b287d309f",
+    "output": "icons/WeaponTab",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Interface/WindGage.spr",
+    "sha256": "5b4e543cf1bdb9bee2bfa804258423d7f136f24d638f8c9ca25d09026044a9a5",
+    "output": "icons/WindGage",
+    "frames": 5,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_bridge.spr",
+    "sha256": "53b8b167580c05984bf78f5f21bae3b71287b0d75aa8282ad0acabe8337df112",
+    "output": "scenery/bk_bridge",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_bubble.spr",
+    "sha256": "048d6b52db994b8c7b318e87312e071235225813bee2c37270afbb0999c96f3b",
+    "output": "scenery/bk_bubble",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_cave.spr",
+    "sha256": "dff92939f5c51051ffc659d4d81c89bb240cb7b5ee4bdcd272928ac8326945b1",
+    "output": "scenery/bk_cave",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_city.spr",
+    "sha256": "9f0504571fd9110a3bd620892dec0f274a2bff219062e7f5e028782635f8365e",
+    "output": "scenery/bk_city",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_desertplanet.spr",
+    "sha256": "254101050a96c9b57e6d8533673db27c7762afd453aece957ac20cab85b1dfd3",
+    "output": "scenery/bk_desertplanet",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_factory.spr",
+    "sha256": "6bf3187a57c04a519ef1910a47f74684320a04df2559e82ebdff783f89cb789d",
+    "output": "scenery/bk_factory",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_futurespace.spr",
+    "sha256": "2b3eac8257b391ca9fde384eb5e2c666c7f620e84a73b1f9279453ed88efa9e7",
+    "output": "scenery/bk_futurespace",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_jungle.spr",
+    "sha256": "2865f966a3502bb0866e88ec57019adecde20d24ac9304b73837ae73f0a5dea0",
+    "output": "scenery/bk_jungle",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_meteor.spr",
+    "sha256": "f4eaa461c80808c8c25b14b4db2e4c2db2b793eb1d853ff46b3b82b9ac821aee",
+    "output": "scenery/bk_meteor",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_rain.spr",
+    "sha256": "7d13c0590929a8c08b76612446e459c5877030de7f76fa70dc307426fef57413",
+    "output": "scenery/bk_rain",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_snow.spr",
+    "sha256": "d0189475351f3831c33eb13d956ebb6dd7d656c983f1f8baaf521580e88e26ed",
+    "output": "scenery/bk_snow",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_underworld.spr",
+    "sha256": "d40316dc1623d9330473033bb109f5b3ad3aa13f2c1ba40e626eb7839749a5f1",
+    "output": "scenery/bk_underworld",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/bk_volcano.spr",
+    "sha256": "9f0504571fd9110a3bd620892dec0f274a2bff219062e7f5e028782635f8365e",
+    "output": "scenery/bk_volcano",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/BlindShock.spr",
+    "sha256": "2cff87118eb399f653cd9ef26679b34f6333f8470770e8cdb7f68a5d11fb6d6b",
+    "output": "effects/BlindShock",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect01.spr",
+    "sha256": "b7bd4bc8545ae26cd61798a5474d313d46ec096902b55afb8fbb669f1a8e0851",
+    "output": "effects/Effect01",
+    "frames": 10,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect02.spr",
+    "sha256": "ab38dc96f118753069078ba5c1a9bf9f440d1af73f6f41069696f9527f44dec0",
+    "output": "effects/Effect02",
+    "frames": 9,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect03.spr",
+    "sha256": "ef82a94931b66d718d7c9194976be4a5c0b2d858aff099fe34638e096eaf4940",
+    "output": "effects/Effect03",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect05.spr",
+    "sha256": "20c8e4f1d73fa6b1ab0681e81d8f771046075574fb3656ca26a517a0cb423ff8",
+    "output": "effects/Effect05",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect06.spr",
+    "sha256": "43db021dde5e5b12688299affb61da0622327a50cf79438e153c86ad3ca851e1",
+    "output": "effects/Effect06",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect07.spr",
+    "sha256": "c5bdfc8633fd8c6f83399b5b639c8fed9531d7a2e0e30497517a0ec199f71826",
+    "output": "effects/Effect07",
+    "frames": 9,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect08.spr",
+    "sha256": "01bf673664afe9d3375ab5eb6320ddbd5157f77601c713e03eec3aa31747b5d7",
+    "output": "effects/Effect08",
+    "frames": 7,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect09.spr",
+    "sha256": "657f22f367298a3a8e6d4da2738a1f358f228131257eb514990b973101f6d332",
+    "output": "effects/Effect09",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect10.spr",
+    "sha256": "ad6e2e16bf794becbcee4395f5d917ca2ccd2df94e67715abd3b2e88815d8059",
+    "output": "effects/Effect10",
+    "frames": 16,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect11.spr",
+    "sha256": "f9f057828493fcae3540412aff0a5c3fec5e5493f08c5f4fea760b90705bd405",
+    "output": "effects/Effect11",
+    "frames": 11,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect12.spr",
+    "sha256": "0c1c07e0887ea1eb2ae1c5f4d527c05e93347242023f1f3f2b487a56cc889db1",
+    "output": "effects/Effect12",
+    "frames": 16,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect13.spr",
+    "sha256": "4a0161452420a549c1c17fbb6b791962142daf0ec5f281fe5c4d0d9804d27950",
+    "output": "effects/Effect13",
+    "frames": 13,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect14.spr",
+    "sha256": "8924f1bc7b62e26d91165721a5e9bba55190c47ac3ac8c409bb1e7881a348f9f",
+    "output": "effects/Effect14",
+    "frames": 15,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect15.spr",
+    "sha256": "b2e07f7a798590e79ff56faf33d0a82810bc41cf2d170ff354fd72a96ba6e3d3",
+    "output": "effects/Effect15",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect16.spr",
+    "sha256": "72ac3c399061f174ec469ed974b6ab2c214ee92ef6a1642b11a350c4e517de18",
+    "output": "effects/Effect16",
+    "frames": 7,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect16e.spr",
+    "sha256": "9ad21fd80d5ede3676a9d3a317cf1752dea961e6299cef4107b0373229b70373",
+    "output": "effects/Effect16e",
+    "frames": 9,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect16eb.spr",
+    "sha256": "0c1d8e9ee92fc08fe5af2782c67d5bc35bfdc7518cd1351a4e869094aecedc6a",
+    "output": "effects/Effect16eb",
+    "frames": 17,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect17.spr",
+    "sha256": "6b75d61eb9ba52e9c108e452d7771348501c70d38940f67750a23fb11800b30c",
+    "output": "effects/Effect17",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect30.spr",
+    "sha256": "bfa8105e9a5a2aedd3f0480bb11d848e9606f2088100139ca13dbb3d2ec180d8",
+    "output": "effects/Effect30",
+    "frames": 10,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect50.spr",
+    "sha256": "0ea29e5e8582203f898fe9156ace428898ecfd87e6342d3d02f6d4744dd7d138",
+    "output": "effects/Effect50",
+    "frames": 11,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect52.spr",
+    "sha256": "2b8dd598dbd6d42eaa1f3c90a47d25a3445da0ea9811d97c00724a6a3e7d2ab3",
+    "output": "effects/Effect52",
+    "frames": 5,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect53.spr",
+    "sha256": "0099e17a3e461fe7674539823dd8814ddb9b4b1f2da2cad0717233758a93c670",
+    "output": "effects/Effect53",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect54.spr",
+    "sha256": "db650d7824aafe6329b3029d910ba1334047d51f8270a7657798d0a6878c2e43",
+    "output": "effects/Effect54",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect55.spr",
+    "sha256": "f77621492880f2c5bd7bdfba477c2ac13d2fcf65d0c0671c1f38bef1f7b92848",
+    "output": "effects/Effect55",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect56.spr",
+    "sha256": "82a4cbb2f7e4ef8cf94119ed9bb83b7446fbcc0afed6c70489718632d6be69d3",
+    "output": "effects/Effect56",
+    "frames": 3,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Effect57.spr",
+    "sha256": "241855d3468227642fa80aab67e035b774c7964dd21dfa5e7fe34df4bc2d626c",
+    "output": "effects/Effect57",
+    "frames": 36,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/eo_ItemBox.spr",
+    "sha256": "b90410ca53e2c421061020fda4666b670b415f93d963b6a74482c17fe86646d1",
+    "output": "effects/eo_ItemBox",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/GearEtc.spr",
+    "sha256": "0994ed0e4768dd32cfb73687612d9d4e28194b1c8b1bc24674fe0eb61b604ad3",
+    "output": "effects/GearEtc",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/MaskImage.spr",
+    "sha256": "d985e9aa7557cf912ce6d500c59057cd10c72481c48e9bd868c71185332455a9",
+    "output": "effects/MaskImage",
+    "frames": 23,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/OverDrive.spr",
+    "sha256": "03dc8b88fa9b2a5ac0688b2ac12d08d4712ed6533298b300c07a351d72f2e710",
+    "output": "effects/OverDrive",
+    "frames": 7,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/StateEShock.spr",
+    "sha256": "ad59c8a732f47e1ee9dea4350b43c573fc8a3678bd84735ed15478bfeea2c38c",
+    "output": "effects/StateEShock",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/StateShield.spr",
+    "sha256": "5bde3168bc7fe0941a2a3cd7c8b52cb5271bb9ae31c65baeb8733287224a15f5",
+    "output": "effects/StateShield",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/StateStealth.spr",
+    "sha256": "5ba3a20f5b8e57fc959d2073ef0f31c9dc2fb42dad1819fba704486f32e187a6",
+    "output": "effects/StateStealth",
+    "frames": 5,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Tank01.spr",
+    "sha256": "b6c6a7cb5a0aff6e6e3db6115c9b657967f9b3bab1c3fec2b40eb3a81925f829",
+    "output": "tanks/1",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Tank02.spr",
+    "sha256": "7ef90c8ecbdf4d4e7780de463eaac4f04b6b514b753a269a48fb911f950ddd45",
+    "output": "tanks/2",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Tank03.spr",
+    "sha256": "d54cf3146cf9374a58815ae4f830eb9ce917921067520768a224cdbdaafc6625",
+    "output": "tanks/3",
+    "frames": 24,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Tank04.spr",
+    "sha256": "e7bb250a560ce35564106c2c53e574724393c7e400f8993a6013eb10e6fa369b",
+    "output": "tanks/4",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Tank05.spr",
+    "sha256": "2e69e34ad388ede2e502d154c4b802ae8dc3624fb02d5a29e6663f14f68b9654",
+    "output": "tanks/5",
+    "frames": 17,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Tank06.spr",
+    "sha256": "1841eff4bbfdc035fd097c22afcbc090406a0e7c7f7b199a3145a8793b7bee11",
+    "output": "tanks/6",
+    "frames": 21,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Tank07.spr",
+    "sha256": "2141022b81cc832e6c431e3b581c68a3e4e6b9cde793a94cead32a3632d1666b",
+    "output": "tanks/7",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Tank08.spr",
+    "sha256": "92451ee49db1d6261ad272e1f304ccd0191984b58c9f580ab2b36a478755f9bf",
+    "output": "tanks/8",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Tank09.spr",
+    "sha256": "3a0369316f463ef25649c7388b2b4f5b9c19a07d1a5553aded732f536e1ab1c8",
+    "output": "tanks/9",
+    "frames": 42,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/Tank10.spr",
+    "sha256": "4b22c5f7c2196e62a86c55841496392cd2fd5759692af12b8e24a13aab453230",
+    "output": "tanks/10",
+    "frames": 26,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/TargetMark.spr",
+    "sha256": "0e3730884e921e6a5a502c46634bebb277f14d8f5dc63d367063d4235d5c0208",
+    "output": "effects/TargetMark",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/WItem_Blind.spr",
+    "sha256": "70ff37a6ab82a216f9049a425740474c9a0cf3aa66f75f92808bf04adaa9f295",
+    "output": "effects/WItem_Blind",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/WItem_EShock.spr",
+    "sha256": "0548478f63f89979ebf4a68bc41361f7c43b5cc208ce78210340620469b276c1",
+    "output": "effects/WItem_EShock",
+    "frames": 4,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/WItem_Grenade.spr",
+    "sha256": "2ab57fe65d040cc988ae0edad16b3fbe101eea0c7366fb3ecd2d2f17c7d3165f",
+    "output": "effects/WItem_Grenade",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/WItem_Health.spr",
+    "sha256": "7e495ceb607324e89777dc4ea6f50831ebfcbc897f03dc9e718773d57e6c1f4a",
+    "output": "effects/WItem_Health",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/WItem_HMissile.spr",
+    "sha256": "779436083c74ae893a5781e35284670f5f4f50759e1e082f369214e1d40014ef",
+    "output": "effects/WItem_HMissile",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "Data/WItem_Warp.spr",
+    "sha256": "f8f2d84633246bd8da36f5e29366e29de926ee58653ba88c204df6bce5c90531",
+    "output": "effects/WItem_Warp",
+    "frames": 9,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/diyMap_272.spr",
+    "sha256": "d383612ccd004d0e8241f78b5a7fce45074497d98766e281db673ae471a1fae8",
+    "output": "effects/diyMap_272",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Effect100.spr",
+    "sha256": "b185d55e0a8e74ebfb45ea8888e3503c3978cef3baa7f85d63a271c8fa6fc4b1",
+    "output": "effects/Effect100",
+    "frames": 11,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Effect102.spr",
+    "sha256": "c70b3595aca91516a6e4550f9d62c5df65de079b90dae2eb2c95f3506211b5f8",
+    "output": "effects/Effect102",
+    "frames": 11,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Effect103.spr",
+    "sha256": "f0e8405fc3b3143cf54c25044e3578e203d51d9395dcc6c82d42bae66da45918",
+    "output": "effects/Effect103",
+    "frames": 7,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Effect104.spr",
+    "sha256": "49dcc69b8d97d085a80472dfd9ee375beb58e68be22575b4f2e89045c77426e2",
+    "output": "effects/Effect104",
+    "frames": 9,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Effect105_255.spr",
+    "sha256": "4a7322d87ab193c98d43acaa832e0d7c334d01b24af7ae5b1b755738d52002a4",
+    "output": "effects/Effect105_255",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Effect106.spr",
+    "sha256": "72c82d980c9e9d257b1ca99b1402cea25b9d1ae406e013068248af5b047aa456",
+    "output": "effects/Effect106",
+    "frames": 11,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Effect107.spr",
+    "sha256": "7cac6ea626e2aea1e8b514ab6fcf125228f6beb99efd6e054e9191fd37c26e8c",
+    "output": "effects/Effect107",
+    "frames": 11,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Effect2050.spr",
+    "sha256": "12f53204c5699b3a711395b05a39b51728521e3d351fad50de7089b8ae389b26",
+    "output": "effects/Effect2050",
+    "frames": 11,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Effect50t4s.spr",
+    "sha256": "c1074fc078942a1462e05757ebf9ccbe2af8021c89522964386b66d75d72db71",
+    "output": "effects/Effect50t4s",
+    "frames": 4,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/FunBall265.spr",
+    "sha256": "73161d1c29382ec369bb7d9f4bce5982b64efafbcb4d09a71b3d9d0a9c6c5717",
+    "output": "effects/FunBall265",
+    "frames": 13,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/ItemIcon18.spr",
+    "sha256": "d0974e0ca913460a26b4f1c8dd043b51b0e212caa3656de3e7e482dd4214c3bf",
+    "output": "effects/ItemIcon18",
+    "frames": 19,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/MaskImageNew.spr",
+    "sha256": "a5613877787aad3eb4c3adf3dc5230e3a68f74ed8212bc0c5e93e508c3d56c55",
+    "output": "effects/MaskImageNew",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/NewMap01.spr",
+    "sha256": "a067a5d9b2fd733dd5ffe8289fbe5c929e06b2d06be8283965c3203db15f69e9",
+    "output": "effects/NewMap01",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/NewMap02_257.spr",
+    "sha256": "63a8e0eda7b265263ef7456f0cc2010d8b2bdf044a732c9be2f9d3f0c313f2e8",
+    "output": "effects/NewMap02_257",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/NewMap03.spr",
+    "sha256": "045cef093c7ada7d04fedd7cb9de4fd76984b136e648906fcd2d552be888eae6",
+    "output": "effects/NewMap03",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/NewTank01C.spr",
+    "sha256": "0bdecd164a0fec08b7950b65a8f3b46489a746a61fcd84bcf104327c29af6695",
+    "output": "effects/NewTank01C",
+    "frames": 25,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/PrevMap271.spr",
+    "sha256": "b2e8bc90911f96fbd85110e5ab6343169ae92e9331d5387335b0773a4f995cff",
+    "output": "effects/PrevMap271",
+    "frames": 25,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/sjIsland.spr",
+    "sha256": "cef2a84dede2e041b39b82364e2995cec98b7bddc5e277008d3b3db551b7eaa4",
+    "output": "effects/sjIsland",
+    "frames": 8,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/sjMap01.spr",
+    "sha256": "71690cd61274bcdfb96a1f0603658a3b5f2cc48eaf9044ba23bdf73b454b9a1e",
+    "output": "reference-assets/decoded/sjMap01",
+    "frames": 2,
+    "complete": true,
+    "reference_only": true
+  },
+  {
+    "source": "New/sjPoint.spr",
+    "sha256": "9b57c0a5c938d644fa8ea48b3c2ef0cf364b080326c76d330c034a7a5d61a60c",
+    "output": "effects/sjPoint",
+    "frames": 2,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/StateBlueB.spr",
+    "sha256": "de8ec693d7f482a69a1b96c2fae038ad319229a96a64f3d088ff335e975eb6e0",
+    "output": "effects/StateBlueB",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/StateRedB.spr",
+    "sha256": "04b60efd00998de27329728b0ee5da7b6bd15f1b00868da0c3e78ea481e2346f",
+    "output": "effects/StateRedB",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/StateT22F3B.spr",
+    "sha256": "36c2ea97c46a82f1cae7d4f627079cb34642e6f36423628dc822ae7ece3a0a9d",
+    "output": "effects/StateT22F3B",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/stIsland.spr",
+    "sha256": "3a102d5fc88ee1a4ce9f9ad8a41b8b0677b89cee02679284fe234812f6f90376",
+    "output": "effects/stIsland",
+    "frames": 1,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank11.spr",
+    "sha256": "f99f08d061554b39d26e1799e305cbee92e50968ac88bb1f47a7e571ed63b7ca",
+    "output": "tanks/11",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank12.spr",
+    "sha256": "41ff424edc6bd2e534d086acd8363377e62305292045ce4da583546a266a0e61",
+    "output": "tanks/12",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank13.spr",
+    "sha256": "07d7a36c3897172eca6dbcc3757a532cca97f74f0ceebec3ed93f35cba5217a6",
+    "output": "tanks/13",
+    "frames": 24,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank14.spr",
+    "sha256": "4fa447c25c0bc975b0380f09369996c7d8a0367b0ec13e52d9f25b2d700fd6dd",
+    "output": "tanks/14",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank15.spr",
+    "sha256": "d34cf91cfd33fa6fc4ec9a2b55a808ff92f7f833c84851c0b2cf167d2f015744",
+    "output": "tanks/15",
+    "frames": 17,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank16.spr",
+    "sha256": "cde231b4388e1997d8429ab82fd3c9cc7468cfaef14bda3e49fd9aa867829514",
+    "output": "tanks/16",
+    "frames": 21,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank17.spr",
+    "sha256": "0010c0801192f48179958d9aff00873725bbb6911c526b70097fc771e0e31877",
+    "output": "tanks/17",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank18.spr",
+    "sha256": "b7662e0c9b9804d3ce38d0b965fa637b89907de6d9343df6cf7eb05a7e894792",
+    "output": "tanks/18",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank19.spr",
+    "sha256": "78015c5df50b2ea1a2bcd9eae5e0dbee7988fdbf5d76634363206487e2e6c116",
+    "output": "tanks/19",
+    "frames": 42,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank20.spr",
+    "sha256": "5cd2249a81c8721ce1f6d5aa96a1914eb45d87f861ccd4099e5e8cdc521ab379",
+    "output": "tanks/20",
+    "frames": 26,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank21.spr",
+    "sha256": "a275edc8943fc5c040add61cc28e1c630666bab9e7873a735e85253bb8b75067",
+    "output": "tanks/21",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank22.spr",
+    "sha256": "2474e74be3c4c227dbff7c42c69c53a2de557aaf1d0caa90b61ce2b08f59e059",
+    "output": "tanks/22",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank23.spr",
+    "sha256": "c3331d50364882f824d08750d27a22fdd7c64d5efaa3110514e1122cab218c00",
+    "output": "tanks/23",
+    "frames": 24,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank24.spr",
+    "sha256": "7a96616082663fb9cc5bbc25049fd1f9f451273ff164ee27e27f5747e98ed2bd",
+    "output": "tanks/24",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank25.spr",
+    "sha256": "6521e9d8428fa8aa481a66af17437a53953f73ea16171a61379f8e6e49125c81",
+    "output": "tanks/25",
+    "frames": 17,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank26.spr",
+    "sha256": "ab90ab09c72ac7ac92a482b96aa54f3c7697ee55778a7c7d2023f77dc35e56a4",
+    "output": "tanks/26",
+    "frames": 21,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank27.spr",
+    "sha256": "7d45dad50438354bd07ec44caf356962dbad44c76af9f32f34489e16f150e40f",
+    "output": "tanks/27",
+    "frames": 6,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank28.spr",
+    "sha256": "277e59236e8621b3a0bced24840a1fd9822ffd73117d924c1f5200357481d01a",
+    "output": "tanks/28",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank29.spr",
+    "sha256": "b4268f95b557973eff4496de995c8237cead9f3aba2ac24dbc4cdee5030e1184",
+    "output": "tanks/29",
+    "frames": 42,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/Tank30.spr",
+    "sha256": "041a84e1107aafd040ea4dd3e4dc5ee5aca9479831725901496830e2e137d0c2",
+    "output": "tanks/30",
+    "frames": 26,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000100.spr",
+    "sha256": "62ba9da5ac5bd70a14494087463f7b1b219ceb380fdac20c936420e4547cef1a",
+    "output": "effects/TankEffect1000100",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000101.spr",
+    "sha256": "a9d9c608f50a77f690403bfbdc0130c01741ca8a3e7ec9b416489b8dd74c6c7a",
+    "output": "effects/TankEffect1000101",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000200.spr",
+    "sha256": "dd37b1bafe5fd216a6235903739a02fbe217ea4baed500092bc655b93d2f4fce",
+    "output": "effects/TankEffect1000200",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000201.spr",
+    "sha256": "7b87f638ff3a9246a0c4187839e779e6d795d6c8e836002ee76310cbab4927ac",
+    "output": "effects/TankEffect1000201",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000300.spr",
+    "sha256": "64ecf87a44f171fcdc50b4dc7ceb595e60c89f5301347cbd96828b96a20be536",
+    "output": "effects/TankEffect1000300",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000301.spr",
+    "sha256": "6bd0b983e811f53d9583f62aac13a5000e1b7bc6a33b4708a594a907e4df2430",
+    "output": "effects/TankEffect1000301",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000400.spr",
+    "sha256": "9721678f7ced66f7b9e06091933e8dced6a9ae3e8d0d38502bfb40d299eb540e",
+    "output": "effects/TankEffect1000400",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000401.spr",
+    "sha256": "2c1cde7b99ba65121ccc58719f87c2e10ac19eaa80db3f6eb56f2472f5db7ae4",
+    "output": "effects/TankEffect1000401",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000500.spr",
+    "sha256": "dfbc972250505767462f53bca7caa08d1a15d2ccdaab40c6baa0a79df4e59ab6",
+    "output": "effects/TankEffect1000500",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000501.spr",
+    "sha256": "12fc653c31ddbdbce1a42878ee7284b4a7dd3f7c09d94a4d347e71bdd6d1cb6d",
+    "output": "effects/TankEffect1000501",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000600.spr",
+    "sha256": "751dcdf78e4e69782074b6adbd0cabc62afed72f0f61ab72fa59b758c55791b1",
+    "output": "effects/TankEffect1000600",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000601.spr",
+    "sha256": "a1c261e252b4523580a0b9657f68c9e975678931e4827b57b6c30d131ef22bf4",
+    "output": "effects/TankEffect1000601",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000700.spr",
+    "sha256": "5763d83654d9522b819514c44fa7cd27d782ecfd02e033a9f1fb1e11d8018ebc",
+    "output": "effects/TankEffect1000700",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000701.spr",
+    "sha256": "470b15b0c6c41fa7eb8a1f5486bfd7816fb8d91aa8ee577f7540f28de6521941",
+    "output": "effects/TankEffect1000701",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000800.spr",
+    "sha256": "9db55cafa4a36fda8d774503eff1ddf223e565f555e0415043714fbe13aed66e",
+    "output": "effects/TankEffect1000800",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000801.spr",
+    "sha256": "6d82044c12576b3d960a3c6c2f43cc7ccbcbfd8bc9fc88ce097b8ffcf89986e7",
+    "output": "effects/TankEffect1000801",
+    "frames": 64,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000900.spr",
+    "sha256": "847c9734fe2a5b9097c011a70f391763ac1c22298f4ded3cc33473a041343fad",
+    "output": "effects/TankEffect1000900",
+    "frames": 17,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1000901.spr",
+    "sha256": "36ec91e75a6dfdb1684b0415196298c13569b1c268bd3a9867bcd158db8b438b",
+    "output": "effects/TankEffect1000901",
+    "frames": 17,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1001000.spr",
+    "sha256": "0cfbe6a1160962bd2528f70c66f2e1030ddb155dacdee3eb7c46c75139c936bf",
+    "output": "effects/TankEffect1001000",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1001001.spr",
+    "sha256": "20851cd3dd0808421b717f3a1b633ccfdc33ab96d11eb05e68246d29eb7842da",
+    "output": "effects/TankEffect1001001",
+    "frames": 14,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1001100.spr",
+    "sha256": "5a10bf3df425b4891ed09cba7fe6ecfbbf51b0040c861c2b61b7a66271598358",
+    "output": "effects/TankEffect1001100",
+    "frames": 18,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect1001101.spr",
+    "sha256": "adb24b206390558a0aeb5d742668f1a61a399eae3bf4800ceb808a59dabd9631",
+    "output": "effects/TankEffect1001101",
+    "frames": 18,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect2000100.spr",
+    "sha256": "42fd552c584933cc24cb4a5e0fbb9c47a6a1525631587069d7f3927e54f34c41",
+    "output": "effects/TankEffect2000100",
+    "frames": 18,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect2000101.spr",
+    "sha256": "ff3a2dd9f28cc79f1b03039a27e98f6d54b44b9399be7834233dd546f3b6a339",
+    "output": "effects/TankEffect2000101",
+    "frames": 18,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect2000200.spr",
+    "sha256": "142630122b7e41ee9e1493658d9a269a4f6534d1ba6194fe3c2dcf4f3d8e1995",
+    "output": "effects/TankEffect2000200",
+    "frames": 18,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect2000201.spr",
+    "sha256": "10540a182b76d2ba7f04a6a6066ea49b631d8fabe08c46b079a949dea3cc68f0",
+    "output": "effects/TankEffect2000201",
+    "frames": 18,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect2000202.spr",
+    "sha256": "307a6928c6d1bf67a6b0aa3b6e05f053047370078bfdb8a698ec1f4e0578c1db",
+    "output": "effects/TankEffect2000202",
+    "frames": 18,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect2000300.spr",
+    "sha256": "5b393a0ddaa2a7ed740a0ad28328279aa64da125ac0b3085b6905f04536e68e0",
+    "output": "effects/TankEffect2000300",
+    "frames": 16,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TankEffect2000301.spr",
+    "sha256": "e1ee690a84c0ce8d4e476e19eaec9e2e8752ec8d99f640da449531fa5be562b9",
+    "output": "effects/TankEffect2000301",
+    "frames": 16,
+    "complete": true,
+    "reference_only": false
+  },
+  {
+    "source": "New/TotUnit269.spr",
+    "sha256": "01a9b77a1ce8fefff9189e64919babdebba6790e1f1b8e0e2248f4ded960695c",
+    "output": "effects/TotUnit269",
+    "frames": 32,
+    "complete": true,
+    "reference_only": false
+  }
+]

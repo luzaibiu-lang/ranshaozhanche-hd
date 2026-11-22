@@ -1,0 +1,177 @@
+{
+  "map": 9,
+  "vehicle": 1,
+  "initial_position": [
+    1416,
+    510
+  ],
+  "footprint": [
+    15,
+    15
+  ],
+  "samples": [
+    {
+      "tick": 0,
+      "position": [
+        1416,
+        510
+      ],
+      "slope": 15,
+      "falling": 0,
+      "hp": 300
+    },
+    {
+      "tick": 6,
+      "position": [
+        1416,
+        513
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 12,
+      "position": [
+        1416,
+        517
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 17,
+      "position": [
+        1416,
+        522
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 23,
+      "position": [
+        1416,
+        528
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 28,
+      "position": [
+        1416,
+        538
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 29,
+      "position": [
+        1416,
+        540
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 34,
+      "position": [
+        1416,
+        550
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 39,
+      "position": [
+        1416,
+        564
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 44,
+      "position": [
+        1416,
+        579
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 50,
+      "position": [
+        1416,
+        600
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 56,
+      "position": [
+        1416,
+        624
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 62,
+      "position": [
+        1416,
+        651
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 67,
+      "position": [
+        1416,
+        676
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 68,
+      "position": [
+        1416,
+        681
+      ],
+      "slope": 0,
+      "falling": 1,
+      "hp": 300
+    },
+    {
+      "tick": 0,
+      "position": [
+        1416,
+        690
+      ],
+      "slope": 15,
+      "falling": 0,
+      "hp": 300
+    }
+  ],
+  "private_desktop": true,
+  "silent_assets": true,
+  "source": "Original isolated fixture: tank moved 180 pixels above its own ground"
+}
