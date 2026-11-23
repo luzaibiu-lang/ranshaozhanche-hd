@@ -56,6 +56,75 @@ func walking_ground(x: float, from_y: int) -> int:
 			return y
 	return height+200
 
+func walking_support(vehicle: int, x: float, y: float) -> Dictionary:
+	var width := 41 if (vehicle-1)%10==8 else 15
+	var height := image.get_height()
+	var left := int(x)-width/2
+	var bottom := int(y)-1
+	var heights:Array[int]=[]
+	var contact := false
+	for i in range(width):
+		var column := left+i
+		var at := height
+		if column>=0 and column<image.get_width():
+			contact=contact or _walking_solid(column,int(y))
+			for row in range(bottom-1,bottom+width-width/4+1):
+				if _walking_solid(column,row):at=row;break
+			var row:=bottom-2
+			while row>=0 and _walking_solid(column,row):at=row;row-=1
+		heights.append(at)
+	var pose:Dictionary={"x":x,"y":y,"slope":0.0,"valid":false}
+	if not contact:return pose
+	var middle := width/2
+	var li:=middle;var ri:=middle;var near_l:=middle;var near_r:=middle
+	var best:=height;var near:=height
+	for i in range(middle,-1,-1):
+		if heights[i]<near and heights[i]-int(y)<width/3+1:near_l=i;near=heights[i]
+		if heights[i]<=best:li=i;best=heights[i]
+	best=height;near=height
+	for i in range(middle,width):
+		if heights[i]<near and heights[i]-int(y)<width/3+1:near_r=i;near=heights[i]
+		if heights[i]<=best:ri=i;best=heights[i]
+	var start:=li;var end:=ri
+	if heights[li]<height and heights[ri]<height:
+		pose.valid=true;pose.y=maxi(heights[li],heights[ri])
+	elif heights[li]<height and middle-near_l<=width/4+1 and heights[near_l]<height:
+		end=near_l;pose.valid=true;pose.y=(heights[li]+heights[near_l])/2
+	elif heights[ri]<height and near_r-middle<=width/4+1 and heights[near_r]<height:
+		start=near_r;pose.valid=true;pose.y=(heights[ri]+heights[near_r])/2
+	if pose.valid:
+		pose.slope=_walking_angle(end-start,heights[start]-heights[end])
+		if y<float(pose.y):pose.valid=false
+	return pose
+
+func _walking_solid(x:int,y:int) -> bool:
+	return x>=0 and y>=0 and x<image.get_width() and y<image.get_height() and image.get_pixel(x,y).a>0
+
+func _walking_angle(dx:int,dy:int) -> float:
+	if dx==0:return 90.0 if dy>0 else 270.0 if dy<0 else 0.0
+	if dy==0:return 0.0 if dx>0 else 180.0
+	var ratio:float=PackedFloat32Array([floor((absf(float(dy)/dx)+.0005)*1000)/1000])[0]
+	var angle:float=PackedFloat32Array([floor((atan(ratio)/.017453288659453392+.0005)*1000)/1000])[0]
+	if dx<0:angle=180-angle if dy>0 else angle+180
+	elif dy<0:angle=360-angle
+	return PackedFloat32Array([angle])[0]
+
+func walking_pose(vehicle:int,x:float,y:float,direction:int,falling:=false) -> Dictionary:
+	var current:=walking_support(vehicle,x,y)
+	var pose:=walking_support(vehicle,x+direction,y)
+	pose.allowed=false
+	if direction==0 or falling:return pose
+	var half := 20 if (vehicle-1)%10==8 else 7
+	if (direction<0 and int(pose.x)<=half) or (direction>0 and int(pose.x)+half>=image.get_width()):return pose
+	var slope:=fposmod(float(pose.slope)+180,360)-180
+	if slope*direction>65:return pose
+	var previous:=float(current.slope)
+	if (fposmod(previous+180,360)-180)*direction<0:previous=0
+	var difference:=fposmod(float(pose.slope)-previous+180,360)-180
+	if difference*direction>=40 or float(current.y)-float(pose.y)>=5:return pose
+	pose.allowed=true
+	return pose
+
 func carve(hole:Dictionary) -> void:
 	var mask_id:=int(hole.get("mask",0))
 	var patch:Dictionary

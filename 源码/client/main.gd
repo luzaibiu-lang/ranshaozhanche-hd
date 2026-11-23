@@ -40,6 +40,7 @@ var poll_elapsed := 0.0
 var chat_label: RichTextLabel
 var chat_input: LineEdit
 var sending_chat: LineEdit
+var battle_chat: Control
 var room_list: VBoxContainer
 var player_list: VBoxContainer
 var invitation_stamp := ""
@@ -487,6 +488,8 @@ func _clear() -> void:
 		child.queue_free()
 	chat_label = null
 	chat_input = null
+	sending_chat = null
+	battle_chat = null
 	view = null
 	native_shop = null
 	vehicle_picker = null
@@ -750,7 +753,9 @@ func _update_lobby() -> void:
 		child.queue_free()
 	for room: Dictionary in snapshot.get("rooms", []):
 		var row := preload("res://original_table_row.gd").new()
-		row.configure(["%03d"%int(room.id),"全部","普通",_map_name(int(room.map)),str(room.name),str(room.get("owner_name","")),"%d/%d"%[int(room.players),int(room.capacity)],"是" if bool(room.get("locked",false)) else "否","对战中" if bool(room.started) else "等待",""],[43,53,53,89,100,45,40,50,40,20],skin.pixel_scale,4)
+		var phase := str(room.get("phase", "battle" if bool(room.started) else "waiting"))
+		var phase_text := "结算中" if phase=="settlement" else "对战中" if phase=="battle" else "等待"
+		row.configure(["%03d"%int(room.id),"全部","普通",_map_name(int(room.map)),str(room.name),str(room.get("owner_name","")),"%d/%d"%[int(room.players),int(room.capacity)],"是" if bool(room.get("locked",false)) else "否",phase_text,""],[43,53,53,89,100,45,40,50,40,20],skin.pixel_scale,4)
 		row.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		row.tooltip_text=str(room.name)
 		row.toggle_mode = true
@@ -839,19 +844,30 @@ func _chat(parent: Node, height: int) -> void:
 
 func _send_chat() -> void:
 	var field := chat_input
-	if not is_instance_valid(field) or field == sending_chat or field.text.strip_edges().is_empty():
+	if not is_instance_valid(field) or field == sending_chat:
+		return
+	if field.text.strip_edges().is_empty():
+		if scene == "battle":
+			field.clear()
+			field.release_focus()
 		return
 	var message := field.text
 	var session: String = net.token
 	sending_chat = field
-	while command_busy and is_instance_valid(field) and field == chat_input and net.token == session and not quitting:
-		await get_tree().process_frame
-	if not quitting and is_instance_valid(field) and field == chat_input and field.text == message and net.token == session:
-		if await _command({"action": "chat", "text": message}):
-			if is_instance_valid(field) and field.text == message:
-				field.clear()
-	if is_instance_valid(field) and field == sending_chat:
-		sending_chat = null
+	var reply: Dictionary = await net.request("/api/command", {"action": "chat", "text": message})
+	if not is_instance_valid(field) or field != chat_input or field != sending_chat:
+		return
+	sending_chat = null
+	if quitting or auth_busy or net.token != session:
+		return
+	if reply.has("profile"):
+		if field.text == message:
+			field.clear()
+			if scene == "battle":
+				field.release_focus()
+		_accept_state(reply)
+	else:
+		toast(str(reply.get("error", "消息发送失败")))
 
 func _show_room() -> void:
 	_original_page("GameBack")
@@ -940,14 +956,18 @@ func _update_room() -> void:
 	if waiting:
 		room_title.text = "等待 %d 位玩家返回" % remaining
 	room_title.tooltip_text = str(room.get("name", ""))
-	for key in ["RoomInvite", "RoomShop", "RoomItems", "RoomSettings", "AIPractice"]:
-		skin.get_node(key).disabled = waiting
-	skin.get_node("RoomSettings").disabled = waiting or int(room.owner) != int(profile.id)
-	start_button.disabled = waiting
-	ready_button.disabled = waiting
-	vehicle_choice.disabled = waiting
+	# A returned player may prepare the next match while others view results.
+	# The old match remains owned by the server until everyone has returned.
+	skin.get_node("RoomInvite").disabled = waiting
+	for key in ["RoomShop", "RoomItems", "AIPractice"]:
+		skin.get_node(key).disabled = false
+	skin.get_node("RoomSettings").disabled = int(room.owner) != int(profile.id)
+	start_button.disabled = waiting or _room_has_unready_players(room)
+	start_button.tooltip_text = "等待其他玩家返回" if waiting else "还有玩家未准备" if start_button.disabled else "开始"
+	ready_button.disabled = false
+	vehicle_choice.disabled = false
 	for button: Button in vehicle_picker.buttons:
-		button.disabled = waiting
+		button.disabled = false
 	var scale: float = skin.pixel_scale
 	var row_height: float = room_grid.size.y/4.0
 	var group_width: float = 0
@@ -968,7 +988,7 @@ func _update_room() -> void:
 				panel.add_child(card)
 			else:
 				var empty := Button.new()
-				empty.disabled = waiting
+				empty.disabled = false
 				empty.tooltip_text = "加入 %s 组 · 位置 %d" % [char(65 + group), position + 1]
 				empty.add_theme_font_size_override("font_size", maxi(10, int(11*scale)))
 				for state in ["normal", "hover", "pressed", "hover_pressed", "disabled", "focus"]:
@@ -981,7 +1001,7 @@ func _update_room() -> void:
 	vehicle_choice.select(vehicle_choice.get_item_index(int(_me().get("vehicle", 1))))
 	vehicle_picker.set_selected(int(_me().get("vehicle", 0)))
 	map_choice.select(map_choice.get_item_index(int(room.get("map", 0))))
-	map_choice.disabled = waiting or int(room.owner) != int(profile.id)
+	map_choice.disabled = int(room.owner) != int(profile.id)
 	map_previous.disabled = map_choice.disabled
 	map_next.disabled = map_choice.disabled
 	start_button.visible = int(room.owner) == int(profile.id)
@@ -989,6 +1009,11 @@ func _update_room() -> void:
 	ready_button.tooltip_text = "已准备 · 点击取消" if bool(_me().get("ready", true)) else "准备"
 	room_status.text = "%d / %d 人" % [room.get("members", []).size(), int(room.capacity)]
 	_preview(room_preview, int(room.get("map", 0)))
+
+func _room_has_unready_players(room:Dictionary) -> bool:
+	for member:Dictionary in room.get("members",[]):
+		if int(member.get("ai",0))==0 and int(member.id)!=int(room.owner) and not bool(member.get("ready",false)):return true
+	return false
 
 func _cycle_room_map(direction: int) -> void:
 	if map_choice.disabled or command_busy:return
@@ -1171,7 +1196,7 @@ func _bot_dialog() -> void:
 			selections.append(chosen)
 	var refresh := func():
 		var current: Variant = snapshot.get("room")
-		if scene not in ["room","shop"] or not current is Dictionary or int(current.id) != int(dialog.get_meta("room_id")) or bool(_me().get("returned", false)):
+		if scene not in ["room","shop"] or not current is Dictionary or int(current.id) != int(dialog.get_meta("room_id")):
 			dialog.hide()
 			dialog.queue_free()
 			return
@@ -1227,6 +1252,7 @@ func _bot_dialog() -> void:
 
 func _show_game_items() -> void:
 	if scene not in ["lobby","room","shop"] or _modal_open():return
+	if not await _pause_room_readiness():return
 	var dialog:=preload("res://native_game_items.gd").new()
 	dialog.theme=theme
 	dialog.catalog=catalog
@@ -1248,6 +1274,7 @@ func _show_shop() -> void:
 	if scene == "shop":
 		_return_from_shop()
 		return
+	if not await _pause_room_readiness():return
 	if snapshot.get("room") is Dictionary:
 		_show_room()
 		shop_room_id = int(snapshot.room.id)
@@ -1278,6 +1305,16 @@ func _show_shop() -> void:
 	skin.place(shop, Rect2(0, 62, 800, 307))
 	native_shop = shop
 	_update_inventory()
+
+func _pause_room_readiness() -> bool:
+	var room:Variant=snapshot.get("room")
+	if not room is Dictionary:return true
+	if scene not in ["room","shop"]:return false
+	if int(room.owner)==int(profile.id) or not bool(_me().get("ready",false)):return true
+	var requested_room:=int(room.id)
+	if not await _command({"action":"ready","ready":false}):return false
+	room=snapshot.get("room")
+	return room is Dictionary and int(room.id)==requested_room and scene in ["room","shop"]
 
 func _original_shop_title() -> String:
 	return "道具商店"
@@ -1426,8 +1463,51 @@ func _show_battle() -> void:
 	inventory_row = HBoxContainer.new()
 	content.add_child(inventory_row)
 	inventory_row.add_theme_constant_override("separation",0)
+	_build_battle_chat()
 	_update_inventory()
 	_update_battle()
+
+func _build_battle_chat() -> void:
+	battle_chat = Control.new()
+	battle_chat.name = "BattleChat"
+	battle_chat.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content.add_child(battle_chat)
+	chat_label = RichTextLabel.new()
+	chat_label.name = "History"
+	chat_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	chat_label.scroll_active = false
+	chat_label.scroll_following = true
+	chat_label.size = Vector2(300, 62)
+	chat_label.add_theme_font_size_override("normal_font_size", 13)
+	chat_label.add_theme_color_override("default_color", Color.WHITE)
+	chat_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	chat_label.add_theme_constant_override("outline_size", 3)
+	battle_chat.add_child(chat_label)
+	chat_input = LineEdit.new()
+	chat_input.name = "Message"
+	chat_input.placeholder_text = "房间聊天"
+	chat_input.tooltip_text = "回车聊天，再按回车发送，Esc 取消"
+	chat_input.context_menu_enabled = false
+	chat_input.keep_editing_on_text_submit = true
+	chat_input.max_length = 200
+	chat_input.position = Vector2(0, 64)
+	chat_input.size = Vector2(220, 24)
+	chat_input.add_theme_font_size_override("font_size", 13)
+	chat_input.add_theme_color_override("font_color", Color.WHITE)
+	chat_input.add_theme_color_override("font_placeholder_color", Color("d3dedf"))
+	chat_input.add_theme_color_override("caret_color", Color.WHITE)
+	var background := StyleBoxFlat.new()
+	background.bg_color = Color(0.04, 0.06, 0.07, 0.70)
+	background.content_margin_left = 4
+	chat_input.add_theme_stylebox_override("normal", background)
+	var border := StyleBoxFlat.new()
+	border.draw_center = false
+	border.set_border_width_all(1)
+	border.border_color = Color("b7d5d8")
+	chat_input.add_theme_stylebox_override("focus", border)
+	battle_chat.add_child(chat_input)
+	chat_input.focus_entered.connect(func(): charging = false)
+	chat_input.text_submitted.connect(func(_message): _send_chat())
 
 func _reveal_scene() -> void:
 	if not is_instance_valid(reveal_layer):
@@ -1464,6 +1544,8 @@ func _reflow_hud() -> void:
 	if not is_instance_valid(battle_hud): return
 	_layout_toast()
 	var s: float = battle_hud.scale_factor
+	battle_chat.position = Vector2(8*s, size.y-208*s)
+	battle_chat.scale = Vector2.ONE*s
 	for key: String in hud_buttons:
 		var button: Button = hud_buttons[key]
 		var r: Rect2 = battle_hud.rect_for("weapon",int(key.substr(6))) if key.begins_with("weapon") else battle_hud.rect_for(key)
@@ -1634,6 +1716,8 @@ func _fire() -> void:
 	await _battle_command({"action": "fire", "aim_mode": "native" if bool(_battle_data().get("native_aim", false)) else "world", "aim_face":aim_face, "angle": aim, "power": clampf(charge, 0.0, 1), "weapon": selected_weapon})
 
 func _show_result(battle: Dictionary) -> void:
+	if is_instance_valid(battle_chat):
+		battle_chat.hide()
 	for node in get_tree().get_nodes_in_group("native_modal"):
 		node.hide()
 		node.queue_free()
@@ -1718,6 +1802,8 @@ func _accept_state(state: Dictionary) -> void:
 		var messages: Array = (room.get("chat", []) if room is Dictionary else state.get("chat", [])).duplicate()
 		messages.append_array(state.get("whispers",[]))
 		messages.sort_custom(func(a:Dictionary,b:Dictionary):return float(a.time)<float(b.time))
+		if scene == "battle" and messages.size() > 4:
+			messages = messages.slice(-4)
 		var stamp := JSON.stringify(messages)
 		if stamp != last_chat_stamp:
 			last_chat_stamp = stamp
@@ -1889,6 +1975,17 @@ func _input(event: InputEvent) -> void:
 	if is_instance_valid(channel_gate) or is_instance_valid(page_transition): return
 	if _modal_open():return
 	var focus := get_viewport().gui_get_focus_owner()
+	if scene == "battle" and event.pressed and not event.echo and is_instance_valid(chat_input):
+		if focus == chat_input and event.keycode == KEY_ESCAPE:
+			if chat_input.has_ime_text():return
+			chat_input.clear()
+			chat_input.release_focus()
+			get_viewport().set_input_as_handled()
+			return
+		if not (focus is LineEdit or focus is TextEdit) and event.keycode in [KEY_ENTER, KEY_KP_ENTER]:
+			chat_input.grab_focus()
+			get_viewport().set_input_as_handled()
+			return
 	if focus is LineEdit or focus is TextEdit:
 		return
 	if event.physical_keycode == KEY_ESCAPE and event.pressed and not event.echo:

@@ -220,6 +220,14 @@ func (b *Battle) move(distance float64) error {
 		if math.Abs(y-u.Y) > 24 || y > float64(b.Height-20) {
 			break
 		}
+		if b.NativeAim {
+			pose, allowed := b.Terrain.nativeWalkPose(u, int(direction))
+			if !allowed || !pose.valid && pose.y <= u.Y {
+				break
+			}
+			y = pose.y
+			u.Slope = math.Trunc(pose.slope)
+		}
 		u.X, u.Y = x, y
 		u.Face = int(direction)
 		moved++
@@ -229,7 +237,11 @@ func (b *Battle) move(distance float64) error {
 	spent := int(u.MoveSpent)
 	u.SP = max(0, u.SP-spent)
 	u.MoveSpent -= float64(spent)
-	u.updateSlope(b.Terrain)
+	if b.NativeAim {
+		u.Aim = u.worldAngle(u.Elevation)
+	} else {
+		u.updateSlope(b.Terrain)
+	}
 	return nil
 }
 func (b *Battle) trajectory(actor *Unit, angle, power float64, w Weapon) (Trail, Impact, bool) {

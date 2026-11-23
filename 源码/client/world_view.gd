@@ -246,8 +246,8 @@ func _process(delta: float) -> void:
 				var steps := maxi(1, ceili(absf(position_on_path.x-previous.x)))
 				for step in range(1, steps+1):
 					var path_x := lerpf(previous.x, position_on_path.x, float(step)/steps)
-					var ground_y:int=terrain.walking_ground(path_x,int(path_y)-22)
-					if absf(ground_y-path_y)<=24:path_y=ground_y
+					var support:Dictionary=terrain.walking_support(int(unit.vehicle),path_x,path_y)
+					if (bool(support.valid) or float(support.y)>path_y) and absf(float(support.y)-path_y)<=24:path_y=float(support.y)
 				position_on_path.y=path_y
 			render_positions[key]=position_on_path
 			render_slopes[key]=lerp_angle(float(render_slopes.get(key,unit.get("slope",0)))*PI/180,float(unit.get("slope",0))*PI/180,1-exp(-delta*16))*180/PI

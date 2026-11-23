@@ -111,7 +111,13 @@ func _run() -> void:
 	app.password.text="qa-only-895432"
 	app.confirmation.text="qa-only-895432"
 	await click(app.skin.find_child("Login",true,false))
-	if not await wait_for(func():return app.scene=="lobby","owner registered through real form"):return
+	if not await wait_for(func():return is_instance_valid(app.channel_gate) and app.channel_gate.phase=="select","registered player reached channel selection"):return
+	await click(app.channel_gate.row)
+	await click(app.channel_gate.enter_button)
+	if not await wait_for(func():return app.scene=="lobby" and not is_instance_valid(app.channel_gate),"registered player entered lobby"):return
+	if options.has("return-test"):
+		await check_return_flow()
+		return
 	var owner:=preload("res://net.gd").new(app)
 	owner.endpoint=app.net.endpoint
 	owner.token=app.net.token
@@ -264,4 +270,85 @@ func _run() -> void:
 	await app._command({"action":"leave"})
 	await owner.request("/api/logout",{})
 	print("FIDELITY_UI_ACCEPTANCE "+JSON.stringify({"checks":checks,"normal_ui":true,"private_input_only":true}))
+	await app._quit()
+
+func fixture_player(suffix:String):
+	var remote:=preload("res://net.gd").new(app)
+	remote.endpoint=app.net.endpoint
+	var registered:=await remote.request("/api/register", {"name":str(options.name)+suffix, "password":"qa-only-895432"})
+	if not check(registered.has("token"),"registered fixture player "+suffix):return null
+	remote.token=registered.token
+	return remote
+
+func fixture_command(remote, cmd:Dictionary) -> Dictionary:
+	var state:Dictionary=await remote.request("/api/command",cmd)
+	check(not state.has("error"),"fixture command "+str(cmd.action)+" "+str(state.get("error","")))
+	return state
+
+func check_return_flow() -> void:
+	var owner=await fixture_player("h")
+	var opponent=await fixture_player("o")
+	var created:=await fixture_command(owner, {"action":"create","map":1,"capacity":8})
+	var room_id:=int(created.room.id)
+	await fixture_command(opponent, {"action":"join","room":room_id})
+	await app._command({"action":"join","room":room_id})
+	if not await wait_for(func():return app.scene=="room" and not is_instance_valid(app.page_transition),"guest entered room"):return
+	var bots:=[]
+	for index in range(16):
+		bots.append({"seat":index,"level":1 if index==2 else 0,"vehicle":1})
+	await fixture_command(owner, {"action":"bots","bots":bots})
+	await fixture_command(owner, {"action":"start"})
+	var first_match:=""
+	for match_index in range(2):
+		if not await wait_for(func():return app.scene=="battle" and app._battle_data().get("result")==null,"match visible "+str(match_index+1)):return
+		var match_id:=str(app._battle_data().id)
+		if match_index==0:first_match=match_id
+		elif not check(match_id!=first_match,"second match has a distinct ID"):return
+		await fixture_command(opponent, {"action":"leave"})
+		if not await wait_for(func():return app.find_child("ReturnToRoom",true,false)!=null,"settlement appears after last opponent forfeits"):return
+		await screenshot("settlement-"+str(match_index+1))
+		await click(app.find_child("ReturnToRoom",true,false))
+		if not await wait_for(func():return app.scene=="room" and not is_instance_valid(app.page_transition) and not app.command_busy,"guest returned before host"):return
+		if not check(app._me().returned and app._me().ready and app.ready_button.visible and not app.ready_button.disabled,"early return enables ready button"):return
+		await click(app.ready_button)
+		if not await wait_for(func():return not app._me().ready,"real ready button cancels auto-ready"):return
+		if match_index==1:
+			await fixture_command(owner, {"action":"leave"})
+			if not await wait_for(func():return app.start_button.visible and not app._me().returned,"unreturned host leaves, guest inherits room"):return
+			if not check(app.snapshot.room.battle==null and not app._me().ready,"host departure clears result and preserves readiness"):return
+			break
+		await click(app.ready_button)
+		if not await wait_for(func():return app._me().ready,"real ready button readies again"):return
+		await click(app.skin.get_node("RoomShop"))
+		if not await wait_for(func():return app.scene=="shop" and not app._me().ready,"opening real shop cancels readiness"):return
+		if not check(app.skin.find_child("NativeCombatShop",true,false)!=null,"shop contents mounted"):return
+		var returned_shop:Control=app.skin.find_child("NativeCombatShop",true,false)
+		await click(returned_shop.item_buttons[1])
+		await click(returned_shop.buy_button)
+		if not await wait_for(func():return int(app.profile.inventory[0])==1,"purchase while another human remains in settlement"):return
+		await click(returned_shop.backpack[0])
+		await click(returned_shop.sell_button)
+		if not await wait_for(func():return int(app.profile.inventory[0])==0,"sale while another human remains in settlement"):return
+		await screenshot("early-return-shop")
+		await click(app.skin.get_node("RoomShop"))
+		if not await wait_for(func():return app.scene=="room","close shop returns to room"):return
+		await click(app.vehicle_picker.buttons[3])
+		if not await wait_for(func():return int(app._me().vehicle)==3,"early return can select vehicle"):return
+		var lobby:Dictionary=await opponent.request("/api/state")
+		var visible_rooms:Array=lobby.rooms.filter(func(row):return int(row.id)==room_id)
+		if not check(visible_rooms.size()==1 and visible_rooms[0].phase=="settlement" and int(visible_rooms[0].waiting_returns)==1,"lobby reports one player in settlement"):return
+		await screenshot("early-return-room")
+		await fixture_command(owner, {"action":"return"})
+		if not await wait_for(func():return not app._me().returned,"last player returns"):return
+		if not check(not app._me().ready,"last player cannot reset cancel-ready"):return
+		await fixture_command(opponent, {"action":"join","room":room_id})
+		var denied:Dictionary=await owner.request("/api/command",{"action":"start"})
+		if not check(denied.has("error") and str(denied.error).contains("准备"),"host blocked while guest is unready"):return
+		await click(app.ready_button)
+		if not await wait_for(func():return app._me().ready,"ready for second match"):return
+		await fixture_command(owner, {"action":"start"})
+	await screenshot("room-after-last-host-leaves")
+	await owner.request("/api/logout",{})
+	await opponent.request("/api/logout",{})
+	print("FIDELITY_UI_ACCEPTANCE "+JSON.stringify({"checks":checks,"private_input_only":true}))
 	await app._quit()

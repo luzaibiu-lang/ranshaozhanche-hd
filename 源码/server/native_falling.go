@@ -14,6 +14,10 @@ func (t *Terrain) nativeSupport(u *Unit) nativeSupport {
 	if (u.Vehicle-1)%10 == 8 {
 		width = 41
 	}
+	return t.nativeFootprint(u, width, false)
+}
+
+func (t *Terrain) nativeFootprint(u *Unit, width int, preciseSlope bool) nativeSupport {
 	left, bottom := int(u.X)-width/2, int(u.Y)-1
 	h := make([]int, width)
 	contact := false
@@ -80,6 +84,9 @@ func (t *Terrain) nativeSupport(u *Unit) nativeSupport {
 	}
 	if s.valid {
 		s.slope = math.Mod(-math.Atan2(float64(h[end]-h[start]), float64(end-start))*180/math.Pi+360, 360)
+		if preciseSlope {
+			s.slope = nativeDirection(float32(left+start), float32(h[start]), float32(left+end), float32(h[end]))
+		}
 		if u.Y < s.y {
 			s.valid = false
 			s.off = true

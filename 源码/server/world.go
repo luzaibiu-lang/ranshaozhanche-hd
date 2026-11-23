@@ -149,12 +149,23 @@ func (w *World) snapshot(id int64) (*Snapshot, error) {
 	list := []map[string]any{}
 	for _, v := range w.rooms {
 		ownerName := ""
+		phase := "waiting"
+		if v.Battle != nil {
+			phase = "battle"
+			if v.Battle.Result != nil {
+				phase = "settlement"
+			}
+		}
+		waitingReturns := 0
 		for _, m := range v.Members {
+			if phase == "settlement" && m.AI == 0 && !m.Returned {
+				waitingReturns++
+			}
 			if m.ID == v.Owner {
 				ownerName = m.Name
 			}
 		}
-		list = append(list, map[string]any{"id": v.ID, "name": v.Name, "map": v.Map, "owner_name": ownerName, "capacity": v.Capacity, "players": len(v.Members), "started": v.Battle != nil, "locked": v.Locked})
+		list = append(list, map[string]any{"id": v.ID, "name": v.Name, "map": v.Map, "owner_name": ownerName, "capacity": v.Capacity, "players": len(v.Members), "started": v.Battle != nil, "phase": phase, "waiting_returns": waitingReturns, "locked": v.Locked})
 	}
 	sort.Slice(list, func(i, j int) bool { return list[i]["id"].(int) < list[j]["id"].(int) })
 	if m != nil && m.Returned && r.Battle != nil {
@@ -207,7 +218,7 @@ func (w *World) leave(id int64) {
 			break
 		}
 	}
-	if r.Battle != nil {
+	if r.Battle != nil && r.Battle.Result == nil {
 		for _, u := range r.Battle.Units {
 			if u.Player == id {
 				u.HP = 0
@@ -250,6 +261,10 @@ func (w *World) leave(id int64) {
 	w.version++
 }
 
+func (r *Room) canConfigure(m *Member) bool {
+	return r.Battle == nil || (r.Battle.Result != nil && m.Returned)
+}
+
 func (r *Room) finishReturning() {
 	if r.Battle == nil || r.Battle.Result == nil {
 		return
@@ -262,7 +277,6 @@ func (r *Room) finishReturning() {
 	r.Battle = nil
 	for _, member := range r.Members {
 		member.Returned = false
-		member.Ready = true
 	}
 }
 func (w *World) command(id int64, c Command) error {
@@ -375,7 +389,7 @@ func (w *World) command(id int64, c Command) error {
 			}
 		}
 	case "buy", "sell", "outfit":
-		if r != nil && r.Battle != nil {
+		if r != nil && !r.canConfigure(m) {
 			return errors.New("请在对局结束后操作商城")
 		}
 		var e error
@@ -386,6 +400,9 @@ func (w *World) command(id int64, c Command) error {
 		}
 		if e != nil {
 			return e
+		}
+		if r != nil && r.Owner != id {
+			m.Ready = false
 		}
 	default:
 		if r == nil {
@@ -421,7 +438,7 @@ func (w *World) command(id int64, c Command) error {
 			}
 			w.invites[c.Player] = Invitation{r.ID, r.Name, m.Name, nowSeconds() + 60}
 		case "settings":
-			if r.Owner != id || r.Battle != nil {
+			if r.Owner != id || !r.canConfigure(m) {
 				return errors.New("仅房主可在开局前修改")
 			}
 			if c.Map < 0 || c.Map > 19 {
@@ -429,7 +446,7 @@ func (w *World) command(id int64, c Command) error {
 			}
 			r.Map = c.Map
 		case "seat":
-			if r.Battle != nil {
+			if !r.canConfigure(m) {
 				return errors.New("对局中无法换组")
 			}
 			if c.Seat < 0 || c.Seat > 15 {
@@ -440,23 +457,28 @@ func (w *World) command(id int64, c Command) error {
 					return errors.New("此位置已有人")
 				}
 			}
+			if c.Seat != m.Seat && r.Owner != id {
+				m.Ready = false
+			}
 			m.Seat = c.Seat
-			m.Ready = true
 		case "vehicle":
-			if r.Battle != nil {
+			if !r.canConfigure(m) {
 				return errors.New("对局中无法换车")
 			}
 			if c.Vehicle < 0 || c.Vehicle > 30 {
 				return errors.New("战车不存在")
 			}
+			if c.Vehicle != m.Vehicle && r.Owner != id {
+				m.Ready = false
+			}
 			m.Vehicle = c.Vehicle
 		case "ready":
-			if r.Battle != nil {
+			if !r.canConfigure(m) {
 				return errors.New("已开始对局")
 			}
 			m.Ready = c.Ready
 		case "bots":
-			if r.Owner != id || r.Battle != nil {
+			if r.Owner != id || !r.canConfigure(m) {
 				return errors.New("仅房主可在开局前设置 AI")
 			}
 			if len(c.Bots) != 16 {
@@ -542,7 +564,10 @@ func (w *World) command(id int64, c Command) error {
 			if r.Battle == nil || r.Battle.Result == nil {
 				return errors.New("对局尚未结束")
 			}
-			m.Returned = true
+			if !m.Returned {
+				m.Returned = true
+				m.Ready = true
+			}
 			r.finishReturning()
 		case "move", "fire", "pass", "item":
 			b := r.Battle

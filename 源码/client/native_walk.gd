@@ -94,14 +94,16 @@ func _move(distance:int) -> int:
 		var x:=float(unit.x)+facing
 		var y:int=app.view.terrain.walking_ground(x,int(float(unit.y))-22)
 		if absf(float(y)-float(unit.y))>24 or y>int(app.view.battle.height)-20:break
+		var pose:Dictionary=app.view.terrain.walking_pose(int(unit.vehicle),float(unit.x),float(unit.y),facing,bool(unit.get("falling",false)))
+		if not bool(pose.allowed) or (not bool(pose.valid) and float(pose.y)<=float(unit.y)):break
 		unit.x=x
-		unit.y=float(y)
+		unit.y=float(pose.y)
+		unit.slope=float(int(pose.slope))
 		moved+=1
 	unit.move=float(unit.move)-moved
 	var spent:=float(unit.get("move_spent",0))+moved*cost
 	unit.sp=maxi(0,int(unit.sp)-int(spent))
 	unit.move_spent=spent-int(spent)
-	unit.slope=_slope()
 	var elevation:float=unit.get("elevation",45)
 	unit.aim=fposmod(float(unit.slope)+(180-elevation if facing<0 else elevation),360)
 	return moved
@@ -115,7 +117,8 @@ func process(delta:float,wanted:int) -> void:
 	else:
 		# 00530740 initializes 1 pixel/tick; 005352f0/005354a0 slow
 		# uphill steps by 1 + uphill_degrees / 65 * 2.5 at 60 Hz.
-		var slope:=float(unit.get("slope",0))
+		var next:Dictionary=app.view.terrain.walking_pose(int(unit.vehicle),float(unit.x),float(unit.y),direction,bool(unit.get("falling",false)))
+		var slope:=float(int(next.slope))
 		if slope>180:slope-=360
 		var uphill:=maxf(0,slope*direction)
 		ticks+=minf(delta,.1)*60/(1+uphill/65*2.5)

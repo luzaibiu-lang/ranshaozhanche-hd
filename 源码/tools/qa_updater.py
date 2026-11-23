@@ -1,6 +1,8 @@
 """Exercise the shipped updater in an isolated full client copy."""
-import hashlib,json,pathlib,secrets,shutil,subprocess,time
+import argparse,hashlib,json,pathlib,secrets,shutil,subprocess,time
 ROOT=pathlib.Path(__file__).resolve().parents[2];source=ROOT/'客户端/燃烧战车 高清重制版';target=ROOT/'.tools/qa/update-client'
+parser=argparse.ArgumentParser();parser.add_argument('--client',type=pathlib.Path,default=source);args=parser.parse_args()
+source=args.client.resolve();assert source.is_relative_to(ROOT.resolve())
 target.mkdir(parents=True,exist_ok=True)
 for p in source.rglob('*'):
  if p.is_file():
