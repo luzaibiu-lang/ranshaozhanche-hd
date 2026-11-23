@@ -25,6 +25,8 @@ func check(value: bool, message: String) -> bool:
 	return true
 
 func click(control: Control, double_click := false) -> void:
+	# A newly accepted room snapshot may still be behind the moving door.
+	while is_instance_valid(app.page_transition):await process_frame
 	if not check(is_instance_valid(control), "click target exists"):return
 	var position := control.get_global_rect().get_center()
 	var window := control.get_viewport() as Window
@@ -67,7 +69,10 @@ func _run() -> void:
 	app.password.text = "qa-only-895432"
 	app.confirmation.text = "qa-only-895432"
 	await click(app.skin.find_child("Login", true, false))
-	if not await wait_for(func(): return app.scene == "lobby", "actual registration form reached lobby"):return
+	if not await wait_for(func(): return app.scene == "channel" and is_instance_valid(app.channel_gate) and app.channel_gate.phase == "select", "actual registration form opens channel chooser"):return
+	await click(app.channel_gate.row)
+	await click(app.channel_gate.enter_button)
+	if not await wait_for(func(): return app.scene == "lobby" and not is_instance_valid(app.channel_gate), "actual registration form reached lobby"):return
 	var avatar:Control=app.skin.get_node("NativeAvatar")
 	var avatar_frame:int=avatar.frame_stamp
 	await create_timer(0.25).timeout

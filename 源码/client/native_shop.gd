@@ -10,6 +10,7 @@ var selected_slot := -1
 var pages := [0, 0, 0]
 var item_buttons := {}
 var backpack: Array[Button] = []
+var backpack_icons: Array[TextureRect] = []
 var information: Label
 var balance: Label
 var price_label: Label
@@ -75,10 +76,17 @@ func _ready() -> void:
 		var button := Button.new()
 		button.name = "InventorySlot%d" % index
 		button.size = Vector2(38, 38)
-		button.expand_icon = true
-		button.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
-		button.add_theme_constant_override("icon_max_width", 32)
+		# Shop/09 frames contain a 31px icon inset five pixels from this
+		# hit target. Button icon alignment/padding cannot express that inset.
+		var icon := TextureRect.new()
+		icon.name = "InventoryIcon"
+		icon.position = Vector2(5, 5)
+		icon.size = Vector2(31, 31)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(icon)
+		backpack_icons.append(icon)
 		_flat(button)
 		button.pressed.connect(func(): selected_slot = index; _refresh())
 		layout.add_child(button)
@@ -181,9 +189,9 @@ func _refresh() -> void:
 	for index in range(4):
 		var id := int(inventory[index])
 		backpack[index].position = Vector2(589 + extra + index * 51, 206)
-		backpack[index].icon = load("res://assets/icons/ItemIcon/%02d.png" % id) if id > 0 else null
+		backpack_icons[index].texture = load("res://assets/icons/ItemIcon/%02d.png" % id) if id > 0 else null
 		backpack[index].tooltip_text = str(_item(id).get("name", "空槽"))
-		backpack[index].self_modulate = Color("ffe68c") if selected_slot == index else Color.WHITE
+		backpack[index].modulate = Color("ffe68c") if selected_slot == index else Color.WHITE
 	buy_button.position.x = 271 + extra
 	sell_button.position = Vector2(581 + extra, 263)
 	sell_button.disabled = selected_slot < 0 or int(inventory[selected_slot]) == 0

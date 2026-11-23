@@ -32,6 +32,7 @@ func _process(_delta:float) -> void:
 	for index in range(shot.get("cues",[]).size()):
 		var cue:Dictionary=shot.cues[index]
 		if str(cue.kind)=="lock":_cue("lock:%d"%index,54,now-float(shot.started)-float(cue.at),.6)
+		if str(cue.kind)=="shield_hit":_cue("shield:%.6f"%float(cue.at),63,now-float(shot.started)-float(cue.at))
 	queue_redraw()
 
 func _cue(key:String,id:int,age:float,window:=.25) -> void:

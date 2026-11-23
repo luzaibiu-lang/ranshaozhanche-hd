@@ -59,7 +59,10 @@ func _run() -> void:
 	app.password.text="qa-only-895432"
 	app.confirmation.text=app.password.text
 	app._login()
-	if not await wait_for(func():return app.scene=="lobby","normal registration enters lobby"):return
+	if not await wait_for(func():return app.scene=="channel" and is_instance_valid(app.channel_gate) and app.channel_gate.phase=="select","normal registration opens channel chooser"):return
+	app.channel_gate._select()
+	app.channel_gate._request_enter()
+	if not await wait_for(func():return app.scene=="lobby" and not is_instance_valid(app.channel_gate),"normal registration enters lobby"):return
 	var guest:RefCounted=load("res://net.gd").new(app)
 	guest.endpoint=app.net.endpoint
 	var response:Dictionary=await guest.request("/api/register",{"name":str(options.name)+"b","password":"qa-only-895432"})

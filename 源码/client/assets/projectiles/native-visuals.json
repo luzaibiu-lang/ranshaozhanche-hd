@@ -945,7 +945,14 @@
           "blend": "mix"
         }
       ],
-      "effects": [],
+      "effects": [
+        {
+          "effect": "Effect05",
+          "scale": 1,
+          "renderer": "orbital_column",
+          "initializer": "004aeff0"
+        }
+      ],
       "draw": "00561010",
       "update": "0x5612f0"
     },

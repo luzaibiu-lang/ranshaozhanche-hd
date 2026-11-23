@@ -387,6 +387,7 @@ func (b *Battle) impact(actor *Unit, w Weapon, impact Impact, shot *Shot) {
 		}
 		if target.Shield > 0 {
 			if b.NativeAim {
+				shot.Cues = append(shot.Cues, ShotCue{At: impact.At, Kind: "shield_hit", Seat: target.Seat, X: target.X, Y: target.Y})
 				// 0052fd60 marks +2d8 as used; it does not clear +2cc.
 				// The same shield blocks every pellet/wave in this shot.
 				if shot.shielded == nil {
@@ -434,6 +435,7 @@ func (b *Battle) impact(actor *Unit, w Weapon, impact Impact, shot *Shot) {
 		x := max(15, min(float64(b.Width-16), impact.X))
 		if b.NativeAim {
 			actor.X, actor.Y = x, impact.Y
+			shot.Cues = append(shot.Cues, ShotCue{At: impact.At, Kind: "warp", Seat: actor.Seat, X: actor.X, Y: actor.Y})
 			return
 		}
 		y := b.Terrain.ground(x, max(0, int(impact.Y)-80))

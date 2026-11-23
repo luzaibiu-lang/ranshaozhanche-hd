@@ -40,6 +40,22 @@ func _overview_image() -> Image:
 	small.resize(maxi(1,int(image.get_width()*factor)),maxi(1,int(image.get_height()*factor)),Image.INTERPOLATE_NEAREST)
 	return small
 
+func walking_ground(x: float, from_y: int) -> int:
+	var column := int(x)
+	var height := image.get_height()
+	if column < 8 or column >= image.get_width()-8:
+		return height+200
+	for y in range(maxi(0, from_y), height-2):
+		if image.get_pixel(column, y).a == 0 or image.get_pixel(column, y+2).a == 0:
+			continue
+		var support := 0
+		for dx in range(-5, 6):
+			if image.get_pixel(column+dx, y).a > 0:
+				support += 1
+		if support >= 5:
+			return y
+	return height+200
+
 func carve(hole:Dictionary) -> void:
 	var mask_id:=int(hole.get("mask",0))
 	var patch:Dictionary

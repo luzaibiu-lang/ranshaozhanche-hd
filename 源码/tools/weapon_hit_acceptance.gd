@@ -66,7 +66,7 @@ func _run() -> void:
 		clock.value=100+before
 		view._process(0.0)
 		var sky_before: Image
-		if int(row.Projectile) == 5:
+		if int(row.Projectile) in [5, 72]:
 			await process_frame
 			await RenderingServer.frame_post_draw
 			sky_before = root.get_texture().get_image()
@@ -97,7 +97,8 @@ func _run() -> void:
 
 func _check_sky_columns(row: Dictionary, sky_before: Image) -> bool:
 	var impacts: Array = row.battle.shot.impacts
-	if not check(impacts.size() == 7, "seven sky strikes vehicle%d" % int(row.Vehicle)):
+	var expected := 2 if int(row.Projectile) == 72 and int(row.Slot) == 1 else 7
+	if not check(impacts.size() == expected, "sky strike count vehicle%d slot%d" % [int(row.Vehicle), int(row.Slot)]):
 		return false
 	for impact: Dictionary in impacts:
 		var strike_time := 100.0 + float(impact.at) + 0.000001

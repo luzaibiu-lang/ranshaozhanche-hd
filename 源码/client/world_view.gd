@@ -237,7 +237,19 @@ func _process(delta: float) -> void:
 			render_slopes[key]=float(pose[3])
 			unit.falling=float(pose[4])>0
 		else:
-			render_positions[key] = (render_positions.get(key, target) as Vector2).lerp(target, 1 - exp(-delta * 16))
+			var previous:Vector2=render_positions.get(key,target)
+			var position_on_path:=previous.lerp(target,1-exp(-delta*16))
+			if bool(walking[key]) and terrain_image and float(battle.get("deadline",0))>0:
+				# Traverse the same one-pixel terrain path as authoritative walking.
+				# A straight line between snapshots can pass inside an entire crest.
+				var path_y := previous.y
+				var steps := maxi(1, ceili(absf(position_on_path.x-previous.x)))
+				for step in range(1, steps+1):
+					var path_x := lerpf(previous.x, position_on_path.x, float(step)/steps)
+					var ground_y:int=terrain.walking_ground(path_x,int(path_y)-22)
+					if absf(ground_y-path_y)<=24:path_y=ground_y
+				position_on_path.y=path_y
+			render_positions[key]=position_on_path
 			render_slopes[key]=lerp_angle(float(render_slopes.get(key,unit.get("slope",0)))*PI/180,float(unit.get("slope",0))*PI/180,1-exp(-delta*16))*180/PI
 		var displayed:Vector2=render_positions[key]
 		if int(unit.player)==player_id and preview_face!=0 and float(battle.get("deadline",0))>0:unit.face=preview_face
@@ -479,10 +491,17 @@ func _motion_poses() -> Dictionary:
 	var blend:=clampf((t-float(a.at))/maxf(.0001,float(b.at)-float(a.at)),0,1)
 	var next:Dictionary={}
 	for pose:Array in b.poses:next[int(pose[0])]=pose
+	var warping:Dictionary={}
+	for cue:Dictionary in shot.get("cues",[]):
+		if str(cue.kind)=="warp" and float(cue.at)>float(a.at) and float(cue.at)<=float(b.at):
+			warping[int(cue.seat)]=true
 	var result:Dictionary={}
 	for pose:Array in a.poses:
 		var seat:=int(pose[0])
 		if bool(source_units.get(seat,{}).get("departed",false)):continue
+		if warping.has(seat):
+			result[seat]=pose
+			continue
 		var to:Array=next.get(seat,pose)
 		result[seat]=[seat,lerpf(float(pose[1]),float(to[1]),blend),lerpf(float(pose[2]),float(to[2]),blend),rad_to_deg(lerp_angle(deg_to_rad(float(pose[3])),deg_to_rad(float(to[3])),blend)),pose[4]]
 	return result

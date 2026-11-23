@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-const version = "0.1.15"
+const version = "0.1.16"
 
 //go:embed gm.html
 var gmHTML string

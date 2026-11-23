@@ -119,7 +119,7 @@ func play_cue(filename: String, priority:=false) -> void:
 	if played_cues.size()>32:played_cues.pop_front()
 
 func play_event(id: int) -> void:
-	play_cue(str(native_audio.get("sounds",{}).get(str(id),"")),id in [54,55])
+	play_cue(str(native_audio.get("sounds",{}).get(str(id),"")),id in [54,55,63])
 
 func play_effect(kind: String, detail := 0) -> void:
 	if kind=="native":play_event(detail);return

@@ -58,17 +58,6 @@ func _solid(x:int,y:int) -> bool:
 	var image:Image=app.view.terrain_image
 	return x>=0 and y>=0 and x<image.get_width() and y<image.get_height() and image.get_pixel(x,y).a>0
 
-func _ground(x:float,from:int) -> int:
-	var image:Image=app.view.terrain_image
-	var column:=int(x)
-	if column<8 or column>=image.get_width()-8:return image.get_height()+200
-	for y in range(maxi(0,from),image.get_height()):
-		var support:=0
-		for dx in range(-5,6):
-			if _solid(column+dx,y):support+=1
-		if support>=5 and _solid(column,y) and _solid(column,y+2):return y
-	return image.get_height()+200
-
 func _slope() -> float:
 	var width:=41 if (int(unit.vehicle)-1)%10==8 else 15
 	var half:=width/2
@@ -103,7 +92,7 @@ func _move(distance:int) -> int:
 	var moved:=0
 	for i in range(steps):
 		var x:=float(unit.x)+facing
-		var y:=_ground(x,int(float(unit.y))-22)
+		var y:int=app.view.terrain.walking_ground(x,int(float(unit.y))-22)
 		if absf(float(y)-float(unit.y))>24 or y>int(app.view.battle.height)-20:break
 		unit.x=x
 		unit.y=float(y)

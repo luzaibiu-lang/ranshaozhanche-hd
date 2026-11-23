@@ -6,7 +6,7 @@
 
 **保留经典战车与回合制炮战，用 Godot 与 Go 重建宽屏联机体验。**
 
-![Version 0.1.15](https://img.shields.io/badge/Version-0.1.15-blue)
+![Version 0.1.16](https://img.shields.io/badge/Version-0.1.16-blue)
 ![Godot 4.5.1](https://img.shields.io/badge/Godot-4.5.1-478CBF?logo=godotengine&logoColor=white)
 ![Go 1.26](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go&logoColor=white)
 ![Platform Windows](https://img.shields.io/badge/Platform-Windows-0078D4)
@@ -24,7 +24,7 @@
 
 游戏逻辑由本仓库源码实现，运行时无需旧客户端核心、DLL 注入或外置机器人窗口。账号、房间、AI、弹道、可破坏地形、回合、道具和结算由自己的服务端管理，适合本地研究和自行部署。
 
-当前源码版本为 **0.1.15**。已验收的发行平台是 **Windows x64**。Web、Android、iOS 仍待适配。各功能与原版的核对进度见[项目状态](docs/STATUS.md)。
+当前源码版本为 **0.1.16**。已验收的发行平台是 **Windows x64**。Web、Android、iOS 仍待适配。各功能与原版的核对进度见[项目状态](docs/STATUS.md)。
 
 ## 实际画面
 

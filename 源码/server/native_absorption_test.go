@@ -101,6 +101,9 @@ func TestNativeWarpPreservesPortalBeforeAndAfterTeleport(t *testing.T) {
 	if b.Shot.Duration < portal.Start+portal.Duration {
 		t.Fatal("turn ended before the original portal faded")
 	}
+	if len(b.Shot.Cues) != 1 || b.Shot.Cues[0].Kind != "warp" || b.Shot.Cues[0].Seat != b.Shot.Actor || b.Shot.Cues[0].At != impact.At {
+		t.Fatalf("client did not receive an exact teleport checkpoint: %+v", b.Shot.Cues)
+	}
 }
 
 func TestNativeWarpMatchesOriginalLanding(t *testing.T) {

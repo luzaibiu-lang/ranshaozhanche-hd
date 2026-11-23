@@ -17,13 +17,17 @@ func _process(_delta:float) -> void:
 func active_beams(shot:Dictionary,now:float) -> Array[Dictionary]:
 	var result:Array[Dictionary]=[]
 	for impact:Dictionary in shot.get("impacts",[]):
-		if int(impact.get("projectile",0))!=5:continue
+		var projectile := int(impact.get("projectile", 0))
+		if projectile != 5 and projectile != 71:continue
 		var age:=now-float(shot.started)-float(impact.at)
 		if age<0 or age>=TICKS/60:continue
+		var origin := Vector2(float(impact.x), float(impact.y))
+		if projectile == 71 and (origin.y > float(world.battle.height) or origin.x < 0 or origin.x >= float(world.battle.width)):
+			continue
 		var alpha:=1-age*60/TICKS
 		var scale_x:=.8*alpha
 		var flicker:=float((int(age*60)*7+int(impact.x)*3)%10)*.06
-		result.append({"origin":Vector2(float(impact.x),float(impact.y)),"width":64*scale_x,"alpha":alpha,"flash_scale":Vector2(scale_x*.4+1.1+flicker,scale_x*.4+.8)})
+		result.append({"origin":origin,"width":64*scale_x,"alpha":alpha,"flash_scale":Vector2(scale_x*.4+1.1+flicker,scale_x*.4+.8)})
 	return result
 
 func _draw() -> void:

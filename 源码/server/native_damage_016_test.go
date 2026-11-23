@@ -20,6 +20,14 @@ func TestNativeShieldBlocksWholeShotAndDoubleVolley(t *testing.T) {
 	if !shot.shielded[target.Seat] {
 		t.Fatal("shield usage was not marked for action-sync consumption")
 	}
+	if len(shot.Cues) != 12 {
+		t.Fatalf("got %d shield cues for twelve blocked pellets", len(shot.Cues))
+	}
+	for i, cue := range shot.Cues {
+		if cue.Kind != "shield_hit" || cue.Seat != target.Seat || cue.At != shot.Impacts[i].At {
+			t.Fatalf("shield cue %d does not match blocked impact: %+v", i, cue)
+		}
+	}
 	// Exercise the actual fireWorld completion, including all native children
 	// and the second double volley, rather than just calling impact in a loop.
 	probe := impactMatrixBattle(8, 0, 0)

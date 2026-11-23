@@ -26,7 +26,9 @@ func _ready() -> void:
 	background.texture = preload("res://assets/icons/Shop/04.png")
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layout.add_child(background)
-	ability = _picture(Vector2(25, 17), Vector2(93, 93))
+	# AbilityInfo contains the native ring and grey backing; its 93px
+	# patch matches Shop/04 at (34,17), including every grey edge pixel.
+	ability = _picture(Vector2(34, 17), Vector2(93, 93))
 	preview = _picture(Vector2(152, 23), Vector2(83, 35))
 	preview.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 	caption = _label(Vector2(147, 0), Vector2(90, 20), 11)
