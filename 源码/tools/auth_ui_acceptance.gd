@@ -58,7 +58,13 @@ func enter(field: LineEdit) -> void:
 
 func wait_scene(expected: String) -> bool:
 	for attempt in range(160):
+		if expected == "lobby" and app.scene == "channel" and is_instance_valid(app.channel_gate) and app.channel_gate.phase == "select":
+			await click(app.channel_gate.row)
+			await click(app.channel_gate.enter_button)
 		if app.scene==expected and not app.auth_busy and not app.command_busy:
+			if is_instance_valid(app.channel_gate):
+				await create_timer(0.1).timeout
+				continue
 			await process_frame
 			return check(true,"reached "+expected)
 		await create_timer(0.1).timeout

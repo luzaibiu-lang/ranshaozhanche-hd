@@ -106,6 +106,9 @@ var shop_gold: Label
 var quitting := false
 var auth_busy := false
 var auth_generation := 0
+var channel_gate: Control
+var channel_accepted := false
+var channel_refreshing := false
 
 func _ready() -> void:
 	get_tree().auto_accept_quit = false
@@ -173,6 +176,10 @@ func _ready() -> void:
 				launched_session=not launcher_ticket.is_empty()
 				_accept_state(state)
 				if launched_session and qa_options.has("proof") and net.endpoint.begins_with("http://127.0.0.1:"):
+					# Launcher QA now verifies the real chooser, not a page
+					# that skipped it on the first successful state reply.
+					while is_instance_valid(channel_gate) and channel_gate.phase != "select" and not quitting:
+						await get_tree().process_frame
 					await RenderingServer.frame_post_draw
 					var proof:=str(qa_options.proof)
 					get_viewport().get_texture().get_image().save_png(proof+".png")
@@ -193,9 +200,75 @@ func _return_to_launcher() -> void:
 		get_tree().quit()
 
 func _show_launch_loading() -> void:
-	_original_page("TitleBack")
-	scene="loading"
-	skin.label("正在进入游戏大厅…",Rect2(340,270,410,40),23,Color.WHITE)
+	_show_channel_gate()
+
+func _show_channel_gate() -> void:
+	if is_instance_valid(channel_gate): return
+	_clear()
+	skin = null
+	scene = "channel"
+	sound.set_scene("lobby")
+	channel_gate = preload("res://native_channel_gate.gd").new()
+	add_child(channel_gate)
+	move_child(channel_gate, toast_label.get_index())
+	channel_gate.cue_requested.connect(func(id: int): sound.play_event(id))
+	channel_gate.enter_requested.connect(_enter_channel)
+	channel_gate.refresh_requested.connect(_refresh_channels)
+	channel_gate.settings_requested.connect(_settings)
+	channel_gate.fullscreen_requested.connect(_toggle_fullscreen)
+	channel_gate.exit_requested.connect(_quit)
+	channel_gate.opened.connect(func():
+		if not is_instance_valid(channel_gate): return
+		channel_gate.queue_free()
+		channel_gate = null
+	)
+
+func _cancel_channel_gate() -> void:
+	if is_instance_valid(channel_gate):
+		channel_gate.hide()
+		channel_gate.queue_free()
+	channel_gate = null
+	channel_accepted = false
+	channel_refreshing = false
+
+func _enter_channel() -> void:
+	if quitting or not is_instance_valid(channel_gate): return
+	if auth_busy:
+		channel_gate.reject_enter("登录正在确认，请稍后重试")
+		return
+	var gate := channel_gate
+	var generation := auth_generation
+	var requested_token: String = net.token
+	var state: Dictionary = await net.request("/api/state")
+	if quitting or generation != auth_generation or gate != channel_gate or not is_instance_valid(gate) or net.token != requested_token: return
+	if not state.has("profile"):
+		gate.reject_enter(str(state.get("error", "频道连接失败，请重试")))
+		if int(state.get("status", 0)) == 401: _logout()
+		return
+	# Buffer the newest authoritative snapshot while the gate is closed.
+	# Polls can update it, but cannot select a channel or skip the animation.
+	_accept_state(state)
+	channel_accepted = true
+	_accept_state(snapshot)
+	gate.begin_open()
+
+func _refresh_channels() -> void:
+	if quitting or auth_busy or channel_refreshing or not is_instance_valid(channel_gate): return
+	if net.token.is_empty():
+		channel_gate.show_notice("正在确认登录，请稍候")
+		return
+	var gate := channel_gate
+	var generation := auth_generation
+	channel_refreshing = true
+	gate.set_refreshing(true)
+	var state: Dictionary = await net.request("/api/state")
+	if quitting or generation != auth_generation or gate != channel_gate or not is_instance_valid(gate): return
+	channel_refreshing = false
+	gate.set_refreshing(false)
+	if state.has("profile"): _accept_state(state)
+	else:
+		gate.show_notice(str(state.get("error", "频道刷新失败，请重试")))
+		if int(state.get("status", 0)) == 401: _logout()
 
 func _setup_window() -> void:
 	var screen := DisplayServer.window_get_current_screen()
@@ -386,6 +459,9 @@ func _clear() -> void:
 	last_inventory_stamp = ""
 
 func toast(message: String, seconds := 4.0) -> void:
+	if is_instance_valid(channel_gate):
+		channel_gate.show_notice(message)
+		return
 	if not is_instance_valid(toast_label):
 		return
 	toast_label.text = message
@@ -420,6 +496,7 @@ func _layout_toast() -> void:
 		toast_label.add_theme_constant_override("outline_size", 0)
 
 func _show_login() -> void:
+	_cancel_channel_gate()
 	_original_page()
 	scene = "login"
 	skin.page = "login"
@@ -1548,6 +1625,10 @@ func _accept_state(state: Dictionary) -> void:
 			return
 	snapshot = state
 	profile = state.get("profile", {})
+	if not qa and not channel_accepted:
+		_show_channel_gate()
+		channel_gate.set_channel_state(state)
+		return
 	_confirm_battle_command()
 	account_label.text = "%s   ·   %d 金币   ·   %d 胜" % [str(profile.get("name", "")), int(profile.get("gold", 0)), int(profile.get("wins", 0))]
 	var room: Variant = state.get("room")
@@ -1654,7 +1735,7 @@ func _command(command: Dictionary) -> bool:
 	return false
 
 func _process(delta: float) -> void:
-	_present_invitation()
+	if not is_instance_valid(channel_gate): _present_invitation()
 	if quitting:return
 	if toast_timer > 0:
 		toast_timer -= delta
@@ -1757,6 +1838,7 @@ func _input(event: InputEvent) -> void:
 		_toggle_fullscreen()
 		get_viewport().set_input_as_handled()
 		return
+	if is_instance_valid(channel_gate): return
 	if _modal_open():return
 	var focus := get_viewport().gui_get_focus_owner()
 	if focus is LineEdit or focus is TextEdit:
@@ -1892,6 +1974,7 @@ func _vault(mode: String, value: String) -> String:
 
 func _logout() -> void:
 	if auth_busy or quitting:return
+	_cancel_channel_gate()
 	auth_generation+=1
 	auth_busy=true
 	command_busy=true

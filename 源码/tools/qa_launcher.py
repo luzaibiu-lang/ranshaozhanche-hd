@@ -60,9 +60,9 @@ try:
    checks.append('incorrect password stays in launcher and enables retry')
   else:
    wait(lambda:proof.exists(),40)
-   value=json.loads(proof.read_text('utf8'));assert value['scene']=='lobby'and value['username']==target_name,value
+   value=json.loads(proof.read_text('utf8'));assert value['scene']=='channel'and value['username']==target_name,value
    shutil.copy2(proof,out/('proof-'+stage+'.json'));shutil.copy2(str(proof)+'.png',out/('game-'+stage+'.png'))
-   checks.append('real launcher '+stage+' enters lobby without second login')
+   checks.append('real launcher '+stage+' enters the channel chooser without second login')
    assert not list((profile/'BurningChariotHD/handoff').glob('*.dat'))
    assert (profile/'BurningChariotHD/session.dat').exists()
    stop_owned_game()
