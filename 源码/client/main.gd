@@ -262,8 +262,12 @@ func _begin_page_transition() -> void:
 	)
 	door.opened.connect(func():
 		if door != page_transition: return
+		door.hide()
 		door.queue_free()
 		page_transition = null
+		# A room may disappear while its door is opening. Finish revealing
+		# this page, then apply the newest destination through its own door.
+		_accept_state(snapshot)
 	)
 
 func _enter_channel() -> void:
@@ -737,7 +741,7 @@ func _join_room(id: int) -> void:
 	field.grab_focus()
 
 func _update_lobby() -> void:
-	if is_instance_valid(page_transition) and not page_transition_applying and page_transition.phase in ["closing", "latch", "covered"]: return
+	if is_instance_valid(page_transition) and not page_transition_applying: return
 	var stamp := JSON.stringify([snapshot.get("rooms", []), snapshot.get("players", []), selected_room_id, selected_lobby_player_id, lobby_player_query, skin.pixel_scale])
 	if stamp == last_lobby_stamp:return
 	last_lobby_stamp = stamp
@@ -915,7 +919,7 @@ func _create_room_settings() -> void:
 	dialog.popup_centered()
 
 func _update_room() -> void:
-	if is_instance_valid(page_transition) and not page_transition_applying and page_transition.phase in ["closing", "latch", "covered"]: return
+	if is_instance_valid(page_transition) and not page_transition_applying: return
 	if scene not in ["room", "shop"] or not is_instance_valid(room_grid):return
 	var room: Dictionary = snapshot.get("room", {})
 	var stamp := JSON.stringify([room.get("members", []), room.get("map", 0), room.get("owner", 0), skin.pixel_scale, room_grid.size])
@@ -1674,7 +1678,7 @@ func _accept_state(state: Dictionary) -> void:
 	if is_instance_valid(page_transition):
 		if wanted == "battle":
 			_cancel_page_transition()
-		elif not page_transition_applying and page_transition.phase in ["closing", "latch", "covered"]:
+		elif not page_transition_applying:
 			return
 	elif not page_transition_applying and not is_instance_valid(channel_gate) and scene in ["lobby", "room"] and wanted in ["lobby", "room"] and wanted != scene:
 		_begin_page_transition()

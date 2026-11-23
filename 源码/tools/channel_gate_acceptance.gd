@@ -152,6 +152,19 @@ func _run() -> void:
 	check(app.page_transition == interrupted, "new snapshot reuses the closing door")
 	await wait_until(func(): return not is_instance_valid(app.page_transition), "changed destination completes normally")
 	check(app.scene == "lobby" and not app.snapshot.get("room") is Dictionary, "closing door uses newest destination instead of stale room")
+	# A state change during opening must finish the current reveal before
+	# closing another door. Polls and resize must never switch uncovered pages.
+	await app._command({"action": "create", "name": "Opening cancellation", "map": 4, "capacity": 8})
+	await wait_until(func(): return is_instance_valid(app.page_transition) and app.page_transition.phase == "opening", "room reveal starts before opening-state probe")
+	var opening_door: Control = app.page_transition
+	var opening_door_id: int = opening_door.get_instance_id()
+	await app._command({"action": "leave"})
+	check(app.scene == "room" and app.page_transition == opening_door, "destination change during opening does not cut to an uncovered page")
+	DisplayServer.window_set_size(Vector2i(1440, 900))
+	await process_frame
+	check(app.scene == "room", "resize during opening preserves the page behind the door")
+	await wait_until(func(): return not is_instance_valid(app.page_transition) or app.page_transition.get_instance_id() != opening_door_id, "pending destination starts a new mechanical transition")
+	await wait_until(func(): return app.scene == "lobby" and not is_instance_valid(app.page_transition), "opening-state change completes through a fully covered page switch")
 	await app._command({"action": "create", "name": "Logout cancellation", "map": 4, "capacity": 8})
 	await app._logout()
 	await create_timer(1.2).timeout
@@ -167,8 +180,23 @@ func verify_page_door(source: String, target: String, prefix: String) -> void:
 	check(app.scene == source and is_instance_valid(app.page_transition), "old " + source + " remains until door closes")
 	var door: Control = app.page_transition
 	check(door.phase == "closing" and app._modal_open(), "page door blocks underlying page interaction")
-	for item in door.placements:
-		check(not item.node.visible, "page door has no channel controls")
+	check(door.get_script().get_base_script() == null, "room door is independent of the channel chooser")
+	check(door.find_children("*", "Button", true, false).is_empty(), "room door creates no channel buttons")
+	check(door.DOOR_ART.resource_path == "res://assets/legacy/GameBack.png", "room door uses the original room logo artwork")
+	await wait_until(func(): return door.size.x > 0 and door.top_leaf.position.y < 0, "vertical door layout is ready")
+	var was_full_screen: bool = app.full_screen
+	for toggle in range(2):
+		var full_screen_key := InputEventKey.new()
+		full_screen_key.keycode = KEY_F11
+		full_screen_key.physical_keycode = KEY_F11
+		full_screen_key.pressed = true
+		root.push_input(full_screen_key)
+		await process_frame
+		check(app.full_screen == (not was_full_screen if toggle == 0 else was_full_screen), "F11 works while the mechanical door blocks other input")
+		full_screen_key.pressed = false
+		root.push_input(full_screen_key)
+	var top_start: float = door.top_leaf.position.y
+	var bottom_start: float = door.bottom_leaf.position.y
 	var old_skin: Control = app.skin
 	var blocked: Control = old_skin.find_child("AIPractice", true, false) if source == "room" else old_skin.placements[4].node
 	if is_instance_valid(blocked):
@@ -177,11 +205,20 @@ func verify_page_door(source: String, target: String, prefix: String) -> void:
 	await app._poll()
 	check(app.page_transition == door and door.phase_history.count("closing") == 1, "polls do not restart the mechanical transition")
 	await wait_until(func(): return door.phase == "closing" and door.closed > 0.2, "page door closes progressively")
-	check(not door.opaque_backdrop, "closing page door preserves the old page behind its moving leaves")
+	check(door.top_leaf.position.y > top_start and door.bottom_leaf.position.y < bottom_start, "upper and lower doors move toward the horizontal center")
+	check(is_zero_approx(door.top_leaf.position.x) and is_zero_approx(door.bottom_leaf.position.x), "room door has no horizontal slide")
+	check(is_equal_approx(door.modulate.a, 1.0), "room door stays opaque without a fade")
 	DisplayServer.window_set_size(Vector2i(1440, 900) if source == "lobby" else Vector2i(1366, 768))
 	await process_frame
 	check(door.size.is_equal_approx(Vector2(root.size)), "moving door follows viewport resizing")
+	check(door.logo_rect.get_center().is_equal_approx(door.size * 0.5), "original room logo remains centered after resizing")
+	check(is_equal_approx(door.logo_rect.size.x / door.logo_rect.size.y, 2.5), "original room logo keeps its source aspect ratio")
 	await screenshot(prefix + "-closing")
+	await wait_until(func(): return door.phase == "latch", "vertical door fully closes before changing pages")
+	check(app.scene == source and app.skin == old_skin, "closed door still covers the original source page")
+	check(is_equal_approx(door.closed, 1.0) and is_zero_approx(door.top_leaf.position.y), "upper door reaches its closed position")
+	check(is_equal_approx(door.top_leaf.get_rect().end.y, door.bottom_leaf.position.y) and is_equal_approx(door.bottom_leaf.get_rect().end.y, door.size.y), "closed door covers the entire viewport without a gap")
+	await screenshot(prefix + "-closed-logo")
 	await wait_until(func(): return door.phase == "opening", "page is revealed by opening the door")
 	check(app.scene == target and (not is_instance_valid(old_skin) or app.skin != old_skin), "page switches only beneath fully closed leaves")
 	check(door.phase_history == ["closing", "latch", "covered", "opening"], "page door has closure latch swap opening without fading")
@@ -189,6 +226,7 @@ func verify_page_door(source: String, target: String, prefix: String) -> void:
 	check(app._modal_open(), "input remains blocked during opening")
 	await create_timer(0.15).timeout
 	check(door.closed > 0 and door.closed < 1, "page opening visibly moves both leaves")
+	check(door.top_leaf.position.y < 0 and door.bottom_leaf.position.y > door.size.y * 0.5, "room doors open vertically away from the logo seam")
 	await screenshot(prefix + "-opening")
 	await wait_until(func(): return not is_instance_valid(app.page_transition), "page transition releases the overlay")
 	check(app.scene == target and not app._modal_open(), "destination page becomes interactive")
