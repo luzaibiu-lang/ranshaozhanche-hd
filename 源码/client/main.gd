@@ -109,6 +109,8 @@ var auth_generation := 0
 var channel_gate: Control
 var channel_accepted := false
 var channel_refreshing := false
+var page_transition: Control
+var page_transition_applying := false
 
 func _ready() -> void:
 	get_tree().auto_accept_quit = false
@@ -230,6 +232,39 @@ func _cancel_channel_gate() -> void:
 	channel_gate = null
 	channel_accepted = false
 	channel_refreshing = false
+
+func _cancel_page_transition() -> void:
+	if is_instance_valid(page_transition):
+		page_transition.hide()
+		page_transition.queue_free()
+	page_transition = null
+	page_transition_applying = false
+
+func _begin_page_transition() -> void:
+	if is_instance_valid(page_transition) or quitting: return
+	get_viewport().gui_release_focus()
+	for child in get_children():
+		if child is Window: child.hide()
+	page_transition = preload("res://native_page_transition.gd").new()
+	page_transition.z_index = 100
+	add_child(page_transition)
+	var door := page_transition
+	var generation := auth_generation
+	door.cue_requested.connect(func(id: int): sound.play_event(id))
+	door.covered.connect(func():
+		if quitting or generation != auth_generation or door != page_transition: return
+		# Keep displaying the old page until the metal leaves fully cover it.
+		# Use the newest buffered snapshot, including changes during closing.
+		page_transition_applying = true
+		_accept_state(snapshot)
+		page_transition_applying = false
+		if is_instance_valid(door) and door == page_transition: door.begin_open()
+	)
+	door.opened.connect(func():
+		if door != page_transition: return
+		door.queue_free()
+		page_transition = null
+	)
 
 func _enter_channel() -> void:
 	if quitting or not is_instance_valid(channel_gate): return
@@ -496,6 +531,7 @@ func _layout_toast() -> void:
 		toast_label.add_theme_constant_override("outline_size", 0)
 
 func _show_login() -> void:
+	_cancel_page_transition()
 	_cancel_channel_gate()
 	_original_page()
 	scene = "login"
@@ -609,7 +645,6 @@ func _set_login_busy(busy: bool) -> void:
 
 func _show_lobby() -> void:
 	_original_page("LobyBack")
-	_reveal_scene()
 	scene = "lobby"
 	sound.set_scene("lobby")
 	skin.button("l_exit", Rect2(10, 9, 89, 44), _logout, "退出账号").name="Logout"
@@ -702,6 +737,7 @@ func _join_room(id: int) -> void:
 	field.grab_focus()
 
 func _update_lobby() -> void:
+	if is_instance_valid(page_transition) and not page_transition_applying and page_transition.phase in ["closing", "latch", "covered"]: return
 	var stamp := JSON.stringify([snapshot.get("rooms", []), snapshot.get("players", []), selected_room_id, selected_lobby_player_id, lobby_player_query, skin.pixel_scale])
 	if stamp == last_lobby_stamp:return
 	last_lobby_stamp = stamp
@@ -815,7 +851,6 @@ func _send_chat() -> void:
 
 func _show_room() -> void:
 	_original_page("GameBack")
-	_reveal_scene()
 	scene = "room"
 	sound.set_scene("lobby")
 	skin.button("gl_exit", Rect2(10, 8, 89, 44), func(): await _command({"action": "leave"}), "返回大厅")
@@ -880,6 +915,7 @@ func _create_room_settings() -> void:
 	dialog.popup_centered()
 
 func _update_room() -> void:
+	if is_instance_valid(page_transition) and not page_transition_applying and page_transition.phase in ["closing", "latch", "covered"]: return
 	if scene not in ["room", "shop"] or not is_instance_valid(room_grid):return
 	var room: Dictionary = snapshot.get("room", {})
 	var stamp := JSON.stringify([room.get("members", []), room.get("map", 0), room.get("owner", 0), skin.pixel_scale, room_grid.size])
@@ -1635,6 +1671,14 @@ func _accept_state(state: Dictionary) -> void:
 	var wanted := "lobby"
 	if room is Dictionary:
 		wanted = "battle" if room.get("battle") is Dictionary else "room"
+	if is_instance_valid(page_transition):
+		if wanted == "battle":
+			_cancel_page_transition()
+		elif not page_transition_applying and page_transition.phase in ["closing", "latch", "covered"]:
+			return
+	elif not page_transition_applying and not is_instance_valid(channel_gate) and scene in ["lobby", "room"] and wanted in ["lobby", "room"] and wanted != scene:
+		_begin_page_transition()
+		return
 	if scene == "shop" and wanted != "battle":
 		var current_room_id := int(room.id) if room is Dictionary else 0
 		if current_room_id != shop_room_id:
@@ -1838,7 +1882,7 @@ func _input(event: InputEvent) -> void:
 		_toggle_fullscreen()
 		get_viewport().set_input_as_handled()
 		return
-	if is_instance_valid(channel_gate): return
+	if is_instance_valid(channel_gate) or is_instance_valid(page_transition): return
 	if _modal_open():return
 	var focus := get_viewport().gui_get_focus_owner()
 	if focus is LineEdit or focus is TextEdit:
@@ -1974,6 +2018,7 @@ func _vault(mode: String, value: String) -> String:
 
 func _logout() -> void:
 	if auth_busy or quitting:return
+	_cancel_page_transition()
 	_cancel_channel_gate()
 	auth_generation+=1
 	auth_busy=true
@@ -2018,6 +2063,7 @@ func _ensure_server() -> void:
 func _quit() -> void:
 	if quitting:return
 	quitting=true
+	_cancel_page_transition()
 	if is_instance_valid(sound):
 		sound.shutdown()
 	if net:net.shutdown()

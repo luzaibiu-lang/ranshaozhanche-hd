@@ -64,28 +64,27 @@ func _run() -> void:
 	app.username.text = str(options.name)
 	app.password.text = "qa-only-895432"
 	app.confirmation.text = "qa-only-895432"
-	var began := Time.get_ticks_msec()
+	check(not ProjectSettings.get_setting("application/boot_splash/show_image"), "engine splash image disabled in exported project")
 	await click(app.skin.find_child("Login", true, false))
 	await wait_until(func(): return app.scene == "channel", "registration leads to channel, not lobby")
 	if failed: return
 	var gate: Control = app.channel_gate
-	await wait_until(func(): return gate.phase == "intro_in" and gate.intro_alpha > 0.2, "intro visibly fades in")
-	check(gate.enter_button.disabled and gate.row.disabled, "intro blocks channel controls")
-	await screenshot("01-fade-in")
-	await wait_until(func(): return gate.phase == "intro_hold", "intro has an explicit hold")
-	check(is_equal_approx(gate.intro_alpha, 1.0), "held intro is fully visible")
-	await screenshot("02-intro")
-	await create_timer(0.5).timeout
-	check(gate.phase == "intro_hold", "fast network cannot flash through the hold")
-	await wait_until(func(): return gate.phase == "intro_out" and gate.intro_alpha < 0.8, "intro visibly fades out")
-	await screenshot("03-fade-out")
+	var began := Time.get_ticks_msec()
+	check(gate.phase == "closing" and gate.phase_history == ["closing"], "channel starts directly with door closure")
+	check(gate.enter_button.disabled and gate.row.disabled and gate.refresh_button.disabled, "moving channel controls block input")
+	await wait_until(func(): return gate.size.x > 0 and gate.left.position.x < 0 and gate.right.position.x > 0, "door layout is ready before sampling movement")
+	var left_start: float = gate.left.position.x
+	var right_start: float = gate.right.position.x
+	await create_timer(0.06).timeout
 	await wait_until(func(): return gate.phase == "closing" and gate.closed > 0.25 and gate.closed < 0.95, "both door leaves close progressively")
+	check(gate.left.position.x > left_start and gate.right.position.x < right_start, "left and right panels move toward one another")
 	await screenshot("04-closing")
 	await wait_until(func(): return gate.phase == "latch", "door has a separate latch effect")
+	check(is_equal_approx(gate.closed, 1.0) and gate.row.disabled, "door closes fully and blocks selection during latch")
 	await screenshot("05-latch")
 	await wait_until(func(): return gate.phase == "select", "channel opens for selection only after closing")
-	timings["intro_and_close_ms"] = Time.get_ticks_msec() - began
-	check(int(timings.intro_and_close_ms) >= 3000, "intro and closure are independent of network speed")
+	timings["channel_close_ms"] = Time.get_ticks_msec() - began
+	check(gate.phase_history == ["closing", "latch", "select"], "no additional intro or fade phases before selection")
 	check(gate.cue_events.count(11) == 1 and gate.cue_events.count(12) == 1, "close motor and latch emit once each")
 	check(not gate.row.disabled and gate.enter_button.disabled, "online channel selectable; enter requires selection")
 	await create_timer(0.8).timeout
@@ -139,12 +138,58 @@ func _run() -> void:
 	check(app.scene == "lobby", "lobby remains after transition")
 	await screenshot("08-lobby")
 	var created: bool = await app._command({"action": "create", "name": "Channel QA", "map": 4, "capacity": 8})
-	check(created and app.scene == "room", "normal room creation works after channel entry")
+	check(created, "normal room creation succeeds after channel entry")
+	await verify_page_door("lobby", "room", "09-room")
 	var left: bool = await app._command({"action": "leave"})
-	check(left and app.scene == "lobby" and not is_instance_valid(app.channel_gate), "leaving room does not replay opening or channel")
+	check(left, "leave command succeeds")
+	await verify_page_door("room", "lobby", "10-lobby")
+	check(not is_instance_valid(app.channel_gate), "leaving room never repeats channel selection")
+	# A room can disappear while its page transition is closing. Render only
+	# the most recent authoritative destination when the leaves cover it.
+	await app._command({"action": "create", "name": "Door cancellation", "map": 4, "capacity": 8})
+	var interrupted: Control = app.page_transition
+	await app._command({"action": "leave"})
+	check(app.page_transition == interrupted, "new snapshot reuses the closing door")
+	await wait_until(func(): return not is_instance_valid(app.page_transition), "changed destination completes normally")
+	check(app.scene == "lobby" and not app.snapshot.get("room") is Dictionary, "closing door uses newest destination instead of stale room")
+	await app._command({"action": "create", "name": "Logout cancellation", "map": 4, "capacity": 8})
+	await app._logout()
+	await create_timer(1.2).timeout
+	check(app.scene == "login" and not is_instance_valid(app.page_transition), "logout cancels door callbacks and returns to login")
 	check(not failed, "all channel checks passed")
 	var report := {"passed": not failed, "checks": checks, "timings": timings, "phases": history, "private_desktop": true, "silent": true}
 	var file := FileAccess.open(str(options.output).path_join("report.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify(report, "  "))
 	print("CHANNEL_GATE_ACCEPTANCE " + JSON.stringify(report))
 	await app._quit()
+
+func verify_page_door(source: String, target: String, prefix: String) -> void:
+	check(app.scene == source and is_instance_valid(app.page_transition), "old " + source + " remains until door closes")
+	var door: Control = app.page_transition
+	check(door.phase == "closing" and app._modal_open(), "page door blocks underlying page interaction")
+	for item in door.placements:
+		check(not item.node.visible, "page door has no channel controls")
+	var old_skin: Control = app.skin
+	var blocked: Control = old_skin.find_child("AIPractice", true, false) if source == "room" else old_skin.placements[4].node
+	if is_instance_valid(blocked):
+		await click(blocked)
+		check(app.scene == source and app.page_transition == door, "mouse cannot activate covered old page")
+	await app._poll()
+	check(app.page_transition == door and door.phase_history.count("closing") == 1, "polls do not restart the mechanical transition")
+	await wait_until(func(): return door.phase == "closing" and door.closed > 0.2, "page door closes progressively")
+	check(not door.opaque_backdrop, "closing page door preserves the old page behind its moving leaves")
+	DisplayServer.window_set_size(Vector2i(1440, 900) if source == "lobby" else Vector2i(1366, 768))
+	await process_frame
+	check(door.size.is_equal_approx(Vector2(root.size)), "moving door follows viewport resizing")
+	await screenshot(prefix + "-closing")
+	await wait_until(func(): return door.phase == "opening", "page is revealed by opening the door")
+	check(app.scene == target and (not is_instance_valid(old_skin) or app.skin != old_skin), "page switches only beneath fully closed leaves")
+	check(door.phase_history == ["closing", "latch", "covered", "opening"], "page door has closure latch swap opening without fading")
+	check(door.cue_events.count(11) == 1 and door.cue_events.count(12) == 1 and door.cue_events.count(10) == 1, "page door emits each native cue once")
+	check(app._modal_open(), "input remains blocked during opening")
+	await create_timer(0.15).timeout
+	check(door.closed > 0 and door.closed < 1, "page opening visibly moves both leaves")
+	await screenshot(prefix + "-opening")
+	await wait_until(func(): return not is_instance_valid(app.page_transition), "page transition releases the overlay")
+	check(app.scene == target and not app._modal_open(), "destination page becomes interactive")
+	await screenshot(prefix + "-finished")

@@ -10,25 +10,21 @@ signal cue_requested(id: int)
 signal opened
 
 const OriginalSkin = preload("res://original_skin.gd")
-const INTRO_IN := 0.65
-const INTRO_HOLD := 1.2
-const INTRO_OUT := 0.55
 const CLOSE_TIME := 0.75
 const LATCH_TIME := 0.28
 const OPEN_TIME := 0.8
 const SPLIT := 308.0
 
-var phase := "intro_in"
+var phase := "closing"
 var elapsed := 0.0
 var closed := 0.0
-var intro_alpha := 0.0
 var selected := false
 var online := false
 var refreshing := false
 var status := "正在连接高清版服务…"
 var state: Dictionary = {}
 var cue_events: Array[int] = []
-var phase_history: Array[String] = ["intro_in"]
+var phase_history: Array[String] = ["closing"]
 var left: Control
 var right: Control
 var row: Button
@@ -39,11 +35,11 @@ var notice: Label
 var player_count: Label
 var placements: Array[Dictionary] = []
 var art: Texture2D = preload("res://assets/legacy/TitleBack.png")
-var intro_vehicle: Node2D
 var font: SystemFont
 var factor := 1.0
 var extra := Vector2.ZERO
 var left_extra := 0.0
+var opaque_backdrop := true
 
 func _ready() -> void:
 	name = "NativeChannelGate"
@@ -57,8 +53,6 @@ func _ready() -> void:
 	for leaf in [left, right]:
 		leaf.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(leaf)
-	intro_vehicle = preload("res://native_vehicle.gd").new()
-	add_child(intro_vehicle)
 	row = _button("●  经典频道", Rect2(16, 222, 265, 29), true, _select)
 	row.name = "ChannelClassic"
 	row.alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -96,6 +90,7 @@ func _ready() -> void:
 	notice = _label(status, Rect2(333, 540, 125, 39), false, 11)
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	resized.connect(_layout)
+	_cue.call_deferred(11)
 	_layout()
 	_update_controls()
 
@@ -163,8 +158,6 @@ func _layout() -> void:
 		item.node.add_theme_font_size_override("font_size", maxi(10, int(item.font * factor)))
 	left.size = size
 	right.size = size
-	intro_vehicle.position = size * 0.5 + Vector2(0, -35 * factor)
-	intro_vehicle.scale = Vector2.ONE * 3.0 * factor
 	_position_leaves()
 	queue_redraw()
 
@@ -172,9 +165,6 @@ func _position_leaves() -> void:
 	var seam := (SPLIT + left_extra) * factor
 	left.position.x = -(1.0 - closed) * (seam + 5.0 * factor)
 	right.position.x = (1.0 - closed) * (size.x - seam + 5.0 * factor)
-	var visible_leaves := not phase.begins_with("intro")
-	left.visible = visible_leaves
-	right.visible = visible_leaves
 
 func set_channel_state(value: Dictionary) -> void:
 	state = value
@@ -244,18 +234,6 @@ func _cue(id: int) -> void:
 func _process(delta: float) -> void:
 	elapsed += delta
 	match phase:
-		"intro_in":
-			intro_alpha = smoothstep(0.0, INTRO_IN, elapsed)
-			if elapsed >= INTRO_IN: _change_phase("intro_hold")
-		"intro_hold":
-			intro_alpha = 1
-			if elapsed >= INTRO_HOLD: _change_phase("intro_out")
-		"intro_out":
-			intro_alpha = 1.0 - smoothstep(0.0, INTRO_OUT, elapsed)
-			if elapsed >= INTRO_OUT:
-				intro_alpha = 0
-				_change_phase("closing")
-				_cue(11)
 		"closing":
 			closed = 1.0 - pow(1.0 - clampf(elapsed / CLOSE_TIME, 0, 1), 3)
 			if elapsed >= CLOSE_TIME:
@@ -264,8 +242,7 @@ func _process(delta: float) -> void:
 				_cue(12)
 		"latch":
 			if elapsed >= LATCH_TIME:
-				_change_phase("select")
-				_update_controls()
+				_door_closed()
 		"opening":
 			closed = 1.0 - smoothstep(0.0, OPEN_TIME, elapsed)
 			if elapsed >= OPEN_TIME:
@@ -273,11 +250,11 @@ func _process(delta: float) -> void:
 				_change_phase("finished")
 				opened.emit()
 	_position_leaves()
-	intro_vehicle.visible = phase.begins_with("intro")
-	if intro_vehicle.visible:
-		intro_vehicle.pose({"vehicle": 1, "face": 1, "hp": 300}, 20.0, 0.0, false, delta)
-		intro_vehicle.modulate.a = intro_alpha
 	queue_redraw()
+
+func _door_closed() -> void:
+	_change_phase("select")
+	_update_controls()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_ENTER, KEY_KP_ENTER]:
@@ -290,20 +267,7 @@ func _patch(source: Rect2, destination: Rect2, on_left: bool) -> void:
 
 func _draw() -> void:
 	if not is_instance_valid(left): return
-	if phase.begins_with("intro"):
-		draw_rect(Rect2(Vector2.ZERO, size), Color.BLACK)
-		var center := size * 0.5
-		var icon_size := minf(size.y * 0.32, 280.0 * factor)
-		var title := "燃烧战车"
-		var points := int(38 * factor)
-		var width := font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, points).x
-		draw_string(font, center + Vector2(-width / 2, icon_size * 0.45), title, HORIZONTAL_ALIGNMENT_LEFT, -1, points, Color(1, 1, 1, intro_alpha))
-		var subtitle := "高清重制版"
-		points = int(16 * factor)
-		width = font.get_string_size(subtitle, HORIZONTAL_ALIGNMENT_LEFT, -1, points).x
-		draw_string(font, center + Vector2(-width / 2, icon_size * 0.45 + 34 * factor), subtitle, HORIZONTAL_ALIGNMENT_LEFT, -1, points, Color(0.7, 0.73, 0.78, intro_alpha))
-		return
-	if phase not in ["opening", "finished"]:
+	if opaque_backdrop and phase not in ["opening", "finished"]:
 		draw_rect(Rect2(Vector2.ZERO, size), Color.BLACK)
 	# Dedicated channel geometry: unlike the lobby it grows between y=220
 	# and 500, keeping its borders continuous and the original logo intact.

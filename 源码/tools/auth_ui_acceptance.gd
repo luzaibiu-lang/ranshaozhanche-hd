@@ -62,7 +62,7 @@ func wait_scene(expected: String) -> bool:
 			await click(app.channel_gate.row)
 			await click(app.channel_gate.enter_button)
 		if app.scene==expected and not app.auth_busy and not app.command_busy:
-			if is_instance_valid(app.channel_gate):
+			if is_instance_valid(app.channel_gate) or is_instance_valid(app.page_transition):
 				await create_timer(0.1).timeout
 				continue
 			await process_frame

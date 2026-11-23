@@ -3,7 +3,9 @@ config_version=5
 
 [application]
 config/name="燃烧战车 高清重制版"
-config/version="0.1.12"
+config/version="0.1.13"
+boot_splash/show_image=false
+boot_splash/bg_color=Color(0, 0, 0, 1)
 config/icon="res://assets/app_icon.png"
 run/main_scene="res://bootstrap.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
