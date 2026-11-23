@@ -64,6 +64,7 @@ var action_layer:Node2D
 var beam_layer:Node2D
 var death_layer:Node2D
 var failure_layer:Node2D
+var recovery_layer: Node2D
 
 func _ready() -> void:
 	terrain_masks=JSON.parse_string(FileAccess.get_file_as_string("res://assets/terrain-masks.json")).masks
@@ -119,6 +120,10 @@ func _ready() -> void:
 	failure_layer.world = self
 	failure_layer.z_index = 4
 	add_child(failure_layer)
+	recovery_layer = preload("res://native_recovery_layer.gd").new()
+	recovery_layer.world = self
+	recovery_layer.z_index = 4
+	add_child(recovery_layer)
 	call_deferred("_resize_camera")
 
 func _resize_camera() -> void:
@@ -142,6 +147,7 @@ func set_battle(value: Dictionary) -> void:
 	visual_frame=-1
 	if str(value.get("id",""))!=battle_id or int(value.get("map", 0)) != map_id:
 		failure_layer.clear_smoke()
+		recovery_layer.clear_effects()
 		battle_id=str(value.get("id",""))
 		map_id = int(value.map)
 		render_positions.clear()
@@ -400,6 +406,7 @@ func _sync_supply_numbers() -> void:
 		if id <= last_supply_id:
 			continue
 		last_supply_id = id
+		recovery_layer.receive_supply(cue)
 		var seat := int(cue.seat)
 		supply_numbers = supply_numbers.filter(func(previous: Dictionary) -> bool: return int(previous.seat) != seat)
 		if now - float(cue.at) < _number_duration(int(cue.amount)) and _number_visible(seat):
@@ -496,6 +503,10 @@ func screen(point: Vector2) -> Vector2:
 func explode(at: Vector2, radius: float, kind: String, projectile := 0, age := 0.0) -> void:
 	if kind=="teleport":
 		if age<.4:effect.emit("explosion",projectile)
+		return
+	if kind == "heal":
+		recovery_layer.receive_impact(at, age)
+		if age < .4: effect.emit("native", 56)
 		return
 	if age>=4:return
 	explosions.append({"position": at, "radius": radius, "age": age, "kind": kind,"projectile":projectile})

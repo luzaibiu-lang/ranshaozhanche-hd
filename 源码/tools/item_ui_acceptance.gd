@@ -64,7 +64,10 @@ func _run() -> void:
 	app.password.text="qa-only-895432"
 	app.confirmation.text="qa-only-895432"
 	await click(app.skin.find_child("Login",true,false))
-	if not await wait_for(func():return app.scene=="lobby","registered through real form"):return
+	if not await wait_for(func():return app.scene == "channel" and is_instance_valid(app.channel_gate) and app.channel_gate.phase == "select", "registration opens the channel chooser"):return
+	await click(app.channel_gate.row)
+	await click(app.channel_gate.enter_button)
+	if not await wait_for(func():return app.scene == "lobby" and not is_instance_valid(app.channel_gate), "channel door opens into the interactive lobby"):return
 	var guest:=preload("res://net.gd").new(app)
 	guest.endpoint=app.net.endpoint
 	var response:Dictionary=await guest.request("/api/register",{"name":str(options.name)+"b","password":"qa-only-895432"})
@@ -89,7 +92,7 @@ func _run() -> void:
 	for child in app.get_children():
 		if child is ConfirmationDialog and child.visible:form=child
 	await click(form.get_ok_button())
-	if not await wait_for(func():return app.scene=="room","room created"):return
+	if not await wait_for(func():return app.scene == "room" and not is_instance_valid(app.page_transition), "created room is interactive after the door opens"):return
 	await app._command({"action":"settings","map":9})
 	response=await guest.request("/api/command",{"action":"join","room":int(app.snapshot.room.id)})
 	if not check(response.get("room") is Dictionary,"second human joined"):return
@@ -107,18 +110,36 @@ func _run() -> void:
 					await guest.request("/api/command",{"action":"pass","generation":int(battle.generation)})
 			await create_timer(0.08).timeout
 		if not check(app._my_turn(),"turn reached item "+str(item_ids[slot])):return
+		var actor_seat := int(app._battle_data().active)
+		var before_supply := int(app.view.last_supply_id)
+		var before_item_sound := int(app.sound.played_cues.count("useitem.wav"))
 		var focused:=root.gui_get_focus_owner()
 		if focused:focused.release_focus()
-		var key:=InputEventKey.new()
-		key.physical_keycode=KEY_F5+slot
-		key.pressed=true
-		root.push_input(key)
+		for pressed in [true, false]:
+			var key := InputEventKey.new()
+			key.physical_keycode = KEY_F5 + slot
+			key.pressed = pressed
+			root.push_input(key)
 		if not await wait_for(func():return int(app.profile.inventory[slot])==0,"actual F-key consumes item "+str(item_ids[slot])):return
 		if supplies:
 			var amount: int = [50, 100, 40][slot]
-			if not await wait_for(func():return app.view.supply_numbers.any(func(cue: Dictionary) -> bool: return int(cue.amount) == amount), "live battle rendered supply +" + str(amount)):return
-			if not check(app.view.supply_numbers.size() == 1, "the newest supply number replaces the old one for this tank"):return
+			var matches_cue := func(cue: Dictionary) -> bool:
+				return int(cue.id) > before_supply and int(cue.seat) == actor_seat and int(cue.amount) == amount
+			if not await wait_for(func():return app.view.supply_numbers.any(matches_cue), "live battle rendered supply +" + str(amount)):return
+			var numbers: Array = app.view.supply_numbers.filter(func(cue: Dictionary) -> bool: return int(cue.seat) == actor_seat)
+			if not check(numbers.size() == 1, "the newest supply number replaces the old one for this tank"):return
+			var cue: Dictionary = numbers[0]
+			var layer: Node2D = app.view.recovery_layer
+			var matches_burst := func(burst: Dictionary) -> bool: return int(burst.id) == int(cue.id)
+			var bursts: Array = layer.bursts.filter(matches_burst)
+			if not check(bool(cue.get("item_effect", false)) and bursts.size() == 1 and bursts[0].sparks.size() == 20, "the server cue starts one burst with 20 original sparks"):return
+			var anchor := Vector2(float(cue.x), float(cue.y))
+			if not await wait_for(func():return layer.visible_samples().any(func(sample: Dictionary) -> bool: return sample.effect == "Effect30" and sample.position == anchor), "the original ring is drawable at the tank position"):return
 			await screenshot("supply-" + str(amount))
+			app.view.set_battle(app._battle_data())
+			app.view._process(0.0)
+			if not check(layer.bursts.filter(matches_burst).size() == 1, "a repeated battle snapshot keeps a single recovery burst"):return
+			if not check(app.sound.played_cues.count("useitem.wav") == before_item_sound + 1, "item use plays the original sound once"):return
 			continue
 		await app._battle_command({"action":"fire","angle":float(app.aim),"aim_mode":"native","power":0.1 if slot==2 else 0.45,"weapon":0})
 		var projectile:int=[100,101,102,104][slot]

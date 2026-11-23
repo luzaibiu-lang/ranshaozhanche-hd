@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 func TestOriginalMapIdentityAndWeaponCosts(t *testing.T) {
 	// Names/IDs come from the native switch table, not an invented catalogue.
@@ -62,9 +65,12 @@ func TestSupplyFeedbackTracksNominalAmountAndEligibleUnits(t *testing.T) {
 		if cue.Amount != 40 || cue.Fuel || cue.ID != uint64(i+1) || cue.At <= 0 {
 			t.Fatalf("invalid health feedback: %+v", cue)
 		}
+		if cue.ItemEffect != (cue.Seat == u.Seat) {
+			t.Fatalf("team recovery must place one native item burst on its user: %+v", cue)
+		}
 	}
 	b.useItem(5)
-	if u.HP != u.MaxHP || b.Supplies[2].Amount != 50 {
+	if u.HP != u.MaxHP || b.Supplies[2].Amount != 50 || !b.Supplies[2].ItemEffect {
 		t.Fatal("full health must stay capped while retaining the original +50 feedback")
 	}
 	u.SP = 140
@@ -72,6 +78,30 @@ func TestSupplyFeedbackTracksNominalAmountAndEligibleUnits(t *testing.T) {
 	b.useItem(8)
 	if u.SP != 180 || u.Move != float64(180)/(vehicle(u.Vehicle).MoveCost*.5) || !b.Supplies[3].Fuel || b.Supplies[3].Amount != 40 {
 		t.Fatal("fuel feedback must preserve the engine's discounted movement cost")
+	}
+	b.useItem(11)
+	b.useItem(6)
+	snapshot, err := json.Marshal(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var wire struct {
+		Supplies []struct {
+			ItemEffect *bool `json:"item_effect"`
+		} `json:"supplies"`
+	}
+	if err := json.Unmarshal(snapshot, &wire); err != nil {
+		t.Fatal(err)
+	}
+	// An omitted flag plays the legacy recovery effect in the client.
+	wantEffects := []bool{true, false, true, false, false, false, true}
+	if len(wire.Supplies) != len(wantEffects) {
+		t.Fatalf("got %d supply cues, want %d", len(wire.Supplies), len(wantEffects))
+	}
+	for i, want := range wantEffects {
+		if got := wire.Supplies[i].ItemEffect; got == nil || *got != want {
+			t.Errorf("supply cue %d must encode item_effect:%t", i+1, want)
+		}
 	}
 	b.Wind = 0
 	b.useItem(13)

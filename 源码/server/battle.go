@@ -620,6 +620,8 @@ type SupplyCue struct {
 	Y      float64 `json:"y"`
 	Amount int     `json:"amount"`
 	Fuel   bool    `json:"fuel,omitempty"`
+	// The native item burst belongs to the user, including team supplies.
+	ItemEffect bool `json:"item_effect"`
 }
 
 func (b *Battle) restoreSupply(u *Unit, amount int, fuel bool) {
@@ -634,7 +636,7 @@ func (b *Battle) restoreSupply(u *Unit, amount int, fuel bool) {
 	for len(b.Supplies) > 0 && at-b.Supplies[0].At > 4 {
 		b.Supplies = b.Supplies[1:]
 	}
-	b.Supplies = append(b.Supplies, SupplyCue{ID: b.supplyID, At: at, Seat: u.Seat, X: u.X, Y: u.Y, Amount: amount, Fuel: fuel})
+	b.Supplies = append(b.Supplies, SupplyCue{ID: b.supplyID, At: at, Seat: u.Seat, X: u.X, Y: u.Y, Amount: amount, Fuel: fuel, ItemEffect: !fuel && u == b.active()})
 }
 
 func (b *Battle) useItem(id int) bool {
