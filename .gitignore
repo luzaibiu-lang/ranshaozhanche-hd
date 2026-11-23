@@ -25,4 +25,6 @@
 /服务端/
 **/connection.json
 **/credentials.dat
+**/account.dat
+**/session.dat
 **/hd-public.crt

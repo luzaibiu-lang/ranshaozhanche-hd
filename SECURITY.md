@@ -2,6 +2,8 @@
 
 安全修复以最新 `main` 分支为基线，旧发布版本不提供独立长期维护承诺。
 
+Windows 登录器在玩家勾选记住密码并登录后，以当前 Windows 用户的 DPAPI 密钥保护凭据。密码和会话分别保存在 `%LOCALAPPDATA%\BurningChariotHD\account.dat` 和同目录的 `session.dat`。取消勾选会立即删除这两份文件，并保留账号文本。
+
 如果问题涉及账号、会话、GM 权限、任意文件写入或更新包校验，请通过本仓库 **Security → Advisories → Report a vulnerability** 提交私密报告，不要先公开可利用细节或真实凭据。
 
 报告应包含受影响版本、最小复现、影响范围和必要的去敏证据。测试请使用自己的部署和账号。

@@ -3,8 +3,8 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-// Per-Windows-user credential vault. Only a revocable login token is retained;
-// account passwords are never written to disk or passed on the command line.
+// Per-Windows-user session vault. The launcher's opt-in password record is
+// protected separately with DPAPI; neither credential uses command-line args.
 internal static class Vault
 {
     private static readonly byte[] Entropy = Encoding.UTF8.GetBytes("BurningChariotHD.Session.v1");

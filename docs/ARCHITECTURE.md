@@ -5,7 +5,7 @@
 | 模块 | 代码入口 | 负责内容 |
 | --- | --- | --- |
 | Windows 登录器 | [Launcher.cs](../源码/launcher/Launcher.cs)、[LauncherWindow.cs](../源码/launcher/LauncherWindow.cs) | 注册、登录、增量更新、启动游戏 |
-| 凭据工具 | [Vault.cs](../源码/launcher/Vault.cs) | 通过 Windows DPAPI 在当前用户范围保存凭据，并交接一次性启动令牌 |
+| 凭据工具 | [LauncherWindow.cs](../源码/launcher/LauncherWindow.cs)、[Vault.cs](../源码/launcher/Vault.cs) | 使用 CurrentUser DPAPI 加密密码与会话，分别写入 `%LOCALAPPDATA%\BurningChariotHD` 下的 `account.dat` 和 `session.dat`，并交接一次性启动令牌 |
 | 游戏客户端 | [main.gd](../源码/client/main.gd)、[net.gd](../源码/client/net.gd) | 大厅、房间、商城、战斗输入和状态同步 |
 | 战场表现 | [world_view.gd](../源码/client/world_view.gd)、[battle_hud.gd](../源码/client/battle_hud.gd) | 摄像机、地形绘制、炮弹和战车动画、音画反馈 |
 | 网络与存储 | [main.go](../源码/server/main.go)、[store.go](../源码/server/store.go) | HTTP 接口、会话、账号与背包的 SQLite 持久化 |

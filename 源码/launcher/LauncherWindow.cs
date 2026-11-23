@@ -13,6 +13,12 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 
+internal sealed class LauncherRequestException : IOException
+{
+    internal readonly int StatusCode;
+    internal LauncherRequestException(int statusCode,string message):base(message){StatusCode=statusCode;}
+}
+
 internal static class LauncherAccount
 {
     internal static readonly JavaScriptSerializer Json = new JavaScriptSerializer();
@@ -26,13 +32,17 @@ internal static class LauncherAccount
     }
     internal static void Save(string name,bool remember,int width,int height)
     {
-        var values=Settings();values["username"]=name;values["remember"]=remember;
+        var values=Settings();values["username"]=name;values["remember"]=remember;values["endpoint"]=Launcher.Origin;
         if(width>0)values["window_size"]=new int[]{width,height};else values.Remove("window_size");
         Directory.CreateDirectory(DataRoot);File.WriteAllText(Path.Combine(DataRoot,"settings.json"),Json.Serialize(values),Encoding.UTF8);
     }
     internal static string ReadToken()
     {
-        try {return Encoding.UTF8.GetString(ProtectedData.Unprotect(File.ReadAllBytes(Path.Combine(VaultRoot,"session.dat")),Entropy,DataProtectionScope.CurrentUser));}
+        try {
+            var settings=Settings();
+            if(settings.ContainsKey("endpoint")&&!String.Equals(new Uri(Convert.ToString(settings["endpoint"])).GetLeftPart(UriPartial.Authority),Launcher.Origin,StringComparison.OrdinalIgnoreCase))return "";
+            return Encoding.UTF8.GetString(ProtectedData.Unprotect(File.ReadAllBytes(Path.Combine(VaultRoot,"session.dat")),Entropy,DataProtectionScope.CurrentUser));
+        }
         catch {return "";}
     }
     internal static void Remember(string token,bool remember)
@@ -40,6 +50,32 @@ internal static class LauncherAccount
         Directory.CreateDirectory(VaultRoot);string path=Path.Combine(VaultRoot,"session.dat");
         if(!remember){if(File.Exists(path))File.Delete(path);return;}
         WriteProtected(path,token);
+    }
+    internal static Dictionary<string,object> ReadAccount(string name)
+    {
+        try {
+            byte[] plain=ProtectedData.Unprotect(File.ReadAllBytes(Path.Combine(VaultRoot,"account.dat")),Entropy,DataProtectionScope.CurrentUser);
+            try {
+                var value=Json.Deserialize<Dictionary<string,object>>(Encoding.UTF8.GetString(plain));
+                if(value!=null&&value.ContainsKey("username")&&value.ContainsKey("password")&&value.ContainsKey("origin")&&
+                   String.Equals(Convert.ToString(value["username"]),name,StringComparison.OrdinalIgnoreCase)&&
+                   String.Equals(Convert.ToString(value["origin"]),Launcher.Origin,StringComparison.Ordinal))return value;
+            } finally {Array.Clear(plain,0,plain.Length);}
+        } catch {}
+        return new Dictionary<string,object>();
+    }
+    internal static void RememberAccount(string name,string password,bool remember)
+    {
+        string path=Path.Combine(VaultRoot,"account.dat");
+        if(!remember){if(File.Exists(path))File.Delete(path);return;}
+        // An older client may have only a session. Preserve a matching saved
+        // password when the current login used that session without typing.
+        if(String.IsNullOrEmpty(password)){
+            if(ReadAccount(name).Count==0&&File.Exists(path))File.Delete(path);
+            return;
+        }
+        Directory.CreateDirectory(VaultRoot);
+        WriteProtected(path,Json.Serialize(new {username=name,password=password,origin=Launcher.Origin}));
     }
     private static void WriteProtected(string path,string value)
     {
@@ -65,10 +101,10 @@ internal static class LauncherAccount
         if(payload!=null){request.Method="POST";request.ContentType="application/json; charset=utf-8";byte[] data=Encoding.UTF8.GetBytes(Json.Serialize(payload));using(var stream=request.GetRequestStream())stream.Write(data,0,data.Length);}
         HttpWebResponse response;
         try {response=(HttpWebResponse)request.GetResponse();}
-        catch(WebException e){response=e.Response as HttpWebResponse;if(response==null)throw new IOException("暂时无法连接游戏服务，请稍后重试。");}
+        catch(WebException e){response=e.Response as HttpWebResponse;if(response==null)throw new LauncherRequestException(0,"暂时无法连接游戏服务，请稍后重试。");}
         using(response)using(var reader=new StreamReader(response.GetResponseStream(),Encoding.UTF8)){
             var result=Json.Deserialize<Dictionary<string,object>>(reader.ReadToEnd());
-            if((int)response.StatusCode>=400)throw new IOException(result.ContainsKey("error")?Convert.ToString(result["error"]):"操作未完成，请重试。");return result;
+            if((int)response.StatusCode>=400)throw new LauncherRequestException((int)response.StatusCode,result.ContainsKey("error")?Convert.ToString(result["error"]):"操作未完成，请重试。");return result;
         }
     }
 }
@@ -149,7 +185,7 @@ internal sealed class LauncherWindow:Form
     private readonly MetalButton submit=new MetalButton(),toggle=new MetalButton();
     private readonly Label note=new Label(),confirmLabel=new Label(),optionsLabel=new Label();
     private readonly ProgressBar progress=new ProgressBar();
-    private string session="";private bool registering,busy,loading=true;private readonly string bootstrap;
+    private string session="";private bool registering,busy,loading=true,restoringCredentials;private readonly string bootstrap;
     internal int Result;
     static LauncherWindow(){try{SetProcessDPIAware();}catch(EntryPointNotFoundException){}}
     internal LauncherWindow(string bootstrapId,string qaFile)
@@ -169,14 +205,23 @@ internal sealed class LauncherWindow:Form
         resolution.Items.AddRange(new object[]{"窗口：自动适配屏幕","窗口：1280 × 720","窗口：1600 × 900","窗口：1920 × 1080"});resolution.SelectedIndex=0;Controls.Add(resolution);
         resolution.BackColor=Color.White;resolution.ForeColor=Color.FromArgb(46,57,74);Place(resolution,584,301,272,33,10);
         submit.Name="StartGame";submit.Text="开始游戏";submit.Primary=true;submit.Click+=async(s,e)=>await Start();Place(submit,400,368,456,50,13);
-        toggle.Name="ToggleRegistration";toggle.Text="注册账号";toggle.Click+=(s,e)=>{if(!busy){registering=!registering;session="";RefreshMode();}};Place(toggle,400,432,220,38,10);
+        toggle.Name="ToggleRegistration";toggle.Text="注册账号";toggle.Click+=(s,e)=>{if(!busy){registering=!registering;session="";RefreshMode();if(!registering)RestorePassword();}};Place(toggle,400,432,220,38,10);
         var close=new MetalButton();close.Name="ExitLauncher";close.Text="退出";close.Click+=(s,e)=>Close();Place(close,636,432,220,38,10);
         note.BackColor=Color.Transparent;note.ForeColor=Color.FromArgb(85,102,123);note.TextAlign=ContentAlignment.MiddleLeft;Place(note,400,507,456,56,10);
         progress.Visible=false;Place(progress,400,581,456,5,9);
         username.TabIndex=0;password.TabIndex=1;confirmation.TabIndex=2;remember.TabIndex=3;resolution.TabIndex=4;submit.TabIndex=5;toggle.TabIndex=6;close.TabIndex=7;
         var settings=LauncherAccount.Settings();username.Text=settings.ContainsKey("username")?Convert.ToString(settings["username"]):"";remember.Checked=settings.ContainsKey("remember")&&Convert.ToBoolean(settings["remember"]);
         if(settings.ContainsKey("window_size")){var sizes=settings["window_size"] as System.Collections.IList;if(sizes!=null&&sizes.Count>=2)for(int i=1;i<4;i++)if(Convert.ToInt32(sizes[0])==new int[]{0,1280,1600,1920}[i])resolution.SelectedIndex=i;}
-        username.TextChanged+=(s,e)=>{session="";};password.TextChanged+=(s,e)=>{if(password.Text.Length>0)session="";};
+        username.TextChanged+=(s,e)=>{if(!restoringCredentials){session="";password.Clear();}};
+        password.TextChanged+=(s,e)=>{if(!restoringCredentials&&password.Text.Length>0)session="";};
+        remember.CheckedChanged+=(s,e)=>{
+            if(loading||remember.Checked)return;
+            try {
+                LauncherAccount.Remember("",false);LauncherAccount.RememberAccount("","",false);
+                int index=resolution.SelectedIndex;
+                LauncherAccount.Save(username.Text.Trim(),false,new int[]{0,1280,1600,1920}[index],new int[]{0,720,900,1080}[index]);
+            } catch(Exception){note.Text="无法清除本机登录信息，请检查用户目录权限后重试。";}
+        };
         AcceptButton=submit;RefreshMode();FitDisplay();Shown+=async(s,e)=>{
             await LoadSession();
             if(!String.IsNullOrEmpty(qaFile))await VerifyRealControls(qaFile);
@@ -227,16 +272,35 @@ internal sealed class LauncherWindow:Form
         submit.Text=value?"请稍候…":registering?"注册并开始游戏":"开始游戏";
         note.Text=message;note.ForeColor=Color.FromArgb(85,102,123);progress.Visible=value;progress.Style=value?ProgressBarStyle.Marquee:ProgressBarStyle.Blocks;
     }
+    private void RestorePassword()
+    {
+        if(registering||!remember.Checked)return;
+        var account=LauncherAccount.ReadAccount(username.Text.Trim());
+        if(!account.ContainsKey("password"))return;
+        restoringCredentials=true;
+        try {password.Text=Convert.ToString(account["password"]);}finally{restoringCredentials=false;}
+    }
     private async Task LoadSession()
     {
         Busy(true,"正在连接游戏服务…");
         try {
+            RestorePassword();
             string saved=remember.Checked?LauncherAccount.ReadToken():"";
+            session=saved;
             var state=await Task.Run(()=>LauncherAccount.Request(String.IsNullOrEmpty(saved)?"/health":"/api/state",null,saved));
             if(IsDisposed)return;
-            if(!String.IsNullOrEmpty(saved)&&state.ContainsKey("profile")){var p=(Dictionary<string,object>)state["profile"];username.Text=Convert.ToString(p["name"]);session=saved;Busy(false,"已记住登录，点击开始游戏。");}
-            else Busy(false,"服务已连接，准备就绪。");
-        } catch(Exception){if(!IsDisposed)Busy(false,"请输入账号和密码，点击开始连接。");}
+            if(!String.IsNullOrEmpty(saved)&&state.ContainsKey("profile")){
+                var p=(Dictionary<string,object>)state["profile"];
+                string name=Convert.ToString(p["name"]);
+                if(!String.Equals(username.Text.Trim(),name,StringComparison.OrdinalIgnoreCase)){username.Text=name;RestorePassword();}
+                session=saved;Busy(false,"已记住登录，点击开始游戏。");
+            } else Busy(false,password.Text.Length>0?"已记住密码，点击开始游戏。":"服务已连接，准备就绪。");
+        } catch(LauncherRequestException error){
+            if(!IsDisposed){
+                if(error.StatusCode==401){session="";LauncherAccount.Remember("",false);Busy(false,password.Text.Length>0?"登录已过期，已保留密码，点击开始重新登录。":"登录已过期，请重新输入密码。");}
+                else Busy(false,"暂时无法连接，已保留登录信息，点击开始重试。");
+            }
+        } catch(Exception){if(!IsDisposed)Busy(false,"暂时无法连接，已保留登录信息，点击开始重试。");}
         loading=false;
     }
     private async Task Start()
@@ -247,12 +311,22 @@ internal sealed class LauncherWindow:Form
         string name=username.Text.Trim(),plain=password.Text,token=session;bool keep=remember.Checked;bool create=registering;int index=resolution.SelectedIndex;
         Busy(true,create?"正在创建账号…":"正在登录…");
         try {
+            if(!create&&token.Length>0){
+                try {await Task.Run(()=>LauncherAccount.Request("/api/state",null,token));}
+                catch(LauncherRequestException error){
+                    if(error.StatusCode!=401)throw;
+                    token="";session="";LauncherAccount.Remember("",false);
+                    if(plain.Length==0)throw new IOException("登录已过期，请重新输入密码。");
+                }
+            }
             if(create||token.Length==0){var result=await Task.Run(()=>LauncherAccount.Request(create?"/api/register":"/api/login",new {name=name,password=plain},""));token=Convert.ToString(result["token"]);}
             if(IsDisposed)return;
             // An update failure must retry the authenticated session, rather
             // than submit the completed registration again with empty fields.
-            session=token;registering=false;RefreshMode();Busy(true,"正在检查游戏更新…");
-            LauncherAccount.Save(name,keep,new int[]{0,1280,1600,1920}[index],new int[]{0,720,900,1080}[index]);LauncherAccount.Remember(token,keep);
+            session=token;
+            LauncherAccount.RememberAccount(name,plain,keep);LauncherAccount.Remember(token,keep);
+            LauncherAccount.Save(name,keep,new int[]{0,1280,1600,1920}[index],new int[]{0,720,900,1080}[index]);
+            registering=false;RefreshMode();Busy(true,"正在检查游戏更新…");
             if(!await Task.Run(()=>new Updater(null).HostMatches())){
                 if(String.IsNullOrEmpty(bootstrap))throw new IOException("启动器需要更新，请从燃烧战车.exe 重新打开。");
                 string bootstrapTicket=LauncherAccount.Handoff(token);

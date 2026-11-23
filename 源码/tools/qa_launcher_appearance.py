@@ -18,8 +18,8 @@ requests_seen = []
 class HealthOnly(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         requests_seen.append(self.command + ' ' + self.path)
-        data = json.dumps({'edition': 'hd'}).encode()
-        self.send_response(200 if self.path == '/health' else 404)
+        data = json.dumps({'profile': {'name': 'qa_visual'}} if self.path == '/api/state' else {'edition': 'hd'}).encode()
+        self.send_response(200 if self.path in ['/health', '/api/state'] else 404)
         self.send_header('Content-Type', 'application/json')
         self.send_header('Content-Length', str(len(data)))
         self.end_headers()
@@ -93,7 +93,7 @@ try:
     assert result['exit_code'] == 0, (out / 'exception.txt').read_text('utf8') if (out / 'exception.txt').exists() else result
     report = json.loads((out / 'appearance-report.json').read_text('utf-8-sig'))
     assert report['passed']
-    assert requests_seen == ['GET /health', 'POST /api/register', 'GET /updates/manifest.json', 'GET /updates/manifest.json'], requests_seen
+    assert requests_seen == ['GET /health', 'POST /api/register', 'GET /updates/manifest.json', 'GET /api/state', 'GET /updates/manifest.json'], requests_seen
     assert not list(profile.rglob('session.dat'))
     assert len(list(profile.rglob('settings.json'))) == 1
     report.update(result, evidence=str(out), requests=requests_seen, no_accounts_created=True)
