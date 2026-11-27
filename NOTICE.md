@@ -7,6 +7,7 @@
 | 新编写的 Go、GDScript、C#、Python 代码及项目文档 | 除另有标注外，使用根目录 MIT License |
 | `源码/client/assets/` 中的原游戏衍生素材 | 图像、音乐、音效、动画与地图保留原权利人的权利；不纳入 MIT 授权 |
 | `源码/docs/` 中提取的原版数据与索引 | 记录兼容性核对依据；不代表对原游戏内容的所有权或再许可 |
+| Noto Sans SC 字体 | 使用 SIL Open Font License 1.1，见随字体附带的 [OFL.txt](源码/client/assets/fonts/OFL.txt) |
 | 第三方引擎、库和工具 | 遵循各自许可证，见 [THIRD_PARTY.md](docs/THIRD_PARTY.md) |
 
 仓库未附带一份能够证明全部历史游戏素材均可自由再分发的统一许可。公开程序源码不会改变素材、商标或第三方软件的权利归属。需要纯自由许可发行版时，应替换未获充分授权的素材并保持资源接口兼容。

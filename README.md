@@ -6,10 +6,10 @@
 
 **保留经典战车与回合制炮战，用 Godot 与 Go 重建宽屏联机体验。**
 
-![Version 0.1.17](https://img.shields.io/badge/Version-0.1.17-blue)
+![Version 0.2.0](https://img.shields.io/badge/Version-0.2.0-blue)
 ![Godot 4.5.1](https://img.shields.io/badge/Godot-4.5.1-478CBF?logo=godotengine&logoColor=white)
 ![Go 1.26](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go&logoColor=white)
-![Platform Windows](https://img.shields.io/badge/Platform-Windows-0078D4)
+![Windows 与 Web](https://img.shields.io/badge/Platform-Windows%20%7C%20Web-0078D4)
 [![Code license MIT](https://img.shields.io/badge/Code-MIT-green)](LICENSE)
 
 [本地运行](docs/BUILDING.md) · [玩法与操作](docs/GAMEPLAY.md) · [架构](docs/ARCHITECTURE.md) · [自行部署](docs/DEPLOYMENT.md) · [参与贡献](CONTRIBUTING.md)
@@ -20,11 +20,11 @@
 
 ## 项目介绍
 
-燃烧战车 HD 是一个 Godot 4 客户端、Go 权威服务端和 C# Windows 登录器组成的经典炮战重建项目。目标是保留战车、地图、音乐和武器的游戏身份，改善现代显示器上的窗口适配、文字清晰度、动画与操作反馈。
+燃烧战车 HD 使用 Godot 4 同时构建 Windows 客户端和网页版。玩家在游戏内注册、登录并进入同一套 Go 对战服务。两个平台共享角色、背包、房间和战斗进度。
 
 游戏逻辑由本仓库源码实现，运行时无需旧客户端核心、DLL 注入或外置机器人窗口。账号、房间、AI、弹道、可破坏地形、回合、道具和结算由自己的服务端管理，适合本地研究和自行部署。
 
-当前源码版本为 **0.1.17**。已验收的发行平台是 **Windows x64**。Web、Android、iOS 仍待适配。各功能与原版的核对进度见[项目状态](docs/STATUS.md)。
+**0.2.0** 提供 Windows x64 和桌面浏览器入口。官网首页可直接进入高清网页版，也可下载 Windows 高清重制版或经典版。经典版使用自己的账号和房间。Android 和 iOS 原生客户端仍待适配。各功能与原版的核对进度见[项目状态](docs/STATUS.md)。
 
 ## 实际画面
 
@@ -48,7 +48,7 @@
 | AI 陪练 | 房间内设置简单／中等／困难 AI，可选择车型或随机 |
 | 战斗 | 服务端弹道和伤害计算、地形破坏、风向、技能、SP 与道具 |
 | 现代窗口 | 自适应宽屏、窗口缩放、最大化、F11 全屏、摄像机查看战场 |
-| Windows 入口 | 独立登录器、DPAPI 凭据存储、按文件校验的增量更新 |
+| Windows 入口 | 先校验并下载有变动的文件，再进入游戏内登录，可用 DPAPI 加密记住密码 |
 | 自建服务 | Go 服务、SQLite、可选 TLS、GM 管理页面和接口 |
 
 房间总人数上限为 8。A／B／C／D 的 16 个队伍席位是排列空间，不表示可以同时加入 16 人。
@@ -66,7 +66,7 @@ go run . --listen 127.0.0.1:18180 --assets ../client/assets --data ../../.tools/
 
 保留服务端终端，用 Godot 导入 `源码/client/project.godot`，运行项目并连接 `http://127.0.0.1:18180`。注册本地账号后创建房间，添加 AI 即可体验对局。公开源码默认使用本机服务，不依赖运营服务器。
 
-完整构建步骤、资源说明与常见问题见[构建指南](docs/BUILDING.md)。本仓库当前提供源码；预编译 Windows 客户端暂未作为公开 Release 发布。
+本机也可以同时启动网页和 Windows 客户端，用两个账号在同一张地图上联机。完整步骤见[构建指南](docs/BUILDING.md)，启动迁移、缓存机制与跨端验收边界见[多端说明](docs/MULTIPLATFORM.md)。
 
 ## 操作速查
 
@@ -87,7 +87,8 @@ go run . --listen 127.0.0.1:18180 --assets ../client/assets --data ../../.tools/
 ├── 源码/
 │   ├── client/       # Godot 游戏、UI、表现和资源
 │   ├── server/       # Go 账号、房间、AI、战斗、GM 与测试
-│   ├── launcher/     # C# Windows 登录器、更新器和凭据工具
+│   ├── launcher/     # C# Windows 启动、更新和凭据工具
+│   ├── web/          # 官网页面与 Web 导出 HTML 模板
 │   ├── tools/        # 构建、分包与本地验收工具
 │   └── docs/         # 规则提取表与资源索引
 ├── docs/             # 开发、部署、玩法、架构和项目状态

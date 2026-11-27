@@ -35,7 +35,7 @@ var notice: Label
 var player_count: Label
 var placements: Array[Dictionary] = []
 var art: Texture2D = preload("res://assets/legacy/TitleBack.png")
-var font: SystemFont
+var font: Font
 var factor := 1.0
 var extra := Vector2.ZERO
 var left_extra := 0.0
@@ -46,8 +46,7 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
-	font = SystemFont.new()
-	font.font_names = PackedStringArray(["Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"])
+	font = get_theme_default_font()
 	left = Control.new()
 	right = Control.new()
 	for leaf in [left, right]:

@@ -2,6 +2,7 @@ extends Control
 
 const OriginalSkin = preload("res://original_skin.gd")
 const LoginArt = preload("res://login_art.gd")
+const GamePlatform = preload("res://game_platform.gd")
 
 const Network = preload("res://net.gd")
 const Sound = preload("res://sound.gd")
@@ -86,7 +87,6 @@ var last_inventory_stamp := ""
 var shop_grid: GridContainer
 var native_shop: Control
 var launcher_ticket:=""
-var launched_session:=false
 var reveal_tween:Tween
 var reveal_layer:ColorRect
 var shop_room_id := 0
@@ -102,7 +102,7 @@ var skin: Control
 var aim_slider: HSlider
 var battle_hud: Control
 var hud_buttons := {}
-var ui_font: SystemFont
+var ui_font: Font
 var shop_gold: Label
 var quitting := false
 var auth_busy := false
@@ -124,9 +124,6 @@ func _ready() -> void:
 			qa_options[pair[0]] = pair[1]
 		elif argument.begins_with("--launcher-ticket="):
 			launcher_ticket=argument.trim_prefix("--launcher-ticket=")
-	if not qa and launcher_ticket.is_empty() and OS.get_executable_path().get_file()=="Game.exe" and not "--script" in OS.get_cmdline_args():
-		_return_to_launcher()
-		return
 	data_root = OS.get_environment("LOCALAPPDATA").path_join("BurningChariotHD") if OS.has_feature("windows") else OS.get_user_data_dir()
 	DirAccess.make_dir_recursive_absolute(data_root)
 	var path := data_root.path_join("settings.json")
@@ -136,15 +133,16 @@ func _ready() -> void:
 			config = saved
 	if qa:
 		config = {"endpoint": "http://127.0.0.1:18180", "music": 0.0, "effects": 0.0}
-	var connection_file := OS.get_executable_path().get_base_dir().path_join("connection.json")
-	if FileAccess.file_exists(connection_file) and not qa:
-		var settings: Variant = JSON.parse_string(FileAccess.get_file_as_string(connection_file))
-		if settings is Dictionary and settings.has("endpoint"):
-			config.endpoint = settings.endpoint
+	if OS.has_feature("windows") and not qa:
+		var connection_file := OS.get_executable_path().get_base_dir().path_join("connection.json")
+		if FileAccess.file_exists(connection_file):
+			var settings: Variant = JSON.parse_string(FileAccess.get_file_as_string(connection_file))
+			if settings is Dictionary and settings.has("endpoint"):
+				config.endpoint = settings.endpoint
 	if qa_options.has("endpoint"):
 		config.endpoint = qa_options.endpoint
 	net = Network.new(self)
-	net.endpoint = str(config.get("endpoint", "http://127.0.0.1:18180"))
+	net.endpoint = GamePlatform.endpoint(config)
 	sound = Sound.new()
 	add_child(sound)
 	sound.silent = qa
@@ -168,7 +166,11 @@ func _ready() -> void:
 		await _qa_run()
 	else:
 		var startup_generation := auth_generation
-		var saved_token := _vault("consume-handoff",launcher_ticket) if not launcher_ticket.is_empty() else _vault("read", "") if not auth_busy and auth_generation==0 else ""
+		var saved_token := ""
+		if not launcher_ticket.is_empty():
+			saved_token = _vault("consume-handoff", launcher_ticket)
+		elif OS.has_feature("web") and not auth_busy and auth_generation == 0:
+			saved_token = GamePlatform.browser_session("read")
 		if not saved_token.is_empty():
 			auth_busy=true
 			_set_login_busy(true)
@@ -176,9 +178,8 @@ func _ready() -> void:
 			var state: Dictionary = await net.request("/api/state")
 			if quitting or startup_generation!=auth_generation:return
 			if state.has("profile"):
-				launched_session=not launcher_ticket.is_empty()
 				_accept_state(state)
-				if launched_session and qa_options.has("proof") and net.endpoint.begins_with("http://127.0.0.1:"):
+				if not launcher_ticket.is_empty() and qa_options.has("proof") and net.endpoint.begins_with("http://127.0.0.1:"):
 					# Launcher QA now verifies the real chooser, not a page
 					# that skipped it on the first successful state reply.
 					while is_instance_valid(channel_gate) and channel_gate.phase != "select" and not quitting:
@@ -190,17 +191,11 @@ func _ready() -> void:
 					report.store_string(JSON.stringify({"scene":scene,"username":str(profile.name),"handoff_consumed":true,"viewport":str(get_viewport_rect().size)}))
 			else:
 				net.token = ""
+				if int(state.get("status", 0)) == 401: _vault("clear", "")
 			auth_busy=false
 			_set_login_busy(false)
-		if not launcher_ticket.is_empty() and not launched_session:_return_to_launcher()
-
-func _return_to_launcher() -> void:
-	var host:=OS.get_executable_path().get_base_dir().path_join("LauncherHost.exe")
-	if FileAccess.file_exists(host):OS.create_process(host,PackedStringArray(["--wait-game="+str(OS.get_process_id())]))
-	if is_instance_valid(sound):
-		await _quit()
-	else:
-		get_tree().quit()
+		if not launcher_ticket.is_empty() and profile.is_empty(): _show_login()
+		launcher_ticket = ""
 
 func _show_launch_loading() -> void:
 	_show_channel_gate()
@@ -311,6 +306,11 @@ func _refresh_channels() -> void:
 		if int(state.get("status", 0)) == 401: _logout()
 
 func _setup_window() -> void:
+	Engine.max_fps = int(config.get("fps", 120))
+	get_viewport().size_changed.connect(_on_resize)
+	if OS.has_feature("web"):
+		ui_scale = clampf(get_viewport_rect().size.y / 900.0, 0.8, 2.25)
+		return
 	var screen := DisplayServer.window_get_current_screen()
 	var work := DisplayServer.screen_get_usable_rect(screen)
 	var target := Vector2i(int(work.size.x * 0.88), int(work.size.y * 0.88))
@@ -325,15 +325,13 @@ func _setup_window() -> void:
 	DisplayServer.window_set_position(work.position + (work.size - target) / 2)
 	DisplayServer.window_set_title("燃烧战车 · 高清重制版")
 	ui_scale = clampf(float(target.y) / 900.0, 0.8, 2.25)
-	Engine.max_fps = int(config.get("fps", 120))
-	get_viewport().size_changed.connect(_on_resize)
 
 func _on_resize() -> void:
 	var next_scale := clampf(size.y / 900.0, 0.8, 2.25)
 	if absf(next_scale - ui_scale) > 0.05:
 		ui_scale = next_scale
 		_apply_theme()
-	if not full_screen:
+	if not full_screen and not OS.has_feature("web"):
 		var dimensions := DisplayServer.window_get_size()
 		config.window_size = [dimensions.x, dimensions.y]
 	_layout_toast()
@@ -353,8 +351,7 @@ func _style(color: Color, border := Color("2c4056"), padding := 12.0) -> StyleBo
 func _apply_theme() -> void:
 	var value := Theme.new()
 	if ui_font == null:
-		ui_font = SystemFont.new()
-		ui_font.font_names = PackedStringArray(["Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"])
+		ui_font = GamePlatform.ui_font()
 	value.default_font = ui_font
 	value.default_font_size = maxi(12, int(15*ui_scale))
 	for type in ["Button", "OptionButton"]:
@@ -582,6 +579,20 @@ func _show_login() -> void:
 	remember.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
 	skin.place(remember, Rect2(395, 299, 300, 25), 13)
 	remember.visible = not register_mode
+	if not register_mode and remember.button_pressed and OS.has_feature("windows") and not qa:
+		var record := _vault("read-account", "")
+		if not record.is_empty():
+			var account: Variant = JSON.parse_string(record)
+			if account is Dictionary and account.get("username") == username.text and account.get("origin") == net.endpoint:
+				password.text = str(account.get("password", ""))
+				username.text_changed.connect(func(_name): password.clear(), CONNECT_ONE_SHOT)
+	remember.toggled.connect(func(enabled: bool):
+		if not enabled:
+			_vault("clear", "")
+			_vault("clear-account", "")
+			config.remember = false
+			_save_config()
+	)
 	var submit: Button = skin.text_button("创 建 账 号" if register_mode else "登 录 游 戏", Rect2(395, 380 if register_mode else 337, 300, 43), _login)
 	submit.name = "Login"
 	submit.add_theme_stylebox_override("normal", OriginalSkin.box(Color("f6ae3f"), Color("f6ae3f")))
@@ -610,7 +621,7 @@ func _login() -> void:
 		return
 	var submitted_name := username.text.strip_edges()
 	var submitted_password := password.text
-	var remember_login := remember.button_pressed
+	var remember_login := remember.button_pressed and not register_mode
 	var registering := register_mode
 	auth_generation+=1
 	var generation := auth_generation
@@ -628,7 +639,14 @@ func _login() -> void:
 		if state.has("profile"):
 			config.username=submitted_name
 			config.remember=remember_login
-			_vault("write" if remember_login else "clear",net.token if remember_login else "")
+			if OS.has_feature("web"):
+				GamePlatform.browser_session("write" if remember_login else "tab", net.token)
+			elif remember_login:
+				_vault("write-account", JSON.stringify({"username": submitted_name, "password": submitted_password, "origin": net.endpoint}))
+				_vault("write", net.token)
+			else:
+				_vault("clear-account", "")
+				_vault("clear", "")
 			_save_config()
 			_accept_state(state)
 			toast("欢迎归队，" + str(profile.name), 3)
@@ -2013,6 +2031,9 @@ func _input(event: InputEvent) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		charging = false
+	elif what == NOTIFICATION_APPLICATION_FOCUS_IN and OS.has_feature("web") and net:
+		net.etag = ""
+		poll_elapsed = 0.3
 
 func _modal_open() -> bool:
 	for node in get_tree().get_nodes_in_group("native_modal"):
@@ -2022,6 +2043,10 @@ func _modal_open() -> bool:
 	return false
 
 func _toggle_fullscreen() -> void:
+	if OS.has_feature("web"):
+		var fullscreen := DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
+		return
 	if not full_screen:
 		old_size = DisplayServer.window_get_size()
 		old_position = DisplayServer.window_get_position()
@@ -2068,11 +2093,14 @@ func _settings() -> void:
 	fps.add_item("帧率上限：不限", 0)
 	fps.select(fps.get_item_index(int(config.get("fps", 120))))
 	body.add_child(fps)
-	_label("高清版服务器（重新登录后生效）", body, 13, MUTED)
 	var endpoint := LineEdit.new()
 	endpoint.text = net.endpoint
+	if not OS.has_feature("web"):
+		_label("高清版服务器（重新登录后生效）", body, 13, MUTED)
+	endpoint.visible = not OS.has_feature("web")
 	body.add_child(endpoint)
-	_label("窗口可拖动调整或直接最大化；F11 切换全屏。", body, 13, MUTED)
+	if not OS.has_feature("web"):
+		_label("窗口可拖动调整或直接最大化；F11 切换全屏。", body, 13, MUTED)
 	dialog.confirmed.connect(func():
 		config.music = music.value
 		config.effects = effects.value
@@ -2081,12 +2109,14 @@ func _settings() -> void:
 		config.fps = fps.get_selected_id()
 		Engine.max_fps = int(config.fps)
 		var address := endpoint.text.strip_edges().trim_suffix("/")
-		if address.begins_with("https://") or address.begins_with("http://127.0.0.1:") or address.begins_with("http://localhost:") or address.begins_with("http://192.168.") or address.begins_with("http://10."):
-			config.endpoint = address
-			if scene == "login":
-				net.endpoint = address
-		else:
-			toast("公网服务器请使用 HTTPS，局域网可使用内网地址")
+		if not OS.has_feature("web"):
+			if address.begins_with("https://") or address.begins_with("http://127.0.0.1:") or address.begins_with("http://localhost:") or address.begins_with("http://192.168.") or address.begins_with("http://10."):
+				config.endpoint = address
+				if scene == "login":
+					if address != net.endpoint and is_instance_valid(password): password.clear()
+					net.endpoint = address
+			else:
+				toast("公网服务器请使用 HTTPS，局域网可使用内网地址")
 		if is_instance_valid(view):
 			view.shake_enabled = bool(config.shake)
 			view.quality = int(config.quality)
@@ -2103,6 +2133,10 @@ func _save_config() -> void:
 
 func _vault(mode: String, value: String) -> String:
 	if qa:
+		return ""
+	if OS.has_feature("web"):
+		return GamePlatform.browser_session(mode, value)
+	if not OS.has_feature("windows"):
 		return ""
 	var helper := OS.get_executable_path().get_base_dir().path_join("Vault.exe")
 	if not FileAccess.file_exists(helper):
@@ -2132,9 +2166,6 @@ func _logout() -> void:
 	snapshot.clear()
 	profile.clear()
 	_vault("clear", "")
-	if launched_session:
-		_return_to_launcher()
-		return
 	register_mode=false
 	_show_login()
 	account_label.text = "欢迎归队"
@@ -2142,10 +2173,10 @@ func _logout() -> void:
 	command_busy=false
 
 func _ensure_server() -> void:
+	if not OS.has_feature("windows") or not net.endpoint.begins_with("http://127.0.0.1:18180"):
+		return
 	var response: Dictionary = await net.request("/health")
 	if response.get("edition") == "hd":
-		return
-	if not net.endpoint.begins_with("http://127.0.0.1:18180"):
 		return
 	var directory := OS.get_executable_path().get_base_dir()
 	var executable := directory.path_join("server/hdserver.exe")
@@ -2184,6 +2215,9 @@ func _quit() -> void:
 		net.root = null
 	if is_instance_valid(sound):
 		await sound.wait_for_shutdown()
+	if OS.has_feature("web"):
+		JavaScriptBridge.get_interface("window").location.assign("/")
+		return
 	get_tree().quit()
 	print("HD: SceneTree quit submitted") if qa else null
 

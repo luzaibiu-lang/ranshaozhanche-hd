@@ -32,7 +32,7 @@ func _ready() -> void:
 	var heading:=Node2D.new()
 	add_child(heading)
 	heading.draw.connect(func():
-		var font:=ThemeDB.fallback_font
+		var font:=get_theme_default_font()
 		heading.draw_string_outline(font,Vector2(20,38),caption,HORIZONTAL_ALIGNMENT_CENTER,size.x-40,18,3,Color.WHITE)
 		heading.draw_string(font,Vector2(20,38),caption,HORIZONTAL_ALIGNMENT_CENTER,size.x-40,18,Color("252525"))
 	)

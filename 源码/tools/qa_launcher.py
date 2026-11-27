@@ -1,77 +1,181 @@
-"""Drive only the launcher windows on their own inactive Windows desktop."""
-import argparse, json, os, pathlib, secrets, shutil, time
-import psutil, requests
+"""Test the real shipped bootstrap and legacy upgrade on a private Windows desktop."""
+import argparse
+from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
+import hashlib
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import json
+import os
+from pathlib import Path
+import secrets
+import shutil
+import subprocess
+import sys
+import threading
+import time
+from unittest.mock import patch
+
+import psutil
 from private_desktop import run
 
-ROOT=pathlib.Path(__file__).resolve().parents[2]
-p=argparse.ArgumentParser();p.add_argument('--client',type=pathlib.Path,required=True);p.add_argument('--endpoint',required=True);p.add_argument('--old-host',type=pathlib.Path);p.add_argument('--publication',type=pathlib.Path,default=ROOT/'.tools/qa/updates-013');a=p.parse_args()
-source=a.client.resolve();assert source.is_relative_to(ROOT)
-out=ROOT/('.tools/qa/launcher-'+secrets.token_hex(4));out.mkdir(parents=True)
-client=out/'client';shutil.copytree(source,client)
-(client/'connection.json').write_text(json.dumps({'endpoint':a.endpoint,'edition':'hd'}),encoding='utf8')
-profile=out/'profile';profile.mkdir();proof=out/'game-proof.json'
-os.environ.update(LOCALAPPDATA=str(profile),BCHD_VAULT_ROOT=str(profile/'BurningChariotHD'),BCHD_QA_SILENT='1',BCHD_QA_PROOF=str(proof))
-session=requests.Session();session.trust_env=False
-manifest=json.loads((client/'manifest.json').read_text('utf8'))
-# The isolated development service serves this exact verified candidate.
-name='qa_launch'+secrets.token_hex(3);password='qa-only-895432';checks=[];failures=[]
-def wait(predicate,seconds=30):
- end=time.monotonic()+seconds
- while time.monotonic()<end:
-  value=predicate()
-  if value:return value
-  time.sleep(.08)
- raise TimeoutError('Launcher UI did not reach expected state')
+ROOT = Path(__file__).resolve().parents[2]
+ENTRY = "燃烧战车.exe"
 
-def stop_owned_game():
- for process in psutil.process_iter(['exe']):
-  try:
-   if process.info['exe']and pathlib.Path(process.info['exe']).resolve()==(client/'Game.exe').resolve():process.terminate();process.wait(10)
-  except psutil.NoSuchProcess:pass
 
-fixture=a.publication.resolve()
-assert fixture.is_relative_to(ROOT/'.tools/qa')
-assert fixture.exists(),'Prepare the explicit loopback publication fixture first'
-original=(fixture/'manifest.json').read_bytes()
-connection=client/'connection.json'
-import hashlib
-entry=next(f for f in manifest['files']if f['path']=='connection.json')
-entry.update(size=connection.stat().st_size,sha256=hashlib.sha256(connection.read_bytes()).hexdigest())
-entry['url']='blobs/'+entry['sha256']
-shutil.copy2(connection,fixture/'blobs'/entry['sha256'])
-(fixture/'manifest.json').write_text(json.dumps(manifest),encoding='utf8')
-config=out/'controls.json'
-try:
- for stage in ['register','resume','bad-password']+(['upgrade']if a.old_host else[]):
-  if proof.exists():proof.unlink()
-  target_name=name+'u'if stage=='upgrade'else name
-  if stage=='upgrade':
-   assert a.old_host.resolve().is_relative_to(ROOT)
-   shutil.copy2(a.old_host,client/'LauncherHost.exe')
-  controls={'stage':'register'if stage=='upgrade'else stage,'name':target_name,'password':'intentionally-wrong'if stage=='bad-password'else password,'output':str(out)}
-  config.write_text(json.dumps(controls),encoding='utf8')
-  result=run([client/'燃烧战车.exe','--launcher-qa='+str(config)],out/('launcher-'+stage+'.log'),90)
-  assert result['exit_code']==0,(result,(out/'launcher-error.txt').read_text('utf8')if(out/'launcher-error.txt').exists()else'')
-  shutil.copy2(out/'launcher-login.png',out/('launcher-'+stage+'.png'))
-  if stage=='bad-password':
-   error=json.loads((out/'expected-error.json').read_text('utf-8-sig'))
-   assert error['enabled']and '错误'in error['message'],error
-   assert not proof.exists()
-   checks.append('incorrect password stays in launcher and enables retry')
-  else:
-   wait(lambda:proof.exists(),40)
-   value=json.loads(proof.read_text('utf8'));assert value['scene']=='channel'and value['username']==target_name,value
-   shutil.copy2(proof,out/('proof-'+stage+'.json'));shutil.copy2(str(proof)+'.png',out/('game-'+stage+'.png'))
-   checks.append('real launcher '+stage+' enters the channel chooser without second login')
-   assert not list((profile/'BurningChariotHD/handoff').glob('*.dat'))
-   assert (profile/'BurningChariotHD/session.dat').exists()
-   stop_owned_game()
-   if stage=='upgrade':
-    assert hashlib.sha256((client/'LauncherHost.exe').read_bytes()).hexdigest()==next(f['sha256']for f in manifest['files']if f['path']=='LauncherHost.exe')
-    checks.append('running launcher exits before bootstrap replaces it, then authenticated game starts')
- checks.extend(['encrypted one-use token handoff','source-themed launcher rendered','remembered token saved with Windows DPAPI'])
-finally:
- (fixture/'manifest.json').write_bytes(original)
- stop_owned_game()
-report={'passed':True,'private_desktop':True,'silent':True,'checks':checks,'evidence':str(out)}
-(out/'report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf8');print(json.dumps(report,ensure_ascii=False))
+def owned_game(client):
+    for process in psutil.process_iter(["name", "exe"]):
+        if process.info["name"] == "Game.exe" and process.info["exe"] and Path(process.info["exe"]).resolve() == client / "Game.exe":
+            return process
+    return None
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--client", required=True, type=Path)
+    parser.add_argument("--old-client", type=Path)
+    args = parser.parse_args()
+    source = args.client.resolve()
+    out = ROOT / ".tools/qa" / ("launcher-" + secrets.token_hex(5))
+    client = out / "client"
+    shutil.copytree(source, client)
+    manifest = json.loads((source / "manifest.json").read_text("utf8"))
+    blobs = {}
+    requests = Counter()
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *_):
+            pass
+
+        def do_GET(self):
+            requests[self.path] += 1
+            if self.path == "/updates/manifest.json":
+                data = json.dumps(manifest).encode()
+            elif self.path in blobs:
+                data = blobs[self.path].read_bytes()
+            elif self.path in ["/health", "/api/catalog"]:
+                data = b'{}'
+            else:
+                self.send_error(404)
+                return
+            self.send_response(200)
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers.get("Content-Length", 0)))
+            if self.path != "/api/register":
+                self.send_error(404)
+                return
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b'{"token":"isolated-migration-session"}')
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    origin = "http://127.0.0.1:" + str(server.server_port)
+    connection = client / "connection.json"
+    connection.write_text(json.dumps({"edition":"hd","endpoint":origin}), encoding="utf8")
+    for item in manifest["files"]:
+        path = source / item["path"]
+        if item["path"] == "connection.json":
+            path = connection
+            item["size"] = path.stat().st_size
+            item["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+            item["url"] = "blobs/" + item["sha256"]
+        blobs["/updates/" + item["url"]] = path
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    profile = out / "profile"
+    env = {"LOCALAPPDATA":str(profile),"APPDATA":str(profile),
+           "BCHD_VAULT_ROOT":str(profile / "BurningChariotHD"),"BCHD_QA_SILENT":"1"}
+    checks = {}
+
+    def launch(stage, arguments=(), *, require_ticket=False):
+        requests.clear()
+        finished = out / (stage + ".finish")
+        status = out / (stage + ".status")
+        worker = ThreadPoolExecutor(max_workers=1)
+        job = worker.submit(run, [sys.executable, Path(__file__).resolve(), "--hold-desktop",
+                                  status, finished, client / ENTRY, *arguments], out / (stage + ".log"), 90)
+        try:
+            deadline = time.monotonic() + 65
+            while time.monotonic() < deadline:
+                game = owned_game(client)
+                if game and requests["/api/catalog"] and status.exists():
+                    break
+                if job.done():
+                    raise AssertionError("Bootstrap worker exited early: " + str(job.result()))
+                time.sleep(0.15)
+            else:
+                raise AssertionError(f"Game did not reach catalog after {stage}: {requests}, wrapper exit={status.read_text() if status.exists() else 'running'}")
+            assert status.read_text() == "0"
+            command = game.cmdline()
+            assert "Dummy" in command, command[:4]
+            assert any(arg.startswith("--launcher-ticket=") for arg in command) == require_ticket
+            assert requests["/updates/manifest.json"] >= 1
+            downloads = sorted(k.rsplit("/",1)[1] for k in requests if k.startswith("/updates/blobs/"))
+            checks[stage] = {"blob_downloads": len(downloads), "game_requested_catalog": True}
+            if stage == "clean":
+                pid = game.pid
+                before = requests["/updates/manifest.json"]
+                repeat = run([client / ENTRY], out / "already-running.log", 10)
+                assert repeat["exit_code"] == 0 and owned_game(client).pid == pid
+                assert before == requests["/updates/manifest.json"]
+            return downloads
+        finally:
+            game = owned_game(client)
+            if game:
+                game.terminate()
+                game.wait(10)
+            finished.touch()
+            worker.shutdown(wait=True)
+
+    try:
+        with patch.dict(os.environ, env):
+            assert not launch("clean")
+            (client / "Game.pck").write_bytes(b"isolated broken file")
+            assert launch("repair") == [next(f["sha256"] for f in manifest["files"] if f["path"] == "Game.pck")]
+            # Appending a byte preserves this PE's loader behavior but forces a verified host swap.
+            with (client / "LauncherHost.exe").open("ab") as host:
+                host.write(b"qa")
+            assert len(launch("host-self-update")) == 1
+            assert not launch("repeat")
+            if args.old_client:
+                old = args.old_client.resolve()
+                for name in (ENTRY, "LauncherHost.exe"):
+                    shutil.copy2(old / name, client / name)
+                controls = out / "legacy-controls.json"
+                controls.write_text(json.dumps({"stage":"register","name":"legacy_qa","password":"qa-only-pass",
+                                                "output":str(out)}), encoding="utf8")
+                assert len(launch("legacy-first-update", ["--launcher-qa=" + str(controls)], require_ticket=True)) == 1
+                def vault(operation, value=""):
+                    return subprocess.run([str(client / "Vault.exe"),operation], input=value+"\n",
+                                          capture_output=True, text=True, encoding="utf8", check=True,
+                                          creationflags=subprocess.CREATE_NO_WINDOW).stdout.strip()
+                saved = json.loads(vault("read-account"))
+                assert saved == {"username":"legacy_qa","password":"qa-only-pass","origin":origin}
+                saved["password"] = "加密测试-0123"
+                assert vault("write-account", json.dumps(saved, ensure_ascii=False)) == "ok"
+                assert json.loads(vault("read-account")) == saved
+                assert saved["password"].encode() not in (profile / "BurningChariotHD/account.dat").read_bytes()
+                assert vault("clear-account") == "" and vault("read-account") == ""
+                checks["legacy-saved-password"] = {"read":True,"utf8_round_trip":True,"clear":True}
+                assert not launch("legacy-next-start")
+    finally:
+        server.shutdown()
+        server.server_close()
+    result = {"evidence":str(out),"tests":checks}
+    (out / "report.json").write_text(json.dumps(result, indent=2), encoding="utf8")
+    print(json.dumps(result))
+
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "--hold-desktop":
+        status, finished = map(Path, sys.argv[2:4])
+        executable = Path(sys.argv[4])
+        process = subprocess.run([str(executable), *sys.argv[5:]], cwd=executable.parent, timeout=45)
+        status.write_text(str(process.returncode))
+        deadline = time.monotonic() + 70
+        while not finished.exists() and time.monotonic() < deadline:
+            time.sleep(0.1)
+    else:
+        main()

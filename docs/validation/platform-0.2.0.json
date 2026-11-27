@@ -1,0 +1,117 @@
+{
+  "version": "0.2.0",
+  "date": "2026-11-27",
+  "shared_source": true,
+  "mixed_web_windows": {
+    "passed": true,
+    "checks": [
+      "browser login and room state",
+      "Windows room entry",
+      "map and room synchronized",
+      "native screenshot",
+      "battle, wind, vehicles, HP and SP synchronized",
+      "Windows displays browser chat",
+      "native chat",
+      "browser receives Windows chat",
+      "native screenshot",
+      "state agrees at turn 1",
+      "shot accepted from seat 0",
+      "state agrees at turn 2",
+      "native fire",
+      "shot accepted from seat 1",
+      "state agrees at turn 3",
+      "state agrees at turn 4",
+      "shot accepted from seat 0",
+      "state agrees at turn 5",
+      "native fire",
+      "shot accepted from seat 1",
+      "state agrees at turn 6",
+      "both clients receive settlement",
+      "native screenshot",
+      "native return",
+      "both clients back in the room",
+      "second match starts with fresh map, round and generation",
+      "native screenshot"
+    ],
+    "sampled_generations": [
+      {
+        "generation": 1,
+        "seat": 0,
+        "round": 1
+      },
+      {
+        "generation": 2,
+        "seat": 1,
+        "round": 1
+      },
+      {
+        "generation": 3,
+        "seat": 4,
+        "round": 1
+      },
+      {
+        "generation": 4,
+        "seat": 0,
+        "round": 2
+      },
+      {
+        "generation": 5,
+        "seat": 1,
+        "round": 2
+      },
+      {
+        "generation": 6,
+        "seat": 4,
+        "round": 2
+      }
+    ],
+    "native_exit_code": 0,
+    "browser_exceptions": []
+  },
+  "public_https": {
+    "passed": true,
+    "checks": [
+      "homepage HTTPS",
+      "网页版立即开玩 same site",
+      "网页版立即开玩 reachable",
+      "经典版下载 same site",
+      "经典版下载 reachable",
+      "高清重制版下载 same site",
+      "高清重制版下载 reachable",
+      "classic download path preserved",
+      "game.wasm MIME compression cache",
+      "game.pck MIME compression cache",
+      "game.js MIME compression cache",
+      "game canvas suppresses browser context menu",
+      "canvas follows window size",
+      "in-game registration reaches production API",
+      "lobby exit reached after channel selection",
+      "returning player can log in",
+      "no uncaught JavaScript exceptions"
+    ],
+    "assets": {
+      "game.wasm": {
+        "content-type": "application/wasm",
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-length": "9295456"
+      },
+      "game.pck": {
+        "content-type": "application/octet-stream",
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-length": "127533032"
+      },
+      "game.js": {
+        "content-type": "application/javascript",
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-length": "77288"
+      }
+    }
+  },
+  "game_server_version": "0.1.17",
+  "game_services_restarted": false,
+  "classic_config_changed": false,
+  "other_nginx_sites_changed": false
+}

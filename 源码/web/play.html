@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>燃烧战车 · 高清网页版</title>
+  <!-- BUILD_BASE -->
+  $GODOT_HEAD_INCLUDE
+  <style>
+    * { box-sizing: border-box }
+    [hidden] { display:none !important }
+    html, body, main { margin:0; width:100%; height:100%; overflow:hidden; background:#101315; color:#fff; font-family:"Microsoft YaHei",system-ui,sans-serif }
+    main { position:relative }
+    canvas { display:block; width:100%; height:100%; outline:0; touch-action:none; user-select:none; -webkit-touch-callout:none }
+    #status { position:absolute; inset:0; display:grid; align-content:center; justify-items:start; padding:8%; background:#151a1d url("field.webp") center / cover; isolation:isolate }
+    #status::before { content:""; position:absolute; inset:0; z-index:-1; background:rgba(10,15,17,.78) }
+    h1 { margin:0; font-size:2.25rem; font-weight:850 }
+    #message { margin:1.1rem 0 .75rem; color:#f5e5d4 }
+    progress { width:min(26rem,100%); height:.4rem; accent-color:#ffb34a }
+    #recovery { margin-top:1rem; display:flex; align-items:center; gap:1.25rem }
+    button { padding:.55rem 1rem; font:inherit; font-weight:bold; border:1px solid #e2a14c; background:#ffc065; color:#171712; cursor:pointer }
+    a { color:#fff; text-underline-offset:3px }
+  </style>
+</head>
+<body>
+<main>
+  <canvas id="canvas" tabindex="0" aria-label="燃烧战车游戏画面"></canvas>
+  <section id="status" aria-live="polite">
+    <h1>燃烧战车</h1>
+    <p id="message">正在加载高清网页版…</p>
+    <progress id="progress" aria-label="游戏加载进度"></progress>
+    <div id="recovery" hidden><button id="retry" type="button">重新打开游戏</button><a href="/">返回官网</a></div>
+    <noscript>请启用 JavaScript 后刷新页面，或返回官网下载客户端。</noscript>
+  </section>
+</main>
+<script src="$GODOT_URL"></script>
+<script>
+  (() => {
+    const canvas = document.getElementById("canvas");
+    const overlay = document.getElementById("status");
+    const message = document.getElementById("message");
+    const progress = document.getElementById("progress");
+    const recovery = document.getElementById("recovery");
+    document.getElementById("retry").addEventListener("click", () => location.reload());
+    canvas.addEventListener("contextmenu", event => event.preventDefault());
+    canvas.addEventListener("pointerdown", () => canvas.focus({preventScroll:true}));
+    const gameKeys = new Set(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Space","PageUp","PageDown","Home","End"]);
+    canvas.addEventListener("keydown", event => {
+      if (!event.ctrlKey && !event.metaKey && !event.altKey && gameKeys.has(event.code)) event.preventDefault();
+    });
+    function notice(text) {
+      overlay.hidden = false;
+      progress.hidden = true;
+      recovery.hidden = false;
+      message.textContent = text;
+    }
+    async function start() {
+      if (typeof Engine === "undefined") throw new Error("engine script missing");
+      const missing = Engine.getMissingFeatures({threads:$GODOT_THREADS_ENABLED});
+      if (missing.length) {
+        notice("浏览器缺少 " + missing.join("、") + "。请启用硬件加速或使用最新版浏览器。");
+        return;
+      }
+      const engine = new Engine($GODOT_CONFIG);
+      await engine.startGame({
+        canvas,
+        onProgress(loaded,total) {
+          if (total > 0) {
+            progress.max = total;
+            progress.value = loaded;
+            const percent = Math.min(100,Math.floor(loaded / total * 100));
+            message.textContent = percent === 100 ? "正在启动游戏…" : "正在加载游戏资源 · " + percent + "%";
+          }
+        },
+        onExit(code) {
+          notice(code === 0 ? "游戏已退出。" : "游戏已停止，请重新打开。");
+        }
+      });
+      overlay.hidden = true;
+      canvas.focus({preventScroll:true});
+    }
+    start().catch(error => {
+      console.error("Game startup failed", error);
+      notice("游戏资源加载失败。请检查网络后重试。");
+    });
+  })();
+</script>
+</body>
+</html>

@@ -34,7 +34,21 @@ go build -trimpath -o ../../.tools/hdserver .
 
 “增量”指按文件更新，不是二进制差分。SHA-256 负责完整性，HTTPS 和发布目录访问控制负责发布来源的可信性。不要把数据库、GM 密码、凭据或 TLS 私钥放到更新目录。
 
-未提供更新目录时，可使用 Godot 编辑器直接连接游戏 API 开发；发行登录器需要可访问的更新清单。
+Windows 发行入口需要可访问的更新清单。开发时可使用 Godot 编辑器直接连接游戏 API。
+
+## 官网与网页版
+
+运行 [Web 构建命令](BUILDING.md) 后，将输出目录提供给同一 HTTPS 站点。主页为 `/index.html`，游戏入口为 `/hd/play/index.html`。按构建时配置的两个下载地址分别放置经典版和高清版 ZIP。
+
+| 路径 | 服务器配置 |
+| --- | --- |
+| `/` 与 `/hd/play/` | 返回相应 HTML，并用 `Cache-Control: no-cache` 重新验证 |
+| `/hd/play/builds/<hash>/` | 使用一年 immutable 缓存，保留旧目录以供已打开的页面继续加载 |
+| `/hd-api/api/` | 将 `/hd-api/` 前缀去掉，反向代理到 Windows 使用的同一个 Go 服务，保留 Authorization、ETag 和 If-None-Match |
+
+Web 服务器需识别 `.wasm` 为 `application/wasm`，识别 `.js` 为 JavaScript，并将 `.pck` 作为二进制发送。在 nginx 启用 `gzip_static on` 可直接使用构建时生成的压缩文件。更新时先发布资源目录并校验，再切换两个 HTML 入口。此版本使用单线程 Web 模板，可以在标准 HTTPS 站点运行。
+
+首访约传输 131 MiB 的压缩游戏资源。渲染和音频在玩家浏览器运行，服务器提供静态文件和对局 API。同一构建再次访问可以复用浏览器缓存，首次大量访问会带来相应的出口流量。
 
 ## 数据与升级
 

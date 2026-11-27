@@ -1,0 +1,41 @@
+:root { color-scheme:dark; font-family:"Microsoft YaHei",system-ui,sans-serif; color:#eff1e9; background:#171b1b }
+* { box-sizing:border-box }
+body { margin:0 }
+a { color:inherit; text-decoration:none }
+a:focus-visible { outline:3px solid #fff; outline-offset:4px }
+header { border-bottom:1px solid #414947; background:#171c1c }
+.bar,.editions,footer { width:min(100% - 3rem,1152px); margin:auto }
+.bar { height:66px; display:flex; align-items:center; justify-content:space-between }
+.brand { display:flex; align-items:center; gap:.65rem; font-weight:800; font-size:1.18rem }
+.brand img { image-rendering:pixelated }
+nav a { font-size:.9rem; color:#d1d8d4 }
+.hero { position:relative; isolation:isolate; display:flex; align-items:flex-end; overflow:hidden; min-height:480px; height:65svh; max-height:700px; background:#4c463b }
+.art,.hero::after { position:absolute; inset:0; width:100%; height:100%; z-index:-1 }
+.art { object-fit:cover; object-position:center 55% }
+.hero::after { content:""; background:linear-gradient(0deg,rgba(13,21,20,.94),rgba(13,21,20,.45) 51%,transparent 84%) }
+.hero-content { width:min(100% - 3rem,1152px); margin:0 auto; padding:3.4rem 0 }
+h1 { font-size:5rem; margin:0; font-weight:900; line-height:1.15; text-shadow:0 3px 15px #10130f88 }
+.hero p { font-size:1.1rem; line-height:1.65; color:#faf7ef; margin:1rem 0 1.55rem }
+.actions { display:flex; flex-wrap:wrap; gap:.65rem }
+.actions a { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 1.2rem; gap:.45rem; background:#222927; border:1px solid #7b8175; color:#fff; border-radius:2px; font-weight:700 }
+.actions span { font-family:system-ui,sans-serif }
+.actions a:hover { background:#39443e }
+.actions .primary { background:#ffbc5c; border-color:#ffc778; color:#202019 }
+.actions .primary:hover { background:#ffd291 }
+.editions { padding:2.5rem 0 1.3rem }
+h2 { margin:0 0 1.25rem; font-size:1.55rem }
+.edition { border-top:1px solid #404746; display:grid; align-items:center; grid-template-columns:1fr 1fr; gap:1rem; padding:1.2rem 0 }
+h3,.edition p { margin:0; font-size:1rem; line-height:1.6 }
+h3 span,.edition p { color:#bec8c3; font-weight:400 }
+footer { border-top:1px solid #404746; color:#a1aaa4; font-size:.85rem; padding:1.5rem 0 }
+@media(max-width:650px) {
+  .bar,.hero-content,.editions,footer { width:calc(100% - 2rem) }
+  .bar { height:54px }
+  h1 { font-size:3.2rem }
+  .hero { min-height:365px; max-height:520px }
+  .hero-content { padding:2rem 0 }
+  .actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)) }
+  .actions a { padding:0 .35rem; font-size:.95rem }
+  .actions .primary { grid-column:1 / -1 }
+  .edition { grid-template-columns:1fr; gap:.25rem }
+}

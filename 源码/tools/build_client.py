@@ -43,17 +43,11 @@ framework=pathlib.Path('C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe'
 for source,name,refs,target in [('Vault.cs','Vault.exe',['System.Security.dll'],'exe'),('Launcher.cs','燃烧战车.exe',['System.Windows.Forms.dll','System.Drawing.dll','System.Web.Extensions.dll','System.Security.dll'],'winexe')]:
     if not (ROOT/'源码/launcher'/source).exists():continue
     sources=[ROOT/'源码/launcher'/source]
-    resources=[]
-    if source=='Launcher.cs':
-        sources.append(ROOT/'源码/launcher/LauncherWindow.cs')
-        resources=[('back',client/'assets/legacy/LobyBack.png'),('map',client/'assets/maps/9/background.jpg'),('tank',client/'assets/effects/TotUnit269/01.png'),('button',client/'assets/legacy/pop_ok.png'),('start',client/'assets/legacy/gl_start.png'),('title',client/'assets/legacy/TitleBack.png')]
-        if not resources[1][1].exists():resources[1]=('map',client/'assets/maps/9/background.png')
-    fingerprint=hashlib.sha256(b''.join(p.read_bytes() for p in sources)+b''.join(p.read_bytes()for _,p in resources)+('|'.join(refs)+target).encode()+(client/'assets/icon.ico').read_bytes()).hexdigest()
+    fingerprint=hashlib.sha256(b''.join(p.read_bytes() for p in sources)+('|'.join(refs)+target).encode()+(client/'assets/icon.ico').read_bytes()).hexdigest()
     cache=tools/'csharp-cache'/fingerprint/name;cache.parent.mkdir(parents=True,exist_ok=True)
     arguments=[framework,'/nologo','/optimize+','/target:'+target,'/out:'+str(cache)]
     if source=='Launcher.cs':arguments.append('/win32icon:'+str(client/'assets/icon.ico'))
     arguments.extend('/reference:'+x for x in refs)
-    arguments.extend('/resource:'+str(p)+',art.'+label for label,p in resources)
     arguments.extend(sources)
     if not cache.exists():run(arguments,'compile-'+source+'.log')
     shutil.copy2(cache,output/name)

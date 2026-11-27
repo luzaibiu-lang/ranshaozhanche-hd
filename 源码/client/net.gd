@@ -73,6 +73,7 @@ func request(path: String, payload: Variant = null, conditional := false) -> Dic
 	return data
 
 func configure_http(http: HTTPRequest) -> void:
+	if OS.has_feature("web"):return
 	if endpoint.begins_with("https://") and FileAccess.file_exists("res://hd-public.crt"):
 		var certificate := X509Certificate.new()
 		if certificate.load("res://hd-public.crt") == OK:

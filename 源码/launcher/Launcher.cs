@@ -69,32 +69,39 @@ internal static class Launcher
                 string host=Path.Combine(Root,"LauncherHost.exe");
                 if(!String.Equals(Path.GetFileNameWithoutExtension(Application.ExecutablePath),"LauncherHost",StringComparison.OrdinalIgnoreCase)&&File.Exists(host)){
                     string boot=Guid.NewGuid().ToString("N");
-                    string forwarded="";foreach(string arg in args)if(arg.StartsWith("--launcher-qa=")&&new Uri(Origin).IsLoopback)forwarded=" --launcher-qa=\""+arg.Substring(14).Replace("\"","")+"\"";
-                    using(var child=Process.Start(new ProcessStartInfo(host,"--bootstrap-id="+boot+forwarded){WorkingDirectory=Root,UseShellExecute=false})){
+                    using(var child=Process.Start(new ProcessStartInfo(host,"--bootstrap-id="+boot){WorkingDirectory=Root,UseShellExecute=false})){
                         child.WaitForExit();
                         if(child.ExitCode==37){
-                            string request=Path.Combine(LauncherAccount.DataRoot,"bootstrap-"+boot+".txt");
+                            string request=BootstrapRequest(boot);
                             string ticket=File.ReadAllText(request,Encoding.ASCII).Trim();File.Delete(request);
                             Guid parsed;if(!Guid.TryParseExact(ticket,"N",out parsed))throw new IOException("启动请求无效");
-                            using(var progress=new UpdateWindow(ticket))Application.Run(progress);
+                            return RunUpdate(null,parsed==Guid.Empty ? null : ticket);
                         }
+                        return child.ExitCode;
                     }
                 } else {
                     string boot="";foreach(string arg in args)if(arg.StartsWith("--bootstrap-id=")){Guid parsed;if(Guid.TryParseExact(arg.Substring(15),"N",out parsed))boot=parsed.ToString("N");}
-                    string qaFile="";foreach(string arg in args)if(arg.StartsWith("--launcher-qa=")&&new Uri(Origin).IsLoopback)qaFile=arg.Substring(14);
-                    using(var window=new LauncherWindow(boot,qaFile)){Application.Run(window);return window.Result;}
+                    return RunUpdate(boot,null);
                 }
             }
-            return 0;
         }
         catch (Exception e) { if(args.Length==1 && args[0]=="--verify-update")Console.Error.WriteLine(e.Message);else MessageBox.Show("启动失败："+e.Message,"燃烧战车",MessageBoxButtons.OK,MessageBoxIcon.Error); return 1; }
     }
     internal static string Hash(byte[] data) { using (var sha=SHA256.Create()) return BitConverter.ToString(sha.ComputeHash(data)).Replace("-", "").ToLowerInvariant(); }
+    internal static string BootstrapRequest(string boot)
+    {
+        string local=Environment.GetEnvironmentVariable("LOCALAPPDATA") ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        return Path.Combine(local,"BurningChariotHD","bootstrap-"+boot+".txt");
+    }
+    private static int RunUpdate(string boot,string ticket)
+    {
+        using(var window=new UpdateWindow(boot,ticket)) { Application.Run(window);return window.Result; }
+    }
     internal static string HashFile(string path) { using(var sha=SHA256.Create()) using(var input=File.OpenRead(path)) return BitConverter.ToString(sha.ComputeHash(input)).Replace("-", "").ToLowerInvariant(); }
     internal static void StartGame(string ticket)
     {
         if (!File.Exists(Path.Combine(Root,"Game.exe")) || !File.Exists(Path.Combine(Root,"Game.pck"))) throw new IOException("游戏文件不完整，请重新解压完整客户端。");
-        string engine="",options="--launcher-ticket="+ticket;
+        string engine="",options=String.IsNullOrEmpty(ticket) ? "" : "--launcher-ticket="+ticket;
         if(new Uri(Origin).IsLoopback&&Environment.GetEnvironmentVariable("BCHD_QA_SILENT")=="1"){
             engine="--audio-driver Dummy ";string proof=Environment.GetEnvironmentVariable("BCHD_QA_PROOF");
             if(!String.IsNullOrEmpty(proof))options+=" \"--qa-proof="+proof+"\"";
@@ -108,10 +115,12 @@ internal sealed class UpdateWindow : Form
     private readonly Label note = new Label();
     private readonly ProgressBar bar = new ProgressBar();
     private bool working=true;
+    private readonly string boot;
     private readonly string ticket;
-    internal UpdateWindow(string sessionTicket)
+    internal int Result=1;
+    internal UpdateWindow(string bootstrapId,string sessionTicket)
     {
-        ticket=sessionTicket;
+        boot=bootstrapId;ticket=sessionTicket;
         Text="燃烧战车 · 检查更新";ClientSize=new Size(540,140);StartPosition=FormStartPosition.CenterScreen;
         FormBorderStyle=FormBorderStyle.FixedDialog;MaximizeBox=false;MinimizeBox=false;
         Font=new Font("Microsoft YaHei UI",10);BackColor=Color.FromArgb(185,190,200);ForeColor=Color.FromArgb(25,43,65);
@@ -125,15 +134,30 @@ internal sealed class UpdateWindow : Form
     {
         try
         {
-            int changed = new Updater(Report).Execute();
-            BeginInvoke((Action)(()=> { working=false;Hide();try {Launcher.StartGame(ticket);}catch(Exception e){MessageBox.Show(e.Message,"燃烧战车");}Close(); }));
+            bool runningHost=String.Equals(Path.GetFileName(Application.ExecutablePath),"LauncherHost.exe",StringComparison.OrdinalIgnoreCase);
+            if(new Updater(Report).Execute(runningHost)==Updater.HostUpdateRequired)
+            {
+                if(String.IsNullOrEmpty(boot))throw new IOException("请从燃烧战车.exe 重新打开以更新游戏。");
+                // A 0.1.x parent expects a 32-digit ticket. An empty GUID means in-game login.
+                string request=Launcher.BootstrapRequest(boot);
+                Directory.CreateDirectory(Path.GetDirectoryName(request));
+                File.WriteAllText(request,Guid.Empty.ToString("N"),Encoding.ASCII);
+                Result=37;
+            }
+            else
+            {
+                Launcher.StartGame(ticket);
+                Result=0;
+            }
+            BeginInvoke((Action)(()=> { working=false;Close(); }));
         }
         catch(Exception error)
         {
             BeginInvoke((Action)(()=>{
                 working=false;note.Text="更新未完成："+error.Message;bar.Style=ProgressBarStyle.Blocks;
-                var retry=new Button {Text="重试",Left=350,Top=96,Width=75};retry.Click+=(s,e)=>{retry.Enabled=false;working=true;ThreadPool.QueueUserWorkItem(_=>Work());};Controls.Add(retry);
+                var retry=new Button {Text="重试",Left=350,Top=96,Width=75};
                 var close=new Button {Text="关闭",Left=435,Top=96,Width=75};close.Click+=(s,e)=>Close();Controls.Add(close);
+                retry.Click+=(s,e)=>{retry.Dispose();close.Dispose();working=true;bar.Style=ProgressBarStyle.Marquee;note.Text="正在检查游戏文件…";ThreadPool.QueueUserWorkItem(_=>Work());};Controls.Add(retry);
             }));
         }
     }
@@ -148,14 +172,7 @@ internal sealed class Updater
     private string workDirectory;
     private bool cleanStaging=true;
     internal Updater(Action<string> report) { this.report=report ?? (_=>{}); }
-    internal bool HostMatches()
-    {
-        ReleaseManifest manifest;
-        using(var response=Request("/updates/manifest.json").GetResponse())using(var reader=new StreamReader(response.GetResponseStream(),Encoding.UTF8))manifest=new JavaScriptSerializer().Deserialize<ReleaseManifest>(reader.ReadToEnd());
-        if(manifest==null||manifest.edition!="hd"||manifest.files==null)throw new IOException("更新清单无效");
-        foreach(var file in manifest.files)if(file.path=="LauncherHost.exe")return File.Exists(Target(file.path))&&Launcher.HashFile(Target(file.path))==file.sha256;
-        throw new IOException("服务器尚未提供新版启动器，请稍后重试。");
-    }
+    internal const int HostUpdateRequired=-1;
     private static HttpWebRequest Request(string path)
     {
         var r=(HttpWebRequest)WebRequest.Create(Launcher.Origin+path);r.Proxy=null;r.Timeout=20000;r.ReadWriteTimeout=30000;r.UserAgent="BurningChariotHD";r.AllowAutoRedirect=false;return r;
@@ -168,7 +185,7 @@ internal sealed class Updater
         if(!full.StartsWith(Launcher.Root,StringComparison.OrdinalIgnoreCase)) throw new IOException("更新路径越界");
         return full;
     }
-    internal int Execute()
+    internal int Execute(bool runningHost=false)
     {
         string root=Path.Combine(Launcher.Root,".update");
         if(Directory.Exists(root)) foreach(string candidate in Directory.GetDirectories(root))
@@ -178,7 +195,7 @@ internal sealed class Updater
             Recover(candidate);
             Directory.Delete(candidate,true);
         }
-        try {return ExecuteCore();}
+        try {return ExecuteCore(runningHost);}
         finally {if(cleanStaging && workDirectory!=null && Directory.Exists(workDirectory)) Directory.Delete(workDirectory,true);}
     }
     private static void Recover(string staging)
@@ -195,7 +212,7 @@ internal sealed class Updater
             else if(!entry.existed && !File.Exists(pending) && File.Exists(target))File.Delete(target);
         }
     }
-    private int ExecuteCore()
+    private int ExecuteCore(bool runningHost)
     {
         ReleaseManifest manifest;
         using(var response=Request("/updates/manifest.json").GetResponse())
@@ -216,6 +233,8 @@ internal sealed class Updater
             if(file.url!=null && file.url!="blobs/"+file.sha256)throw new IOException("更新地址无效");
             if(!File.Exists(target) || new FileInfo(target).Length!=file.size || Launcher.HashFile(target)!=file.sha256) changes.Add(file);
         }
+        if(!seen.Contains("LauncherHost.exe"))throw new IOException("服务器尚未提供完整更新清单，请稍后重试。");
+        if(runningHost && changes.Exists(file=>String.Equals(file.path,"LauncherHost.exe",StringComparison.OrdinalIgnoreCase)))return HostUpdateRequired;
         if(changes.Count==0) {RememberManifest(manifest);report("已是最新版本");return 0;}
         foreach(var file in changes)
         {

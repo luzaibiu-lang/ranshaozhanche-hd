@@ -3,8 +3,8 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-// Per-Windows-user session vault. The launcher's opt-in password record is
-// protected separately with DPAPI; neither credential uses command-line args.
+// The native game exchanges UTF-8 records over stdin/stdout. Preserve both
+// legacy DPAPI filenames and entropy so existing opt-in logins survive updates.
 internal static class Vault
 {
     private static readonly byte[] Entropy = Encoding.UTF8.GetBytes("BurningChariotHD.Session.v1");
@@ -15,10 +15,15 @@ internal static class Vault
             string root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BurningChariotHD");
             string isolated = Environment.GetEnvironmentVariable("BCHD_VAULT_ROOT");
             if (!String.IsNullOrEmpty(isolated)) root = Path.GetFullPath(isolated);
-            string path = Path.Combine(root, "session.dat");
-            string input = Console.ReadLine() ?? "";
             if (args.Length != 1) return 2;
-            if (args[0] == "write")
+            Console.InputEncoding = new UTF8Encoding(false);
+            Console.OutputEncoding = new UTF8Encoding(false);
+            string input = Console.ReadLine() ?? "";
+            string operation = args[0];
+            bool account = operation.EndsWith("-account",StringComparison.Ordinal);
+            if (account) operation = operation.Substring(0,operation.Length-8);
+            string path = Path.Combine(root, account ? "account.dat" : "session.dat");
+            if (operation == "write")
             {
                 Directory.CreateDirectory(root);
                 byte[] plain = Encoding.UTF8.GetBytes(input);
@@ -32,14 +37,14 @@ internal static class Vault
                 finally { Array.Clear(plain, 0, plain.Length); }
                 Console.WriteLine("ok");
             }
-            else if (args[0] == "read")
+            else if (operation == "read")
             {
                 if (!File.Exists(path)) { Console.WriteLine(""); return 0; }
                 byte[] plain = ProtectedData.Unprotect(File.ReadAllBytes(path), Entropy, DataProtectionScope.CurrentUser);
                 try { Console.WriteLine(Encoding.UTF8.GetString(plain)); }
                 finally { Array.Clear(plain, 0, plain.Length); }
             }
-            else if (args[0] == "clear") { if (File.Exists(path)) File.Delete(path); Console.WriteLine(""); }
+            else if (operation == "clear") { if (File.Exists(path)) File.Delete(path); Console.WriteLine(""); }
             else if(args[0]=="consume-handoff")
             {
                 Guid id;if(!Guid.TryParseExact(input,"N",out id))return 2;

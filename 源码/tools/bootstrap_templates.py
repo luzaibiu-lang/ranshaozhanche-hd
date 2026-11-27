@@ -1,8 +1,15 @@
-"""Download only the pinned Windows template using HTTP byte ranges."""
-import hashlib, json, pathlib, requests, struct, zlib
+"""Fetch the selected Godot release template using HTTP byte ranges."""
+import argparse, hashlib, json, pathlib, requests, struct, zlib
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 URL = 'https://github.com/godotengine/godot-builds/releases/download/4.5.1-stable/Godot_v4.5.1-stable_export_templates.tpz'
-out = ROOT/'.tools/templates/windows_release_x86_64.exe'
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--platform', choices=['windows', 'web'], default='windows')
+platform = parser.parse_args().platform
+filename, expected = {
+    'windows': ('windows_release_x86_64.exe', '78ccc576e8f8bffd7ef6ad6f36ebd72a41e609a1052225a55b3407c96ea84065'),
+    'web': ('web_nothreads_release.zip', '7f6c5efc9952f6f02509adfb92298161c0152a1f6a81c0bf9b9f4f913676e9c8'),
+}[platform]
+out = ROOT/'.tools/templates'/filename
 out.parent.mkdir(parents=True, exist_ok=True)
 if not out.exists():
     session=requests.Session()
@@ -18,7 +25,7 @@ if not out.exists():
     while at<len(directory):
         record=struct.unpack_from('<4s6H3L5H2L',directory,at);assert record[0]==b'PK\x01\x02'
         n,extra,comment=record[10:13];name=directory[at+46:at+46+n].decode('utf8')
-        if name=='templates/windows_release_x86_64.exe':
+        if name=='templates/'+filename:
             compressed,length,offset,method,crc=record[8],record[9],record[16],record[4],record[7]
             local=struct.unpack('<4s5H3L2H',fetch(offset,offset+29));start=offset+30+local[9]+local[10]
             archive=bytearray()
@@ -26,9 +33,14 @@ if not out.exists():
                 archive.extend(fetch(begin,min(begin+4*1024*1024,start+compressed)-1))
                 print('template %d/%d'%(len(archive),compressed),flush=True)
             data=zlib.decompress(archive,-15) if method==8 else bytes(archive)
-            assert len(data)==length and zlib.crc32(data)==crc
+            if len(data)!=length or zlib.crc32(data)!=crc or hashlib.sha256(data).hexdigest()!=expected:
+                raise RuntimeError('Invalid template checksum: '+filename)
             pending=out.with_suffix('.pending');pending.write_bytes(data);pending.replace(out);break
         at+=46+n+extra+comment
-    else:raise RuntimeError('Windows template missing')
+    else:raise RuntimeError('Release template missing: '+filename)
 report={'version':'4.5.1','source':URL,'file':out.name,'sha256':hashlib.sha256(out.read_bytes()).hexdigest()}
-(out.parent/'provenance.json').write_text(json.dumps(report,indent=2),encoding='utf8');print(json.dumps(report))
+if report['sha256'] != expected:
+    raise RuntimeError('Cached template checksum differs from the pinned release: '+filename)
+if platform=='web':report['threads']=False
+provenance='web-provenance.json' if platform=='web' else 'provenance.json'
+(out.parent/provenance).write_text(json.dumps(report,indent=2),encoding='utf8');print(json.dumps(report))
