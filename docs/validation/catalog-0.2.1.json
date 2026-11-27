@@ -1,0 +1,31 @@
+{
+  "windows": {
+    "catalog_requests": 3,
+    "human_seat": 12,
+    "bot_seat": 4,
+    "difficulty": 3,
+    "random_vehicle": true,
+    "battle_started": true
+  },
+  "web": {
+    "catalog_requests": 3,
+    "human_seat": 12,
+    "bot_seat": 4,
+    "difficulty": 3,
+    "random_vehicle": true,
+    "battle_started": true
+  },
+  "version": "0.2.1",
+  "date": "2026-11-27",
+  "initial_http_503": true,
+  "second_catalog_null_vehicle_name": true,
+  "third_request_recovered": true,
+  "windows_disabled_human_dropdown_cleared": true,
+  "windows_runtime_errors": [],
+  "test_environment": "loopback server; private Windows desktop with Dummy audio; muted headless Edge",
+  "server_switch": {
+    "late_old_response_ignored": true,
+    "new_catalog_preserved": true,
+    "passed": true
+  }
+}

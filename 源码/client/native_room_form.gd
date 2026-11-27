@@ -38,6 +38,9 @@ func _ready() -> void:
 	var layer:=Node2D.new()
 	add_child(layer)
 	canvas=Control.new()
+	# The Node2D layout layer breaks Control theme inheritance.
+	canvas.theme = Theme.new()
+	canvas.theme.default_font = preload("res://game_platform.gd").ui_font()
 	layer.add_child(canvas)
 	canvas.size=Vector2(size)
 	name_field=_entry(room_name,Rect2(88,82,199,24))
@@ -89,6 +92,8 @@ func _place(node:Control,rect:Rect2) -> void:
 	node.position=rect.position*pixel_scale
 	node.size=rect.size*pixel_scale
 	node.add_theme_font_size_override("font_size",maxi(12,int(12*pixel_scale)))
+	if node is OptionButton:
+		node.get_popup().theme = canvas.theme
 
 func _entry(text:String,rect:Rect2) -> LineEdit:
 	var node:=LineEdit.new()

@@ -16,6 +16,12 @@ const TEAMS := [Color("ff4438"), Color("efc138"), Color("83c83b"), Color("4288ef
 var net: RefCounted
 var sound: Node
 var catalog: Dictionary = {}
+var catalog_ready := false
+var catalog_loading := false
+var catalog_failures := 0
+var catalog_retry_at := 0
+var catalog_origin := ""
+var catalog_epoch := 0
 var snapshot: Dictionary = {}
 var profile: Dictionary = {}
 var config: Dictionary = {}
@@ -156,12 +162,12 @@ func _ready() -> void:
 	else:_show_launch_loading()
 	toast("正在连接高清版服务…", 20)
 	await _ensure_server()
-	var response: Dictionary = await net.request("/api/catalog")
-	if response.has("vehicles"):
-		catalog = response
-		toast("准备就绪", 2)
-	else:
-		toast("暂时无法连接服务，可在设置中检查服务器地址", 8)
+	await _load_catalog()
+	# Login/session restoration must not expose a room with an empty catalog.
+	# _process keeps retrying without blocking rendering or keyboard input.
+	while not catalog_ready and not quitting:
+		await get_tree().create_timer(0.2).timeout
+	if quitting:return
 	if qa:
 		await _qa_run()
 	else:
@@ -196,6 +202,74 @@ func _ready() -> void:
 			_set_login_busy(false)
 		if not launcher_ticket.is_empty() and profile.is_empty(): _show_login()
 		launcher_ticket = ""
+
+func _catalog_valid(data: Dictionary) -> bool:
+	for spec in [["vehicles", 30], ["maps", 19], ["items", 17]]:
+		var rows: Variant = data.get(spec[0])
+		if not rows is Array or rows.size() != int(spec[1]):return false
+		var seen := {}
+		for row: Variant in rows:
+			if not row is Dictionary:return false
+			if typeof(row.get("id")) not in [TYPE_INT, TYPE_FLOAT]:return false
+			var id := int(row.id)
+			if id < 1 or id > int(spec[1]) or seen.has(id):return false
+			if not row.get("name") is String or str(row.name).strip_edges().is_empty():return false
+			seen[id] = true
+	for record: Dictionary in data.vehicles:
+		for key in ["armor", "move_cost", "hp", "move", "aim_min", "aim_max"]:
+			if typeof(record.get(key)) not in [TYPE_INT, TYPE_FLOAT]:return false
+		var weapons: Variant = record.get("weapons")
+		if not weapons is Array or weapons.size() != 3:return false
+		for weapon: Variant in weapons:
+			if not weapon is Dictionary or not weapon.get("name") is String:return false
+			if typeof(weapon.get("cost")) not in [TYPE_INT, TYPE_FLOAT]:return false
+	return true
+
+func _load_catalog() -> bool:
+	if catalog_ready and catalog_origin == net.endpoint:return true
+	if catalog_ready:_reset_catalog()
+	if catalog_loading:
+		var waiting_epoch := catalog_epoch
+		while catalog_loading and not quitting and waiting_epoch == catalog_epoch:await get_tree().process_frame
+		return catalog_ready and catalog_origin == net.endpoint
+	if quitting:return false
+	var requested_epoch := catalog_epoch
+	var requested_origin: String = net.endpoint
+	catalog_loading = true
+	var response: Dictionary = await net.request("/api/catalog")
+	if requested_epoch != catalog_epoch or requested_origin != net.endpoint:return false
+	catalog_loading = false
+	if quitting:return false
+	if _catalog_valid(response):
+		# Store by ID: all consumers index vehicle IDs as id - 1.
+		for key in ["vehicles", "maps", "items"]:
+			response[key].sort_custom(func(a: Dictionary, b: Dictionary):return int(a.id) < int(b.id))
+		catalog = response
+		catalog_origin = requested_origin
+		catalog_ready = true
+		catalog_failures = 0
+		toast("准备就绪", 2)
+		if not snapshot.is_empty():_accept_state(snapshot)
+		return true
+	catalog_failures += 1
+	catalog_retry_at = Time.get_ticks_msec() + mini(8000, 2000 * catalog_failures)
+	toast("战车与道具资料暂未加载完整，正在自动重试", 5)
+	return false
+
+func _reset_catalog() -> void:
+	catalog_epoch += 1
+	catalog.clear()
+	catalog_ready = false
+	catalog_loading = false
+	catalog_origin = ""
+	catalog_failures = 0
+	catalog_retry_at = 0
+
+func _require_catalog() -> bool:
+	if catalog_ready and catalog_origin == net.endpoint:return true
+	if await _load_catalog():return true
+	toast("战车与道具资料尚未就绪，请稍后重试", 5)
+	return false
 
 func _show_launch_loading() -> void:
 	_show_channel_gate()
@@ -613,6 +687,8 @@ func _show_login() -> void:
 func _login() -> void:
 	if command_busy or auth_busy or quitting:
 		return
+	if not await _require_catalog():return
+	if command_busy or auth_busy or quitting or scene != "login":return
 	if register_mode and password.text != confirmation.text:
 		toast("两次输入的密码不一致")
 		return
@@ -832,6 +908,8 @@ func _room_info() -> void:
 	dialog.popup_centered()
 
 func _create_dialog() -> void:
+	if not await _require_catalog():return
+	if scene != "lobby":return
 	var dialog:=preload("res://native_room_form.gd").new()
 	dialog.room_name=str(profile.get("name","好友"))+"的战场"
 	dialog.pixel_scale=skin.pixel_scale
@@ -1169,6 +1247,8 @@ func _present_invitation() -> void:
 	dialog.popup_centered()
 
 func _bot_dialog() -> void:
+	if not await _require_catalog():return
+	if scene not in ["room", "shop"]:return
 	var room: Dictionary = snapshot.get("room", {})
 	var editable := int(room.get("owner", 0)) == int(profile.get("id", 0))
 	var dialog := _dialog("AI 陪练 · 总人数最多 %d 人" % int(room.capacity), Vector2(1120, 650), false)
@@ -1208,7 +1288,7 @@ func _bot_dialog() -> void:
 			box.add_child(level)
 			var chosen := _vehicle_options(box)
 			chosen.name = "AIVehicle%02d" % index
-			chosen.select(chosen.get_item_index(int(member.get("vehicle", 0))))
+			chosen.select(maxi(0, chosen.get_item_index(int(member.get("vehicle", 0)))))
 			chosen.disabled = human or not editable or level.selected == 0
 			difficulties.append(level)
 			selections.append(chosen)
@@ -1231,7 +1311,8 @@ func _bot_dialog() -> void:
 			selections[index].disabled = human or not owner or difficulties[index].selected == 0
 			if human or not owner:
 				difficulties[index].select(int(member.get("ai", 0)))
-				selections[index].select(selections[index].get_item_index(int(member.get("vehicle", 0))))
+				if selections[index].item_count > 0:
+					selections[index].select(maxi(0, selections[index].get_item_index(int(member.get("vehicle", 0)))))
 			if human or difficulties[index].selected > 0:
 				total += 1
 		var limit := int(current.capacity)
@@ -1253,8 +1334,18 @@ func _bot_dialog() -> void:
 			status.text = "正在处理上一步操作，请稍后确定"
 			return
 		var choices := []
+		var humans := {}
+		for member: Dictionary in snapshot.room.members:
+			if int(member.ai) == 0:humans[int(member.seat)] = true
 		for index in range(16):
-			choices.append({"seat": index, "level": difficulties[index].selected, "vehicle": selections[index].get_selected_id()})
+			# Human/unused seats are authoritative and never read from a disabled
+			# dropdown. A deselected OptionButton reports -1, which rejects all AI.
+			var level := 0 if humans.has(index) else difficulties[index].selected
+			var vehicle := 0 if level == 0 else selections[index].get_selected_id()
+			if level < 0 or level > 3 or vehicle < 0 or vehicle > 30:
+				status.text = "请选择有效的 AI 难度和战车后重试"
+				return
+			choices.append({"seat": index, "level": level, "vehicle": vehicle})
 		dialog.set_meta("saving", true)
 		dialog.get_ok_button().disabled = true
 		var saved := await _command({"action": "bots", "bots": choices})
@@ -1767,6 +1858,7 @@ func _accept_state(state: Dictionary) -> void:
 			return
 	snapshot = state
 	profile = state.get("profile", {})
+	if not catalog_ready:return
 	if not qa and not channel_accepted:
 		_show_channel_gate()
 		channel_gate.set_channel_state(state)
@@ -1889,11 +1981,13 @@ func _command(command: Dictionary) -> bool:
 func _process(delta: float) -> void:
 	if not is_instance_valid(channel_gate): _present_invitation()
 	if quitting:return
+	if not catalog_ready and not catalog_loading and Time.get_ticks_msec() >= catalog_retry_at:
+		_load_catalog()
 	if toast_timer > 0:
 		toast_timer -= delta
 		if toast_timer <= 0:
 			toast_label.visible = false
-	if auth_busy or not net or net.token.is_empty():
+	if not catalog_ready or auth_busy or not net or net.token.is_empty():
 		return
 	poll_elapsed += delta
 	if poll_elapsed >= 0.3 and not poll_busy:
@@ -2113,8 +2207,19 @@ func _settings() -> void:
 			if address.begins_with("https://") or address.begins_with("http://127.0.0.1:") or address.begins_with("http://localhost:") or address.begins_with("http://192.168.") or address.begins_with("http://10."):
 				config.endpoint = address
 				if scene == "login":
-					if address != net.endpoint and is_instance_valid(password): password.clear()
-					net.endpoint = address
+					if address != net.endpoint:
+						if is_instance_valid(password):password.clear()
+						auth_generation += 1
+						auth_busy = false
+						command_busy = false
+						net.token = ""
+						net.etag = ""
+						net.endpoint = address
+						snapshot.clear()
+						profile.clear()
+						_reset_catalog()
+						_set_login_busy(false)
+						_load_catalog()
 			else:
 				toast("公网服务器请使用 HTTPS，局域网可使用内网地址")
 		if is_instance_valid(view):

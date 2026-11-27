@@ -6,7 +6,7 @@
 
 **保留经典战车与回合制炮战，用 Godot 与 Go 重建宽屏联机体验。**
 
-![Version 0.2.0](https://img.shields.io/badge/Version-0.2.0-blue)
+![Version 0.2.1](https://img.shields.io/badge/Version-0.2.1-blue)
 ![Godot 4.5.1](https://img.shields.io/badge/Godot-4.5.1-478CBF?logo=godotengine&logoColor=white)
 ![Go 1.26](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go&logoColor=white)
 ![Windows 与 Web](https://img.shields.io/badge/Platform-Windows%20%7C%20Web-0078D4)
@@ -24,7 +24,7 @@
 
 游戏逻辑由本仓库源码实现，运行时无需旧客户端核心、DLL 注入或外置机器人窗口。账号、房间、AI、弹道、可破坏地形、回合、道具和结算由自己的服务端管理，适合本地研究和自行部署。
 
-**0.2.0** 提供 Windows x64 和桌面浏览器入口。官网首页可直接进入高清网页版，也可下载 Windows 高清重制版或经典版。经典版使用自己的账号和房间。Android 和 iOS 原生客户端仍待适配。各功能与原版的核对进度见[项目状态](docs/STATUS.md)。
+**0.2.1** 修复了创建房间时的中文缺字、车型资料加载失败后的恢复，以及房主添加困难 AI 并选择随机战车时的保存问题。官网提供高清网页版、Windows 高清重制版和经典版入口。经典版使用自己的账号和房间。Android 和 iOS 原生客户端仍待适配。各功能与原版的核对进度见[项目状态](docs/STATUS.md)。
 
 ## 实际画面
 

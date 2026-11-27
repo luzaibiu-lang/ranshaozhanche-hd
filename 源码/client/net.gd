@@ -58,10 +58,10 @@ func request(path: String, payload: Variant = null, conditional := false) -> Dic
 		return {"unchanged": true, "status": status}
 	if int(response[0]) != HTTPRequest.RESULT_SUCCESS:
 		return {"error": "连接暂时中断，正在等待恢复", "status": 0}
-	var parsed: Variant = JSON.parse_string((response[3] as PackedByteArray).get_string_from_utf8())
-	if not parsed is Dictionary:
+	var decoder := JSON.new()
+	if decoder.parse((response[3] as PackedByteArray).get_string_from_utf8()) != OK or not decoder.data is Dictionary:
 		return {"error": "服务器返回了无法识别的数据", "status": status}
-	var data: Dictionary = parsed
+	var data: Dictionary = decoder.data
 	data["_request_sequence"] = sequence
 	data["status"] = status
 	if status == 200 and conditional:
