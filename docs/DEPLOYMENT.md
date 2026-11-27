@@ -1,3 +1,5 @@
+
+
 # 自行部署 Go 服务
 
 以下示例部署自己的实例。公开仓库默认连接本机，账号和进度由各部署独立保存。
@@ -55,3 +57,14 @@ Web 服务器需识别 `.wasm` 为 `application/wasm`，识别 `.js` 为 JavaScr
 SQLite 位于 `--data` 目录，包含账号、背包、进度、会话和管理操作记录。备份应使用 SQLite 一致性备份方式，或停止自己的服务后备份数据库及必要的 WAL 文件。不要仅复制一个仍在写入的数据库主文件。
 
 升级前保留程序、资源、配置与数据库备份，并在没有活跃对局时切换。此示例不操作任何既有运营实例，也不共用其他项目的数据目录。
+## Web API 压缩兼容
+
+Godot 4.5.1 的 Web HTTPRequest 在浏览器已解压响应后仍可能再次尝试 gzip 解压。表现为 `/api/catalog` 返回 HTTP 200，游戏却持续重试并记录 `stream_peer_gzip.cpp` 错误。当前网页 API 代理应关闭响应压缩并清除上游压缩请求头；静态 WASM、PCK 和 JS 的预压缩继续保留。
+
+```nginx
+location ^~ /hd-api/ {
+    gzip off;
+    proxy_set_header Accept-Encoding "";
+    proxy_pass http://127.0.0.1:18180/;
+}
+```

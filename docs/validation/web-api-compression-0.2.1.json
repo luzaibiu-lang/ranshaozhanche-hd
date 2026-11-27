@@ -1,0 +1,15 @@
+{
+  "version": "0.2.1",
+  "issue": "Browser transparently decodes gzip, then Godot Web HTTPRequest tries to decode again",
+  "before": {
+    "http_status": 200,
+    "content_encoding": "gzip",
+    "engine_error": "stream_peer_gzip.cpp:118"
+  },
+  "fix": {
+    "web_api_upstream_accept_encoding": "disabled",
+    "web_api_response_gzip": false,
+    "static_resource_gzip": true
+  },
+  "game_service_restarts": 0
+}
