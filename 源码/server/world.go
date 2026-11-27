@@ -84,6 +84,7 @@ type Snapshot struct {
 	Whispers   []Chat           `json:"whispers"`
 }
 type Command struct {
+	RequestID      string      `json:"request_id,omitempty"`
 	Action         string      `json:"action"`
 	Room           int         `json:"room"`
 	Name           string      `json:"name"`

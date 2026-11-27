@@ -1,0 +1,115 @@
+{
+  "version": "0.2.9",
+  "server": "0.1.19",
+  "network": {
+    "passed": true,
+    "checks": [
+      "Manual mobile login establishes authenticated persistent stream and enters channel",
+      "Delayed Start shows disabled loading state; eight touches produce one command",
+      "A rejected Start restores the button and allows a deliberate retry",
+      "Delayed acknowledgement opens one new battle after render readiness",
+      "Native mobile chat sends Chinese exactly once through the persistent connection",
+      "A short 3.5-second network stall does not create repeated disconnect warnings",
+      "Socket replacement reconnects to the same battle with a fresh authenticated snapshot",
+      "Confirmed chat works after reconnection without duplicate messages",
+      "Leaving and starting the next match restores the original Start button state",
+      "Two real touch points still zoom the map after reconnect and the next match",
+      "Touch movement continues through the stream after chat, reconnect and the next match"
+    ],
+    "engine_errors": [],
+    "connections": 2,
+    "start_commands": 3,
+    "network": {
+      "command_busy": false,
+      "failures": 0,
+      "last_failure": "",
+      "rtt_ms": 31,
+      "scene": "battle",
+      "silent_ms": 49,
+      "start_pending": "",
+      "stream_bytes": 71650,
+      "stream_packets": 58,
+      "successes": 70,
+      "transport": "websocket"
+    },
+    "physical_phone_tested": false
+  },
+  "native_fallback": {
+    "certificate_reused": true,
+    "checks": 4,
+    "frames_during_timeout": 9539,
+    "http_304_clears_failure_history": true,
+    "passed": true
+  },
+  "native_game": {
+    "passed": true,
+    "private_desktop": true,
+    "audio_driver": "Dummy",
+    "actual_start_shot_and_window_layout": true
+  },
+  "go_tests": {
+    "all_passed": true,
+    "vet_passed": true,
+    "race_test_run": false,
+    "race_test_limitation": "Local Windows toolchain has CGO disabled and no C compiler"
+  },
+  "rendering_parameters_changed": false,
+  "physical_phone_tested": false,
+  "manual_login": {
+    "passed": true,
+    "checks": [
+      {
+        "mobile": false,
+        "check": "valid legacy tokens in both stores cannot authenticate startup",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "wrong manual password remains at login",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "manual button accepts correct credentials",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "refresh after successful login still requires manual login",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "manual login after refresh works",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "valid legacy tokens in both stores cannot authenticate startup",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "wrong manual password remains at login",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "manual button accepts correct credentials",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "refresh after successful login still requires manual login",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "manual login after refresh works",
+        "passed": true
+      }
+    ],
+    "engine_errors": [],
+    "real_mobile_hardware_tested": false
+  }
+}

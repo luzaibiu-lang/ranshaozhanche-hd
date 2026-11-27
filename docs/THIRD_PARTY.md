@@ -6,6 +6,7 @@
 | --- | --- | --- |
 | Godot Engine 4.5.1 | 游戏客户端与导出模板 | [MIT 及其第三方说明](https://godotengine.org/license/) |
 | Go | 联机服务构建工具链 | [BSD-style](https://go.dev/LICENSE) |
+| github.com/coder/websocket 1.8.14 | Go WebSocket 长连接 | [ISC](https://github.com/coder/websocket/blob/v1.8.14/LICENSE.txt) |
 | golang.org/x/text | Unicode 与文本处理 | [BSD-3-Clause](https://pkg.go.dev/golang.org/x/text) |
 | modernc.org/sqlite | Go SQLite 驱动 | [BSD-3-Clause；SQLite 本体为 public domain](https://pkg.go.dev/modernc.org/sqlite) |
 | .NET Framework | Windows 登录器与 DPAPI | [Microsoft 发行许可](https://dotnet.microsoft.com/en-us/download/dotnet-framework) |

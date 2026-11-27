@@ -32,6 +32,10 @@ func (w *bufferedJSON) Write(data []byte) (int, error) {
 // so compression never holds the world/room mutex or blocks another action.
 func compressGameJSON(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/stream" {
+			next.ServeHTTP(w, r)
+			return
+		}
 		accepts := false
 		for _, encoding := range strings.Split(r.Header.Get("Accept-Encoding"), ",") {
 			fields := strings.Split(strings.TrimSpace(encoding), ";")

@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-const version = "0.1.18"
+const version = "0.1.19"
 
 //go:embed gm.html
 var gmHTML string
@@ -94,13 +94,14 @@ type api struct {
 	admin         string
 	rates         map[string][]time.Time
 	adminSessions map[string]time.Time
+	receipts      map[string]commandReceipt
 }
 
 func newHandler(w *World, admin string) http.Handler {
 	return newPublicationHandler(w, admin, "")
 }
 func newPublicationHandler(w *World, admin, updates string) http.Handler {
-	a := &api{world: w, admin: admin, rates: map[string][]time.Time{}, adminSessions: map[string]time.Time{}}
+	a := &api{world: w, admin: admin, rates: map[string][]time.Time{}, adminSessions: map[string]time.Time{}, receipts: map[string]commandReceipt{}}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", a.health)
 	mux.HandleFunc("/api/register", a.auth)
@@ -108,6 +109,7 @@ func newPublicationHandler(w *World, admin, updates string) http.Handler {
 	mux.HandleFunc("/api/logout", a.logout)
 	mux.HandleFunc("/api/state", a.state)
 	mux.HandleFunc("/api/command", a.command)
+	mux.HandleFunc("/api/stream", a.stream)
 	mux.HandleFunc("/api/catalog", a.catalog)
 	mux.HandleFunc("/gm/api/state", a.gm)
 	mux.HandleFunc("/gm/api/login", a.gmLogin)
@@ -280,8 +282,8 @@ func (a *api) command(w http.ResponseWriter, r *http.Request) {
 		writeError(w, 401, "登录已过期，请重新登录")
 		return
 	}
-	if e := a.world.command(id, c); e != nil {
-		writeError(w, 400, e.Error())
+	if status, message := a.applyCommand(id, c); status != 200 {
+		writeError(w, status, message)
 		return
 	}
 	state, e := a.world.snapshot(id)

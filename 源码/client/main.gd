@@ -42,6 +42,11 @@ var remember: CheckBox
 var register_mode := false
 var poll_busy := false
 var command_busy := false
+var room_action := ""
+var start_phase := ""
+var last_network_notice := -30000
+var network_indicator: Label
+var network_diagnostic_tick := 0
 var command_serial:=0
 var command_context:Dictionary={}
 var poll_elapsed := 0.0
@@ -167,6 +172,7 @@ func _ready() -> void:
 		config.endpoint = qa_options.endpoint
 	net = Network.new(self)
 	net.endpoint = GamePlatform.endpoint(config)
+	net.state_received.connect(_stream_state)
 	sound = Sound.new()
 	add_child(sound)
 	sound.silent = qa
@@ -558,6 +564,7 @@ func _fill(control: Control) -> void:
 	control.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 func _clear() -> void:
+	start_phase = ""
 	if mobile_chat:
 		mobile_chat.close()
 		mobile_chat.clearTrigger()
@@ -1096,9 +1103,9 @@ func _update_room() -> void:
 	for key in ["RoomShop", "RoomItems", "AIPractice"]:
 		skin.get_node(key).disabled = false
 	skin.get_node("RoomSettings").disabled = int(room.owner) != int(profile.id)
-	start_button.disabled = waiting or _room_has_unready_players(room)
+	start_button.disabled = command_busy or not start_phase.is_empty() or waiting or _room_has_unready_players(room)
 	start_button.tooltip_text = "等待其他玩家返回" if waiting else "还有玩家未准备" if start_button.disabled else "开始"
-	ready_button.disabled = false
+	ready_button.disabled = command_busy
 	vehicle_choice.disabled = false
 	for button: Button in vehicle_picker.buttons:
 		button.disabled = false
@@ -1143,6 +1150,76 @@ func _update_room() -> void:
 	ready_button.tooltip_text = "已准备 · 点击取消" if bool(_me().get("ready", true)) else "准备"
 	room_status.text = "%d / %d 人" % [room.get("members", []).size(), int(room.capacity)]
 	_preview(room_preview, int(room.get("map", 0)))
+
+func _refresh_room_actions() -> void:
+	if scene != "room" or not is_instance_valid(start_button):return
+	var room: Dictionary = snapshot.get("room", {})
+	var busy := command_busy or not start_phase.is_empty()
+	start_button.disabled = busy or bool(_me().get("returned", false)) or _room_has_unready_players(room)
+	ready_button.disabled = busy
+	var overlay := start_button.get_node_or_null("PendingState") as Label
+	if not overlay:
+		overlay = Label.new()
+		overlay.name = "PendingState"
+		overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		overlay.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		overlay.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		overlay.add_theme_stylebox_override("normal", OriginalSkin.box(Color("55595d"), Color("989da2")))
+		overlay.add_theme_color_override("font_color", Color("f2f2ed"))
+		start_button.add_child(overlay)
+		overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.add_theme_font_size_override("font_size", maxi(11, int(13*skin.pixel_scale)))
+	overlay.text = start_phase
+	overlay.visible = not start_phase.is_empty()
+	start_button.tooltip_text = start_phase + "，请稍候" if not start_phase.is_empty() else "还有玩家未准备" if _room_has_unready_players(room) else "等待其他玩家返回" if bool(_me().get("returned", false)) else "开始"
+	vehicle_choice.disabled = busy
+	for button: Button in vehicle_picker.buttons:button.disabled = busy
+	map_choice.disabled = busy or int(room.get("owner",0)) != int(profile.get("id",0))
+	map_previous.disabled = map_choice.disabled
+	map_next.disabled = map_choice.disabled
+	for key in ["RoomShop", "RoomItems", "AIPractice"]:skin.get_node(key).disabled = busy
+	skin.get_node("RoomSettings").disabled = busy or int(room.get("owner",0)) != int(profile.get("id",0))
+
+func _stream_state(state: Dictionary) -> void:
+	if quitting or auth_busy or net.token.is_empty():return
+	if state.has("profile"):
+		network_failures = 0
+		_accept_state(state)
+	elif int(state.get("status", 0)) == 401:
+		_logout()
+		toast("登录已过期，请重新登录")
+
+func _update_network_notice() -> void:
+	if not net or net.token.is_empty():
+		if is_instance_valid(network_indicator):network_indicator.hide()
+		return
+	var health: Dictionary = net.health()
+	var age := int(health.silent_ms)
+	var degraded := age >= 8000 and int(health.failures) >= 2
+	if not degraded:
+		if is_instance_valid(network_indicator):network_indicator.hide()
+	else:
+		if not is_instance_valid(network_indicator):
+			network_indicator = Label.new()
+			network_indicator.name = "ConnectionState"
+			network_indicator.z_index = 90
+			network_indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			network_indicator.add_theme_color_override("font_color", Color("ffe3a4"))
+			network_indicator.add_theme_font_size_override("font_size", 14)
+			network_indicator.add_theme_stylebox_override("normal", OriginalSkin.box(Color("252a2ed9"), Color("756849")))
+			add_child(network_indicator)
+		network_indicator.text = "连接不稳定 · 正在恢复" if age < 15000 else "连接中断 · 正在重连"
+		network_indicator.position = Vector2(maxf(8, (size.x-network_indicator.get_minimum_size().x)/2), 60)
+		network_indicator.show()
+		if age >= 15000 and Time.get_ticks_msec()-last_network_notice >= 30000:
+			last_network_notice = Time.get_ticks_msec()
+			toast("暂时无法连接服务器，正在自动重连", 3)
+	if OS.has_feature("web") and Time.get_ticks_msec()-network_diagnostic_tick >= 500:
+		network_diagnostic_tick = Time.get_ticks_msec()
+		health.start_pending = start_phase
+		health.command_busy = command_busy
+		health.scene = scene
+		JavaScriptBridge.eval("globalThis.BurningChariotNetwork=" + JSON.stringify(health), true)
 
 func _room_has_unready_players(room:Dictionary) -> bool:
 	for member:Dictionary in room.get("members",[]):
@@ -2066,6 +2143,16 @@ func _load_web_map(map_id: int, battle_assets: bool) -> void:
 
 func _confirm_battle_command() -> void:
 	if command_context.is_empty():return
+	if str(command_context.action) == "start":
+		var room: Variant = snapshot.get("room")
+		var changed := not room is Dictionary or int(room.get("id",0)) != int(command_context.room)
+		if not changed and not room.get("battle") is Dictionary:return
+		command_serial += 1
+		command_busy = false
+		command_context.clear()
+		room_action = ""
+		start_phase = "" if changed else "加载战场…"
+		return
 	var battle:=_battle_data()
 	var confirmed:=str(battle.get("id",""))!=str(command_context.battle) or int(battle.get("generation",-1))!=int(command_context.generation) or battle.get("result") is Dictionary
 	var shot:Variant=battle.get("shot")
@@ -2089,55 +2176,70 @@ func _confirm_battle_command() -> void:
 		if item_consumed:sound.play_event(13)
 
 func _command(command: Dictionary) -> bool:
-	if command_busy or auth_busy:
-		return false
-	if OS.has_feature("web") and str(command.get("action","")) in ["start","ready"]:
+	if command_busy or auth_busy or quitting:return false
+	var action := str(command.get("action", ""))
+	command_busy = true
+	room_action = action
+	command_serial += 1
+	var requested_serial := command_serial
+	var requested_token: String = net.token
+	var requested_room := int(snapshot.get("room", {}).get("id", 0))
+	command_context = {}
+	if action == "start":
+		start_phase = "准备资源…"
+		command_context = {"action":"start", "room":requested_room}
+	_refresh_room_actions()
+	if OS.has_feature("web") and action in ["start", "ready"]:
 		var resources := get_tree().root.get_node_or_null("WebResources")
 		var map_id := int(snapshot.get("room",{}).get("map",0))
 		if resources:
-			var before_token: String=net.token
-			var before_room := int(snapshot.get("room",{}).get("id",0))
-			if map_id>0 and not resources.is_loaded("map_%d"%map_id) or not resources.is_loaded("battle_fx"):
-				toast("正在准备本局资源，下载完成后继续…",90)
-			command_busy=true
 			var groups: Array = ["battle_fx"]
-			if map_id>0:groups.append("map_%d"%map_id)
-			var available: bool=await resources.ensure_groups(groups)
-			command_busy=false
-			if not available or auth_busy or net.token.is_empty() or net.token!=before_token or int(snapshot.get("room",{}).get("id",0))!=before_room:return false
-	command_busy = true
-	command_serial+=1
-	var requested_serial:=command_serial
-	command_context={}
-	var battle:=_battle_data()
-	if str(command.get("action","")) in ["fire","pass","item"] and not battle.is_empty():
-		var shot:Variant=battle.get("shot")
-		command_context={"action":str(command.action),"battle":str(battle.id),"generation":int(battle.generation),"seat":int(battle.active),"shot":int(shot.get("id",-1)) if shot is Dictionary else -1}
-		if str(command.action)=="item":
-			var slot:=int(command.get("slot",-1))
-			var inventory:Array=profile.get("inventory",[])
-			command_context.slot=slot
-			command_context.item=int(inventory[slot]) if slot>=0 and slot<inventory.size() else 0
-	var requested_token: String = net.token
+			if map_id > 0:groups.append("map_%d" % map_id)
+			var available: bool = await resources.ensure_groups(groups)
+			if requested_serial != command_serial:return true
+			if not available or auth_busy or net.token != requested_token or int(snapshot.get("room",{}).get("id",0)) != requested_room:
+				command_busy = false
+				command_context.clear()
+				room_action = ""
+				start_phase = ""
+				_refresh_room_actions()
+				if not available:toast("本局资源尚未准备好，可点击开始重试", 4)
+				return false
+	if action == "start":
+		start_phase = "请求开局…"
+		_refresh_room_actions()
+	var battle := _battle_data()
+	if action in ["fire", "pass", "item"] and not battle.is_empty():
+		var shot: Variant = battle.get("shot")
+		command_context = {"action":action,"battle":str(battle.id),"generation":int(battle.generation),"seat":int(battle.active),"shot":int(shot.get("id",-1)) if shot is Dictionary else -1}
+		if action == "item":
+			var slot := int(command.get("slot",-1))
+			var inventory: Array = profile.get("inventory",[])
+			command_context.slot = slot
+			command_context.item = int(inventory[slot]) if slot >= 0 and slot < inventory.size() else 0
 	var response: Dictionary = await net.request("/api/command", command)
-	if requested_serial!=command_serial:return true
+	if requested_serial != command_serial:return true
 	command_busy = false
+	room_action = ""
 	command_context.clear()
-	if auth_busy or net.token != requested_token or net.token.is_empty():
-		return false
+	start_phase = "加载战场…" if action == "start" and response.has("profile") else ""
+	_refresh_room_actions()
+	if auth_busy or net.token != requested_token or net.token.is_empty():return false
 	if response.has("profile"):
 		_accept_state(response)
-		if str(command.get("action",""))=="invite":toast("邀请已发送",3)
-		if str(command.get("action","")) in ["buy","sell","item"]:
-			sound.play_event(13 if str(command.action)=="item" else 17)
+		if action == "invite":toast("邀请已发送",3)
+		if action in ["buy","sell","item"]:sound.play_event(13 if action == "item" else 17)
 		return true
-	elif response.has("error"):
-		if str(command.get("action",""))=="fire" and str(response.error)=="SP 不足":
-			_failed_fire(_input_battle_unit(),int(command.weapon))
+	if response.has("error"):
+		if action == "fire" and str(response.error) == "SP 不足":_failed_fire(_input_battle_unit(),int(command.weapon))
+		elif bool(response.get("recoverable",false)):
+			if action == "start":toast("开局确认暂未收到，正在同步房间状态", 4)
 		else:toast(str(response.error))
 	return false
 
 func _process(delta: float) -> void:
+	_refresh_room_actions()
+	_update_network_notice()
 	_update_mobile_chat()
 	if OS.has_feature("web") and not web_map_loading and web_map_retry_at>0 and Time.get_ticks_msec()>=web_map_retry_at and snapshot.has("profile") and not net.token.is_empty():
 		_accept_state(snapshot)
@@ -2152,7 +2254,7 @@ func _process(delta: float) -> void:
 	if not catalog_ready or auth_busy or not net or net.token.is_empty():
 		return
 	poll_elapsed += delta
-	if poll_elapsed >= 0.3 and not poll_busy:
+	if poll_elapsed >= 0.3 and not poll_busy and not net.stream_active():
 		poll_elapsed = 0
 		_poll()
 	if scene != "battle":
@@ -2233,16 +2335,14 @@ func _poll() -> void:
 	poll_busy = false
 	if auth_busy or net.token != requested_token or net.token.is_empty():
 		return
-	if response.has("profile"):
+	if response.has("profile") or bool(response.get("unchanged",false)):
 		network_failures = 0
-		_accept_state(response)
+		if response.has("profile"):_accept_state(response)
 	elif int(response.get("status", 0)) == 401:
 		_logout()
 		toast("登录已过期，请重新登录")
 	elif response.has("error"):
 		network_failures += 1
-		if network_failures % 10 == 1:
-			toast("网络暂时中断，正在尝试恢复连接", 4)
 
 func _input(event: InputEvent) -> void:
 	if quitting:return
@@ -2303,8 +2403,8 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		charging = false
 		if is_instance_valid(touch_controls):touch_controls.reset_touches()
-	elif what == NOTIFICATION_APPLICATION_FOCUS_IN and OS.has_feature("web") and net:
-		net.etag = ""
+	elif what == NOTIFICATION_APPLICATION_FOCUS_IN and net:
+		net.resume()
 		poll_elapsed = 0.3
 
 func _touch_input_blocked() -> bool:

@@ -10,6 +10,7 @@ import socket
 import subprocess
 import tempfile
 import threading
+import select
 import time
 from urllib.parse import urlsplit
 
@@ -74,6 +75,25 @@ def local_site(directory, upstream, traffic):
 
         def do_GET(self):
             path = urlsplit(self.path).path
+            if path == "/hd-api/api/stream" and self.headers.get("Upgrade", "").lower() == "websocket":
+                address = urlsplit(upstream)
+                peer = socket.create_connection((address.hostname, address.port), timeout=10)
+                self.close_connection = True
+                request = "GET /api/stream HTTP/1.1\r\n"
+                for key, value in self.headers.items():request += key + ": " + value + "\r\n"
+                peer.sendall((request + "\r\n").encode())
+                self.connection.settimeout(30)
+                try:
+                    while True:
+                        ready, _, _ = select.select([peer, self.connection], [], [], 30)
+                        if not ready:break
+                        for source in ready:
+                            data = source.recv(65536)
+                            if not data:return
+                            (self.connection if source is peer else peer).sendall(data)
+                except (ConnectionError, OSError):pass
+                finally:peer.close()
+                return
             if path.startswith(("/api/", "/hd-api/")):
                 self.proxy()
                 return

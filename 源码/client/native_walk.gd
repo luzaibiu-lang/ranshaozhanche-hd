@@ -186,7 +186,7 @@ func _send() -> void:
 		direction=0
 		pending.clear()
 		unit=base.duplicate(true)
-		app.toast(str(response.error))
+		if not bool(response.get("recoverable",false)):app.toast(str(response.error))
 		_recover()
 	if not failed and not pending.is_empty():_send()
 
