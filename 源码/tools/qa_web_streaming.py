@@ -17,6 +17,7 @@ import requests
 from playwright.sync_api import sync_playwright
 
 from qa_catalog_recovery import EDGE, ROOT
+from qa_manual_auth import login
 
 
 @contextmanager
@@ -131,8 +132,9 @@ def startup(context, origin, traffic):
 
 def battle_test(page, upstream, origin, traffic, folder):
     name = "qa_stream" + secrets.token_hex(3)
+    password = secrets.token_hex(9)
     registration = requests.post(upstream + "/api/register", timeout=10,
-                                 json={"name": name, "password": secrets.token_hex(9)})
+                                 json={"name": name, "password": password})
     registration.raise_for_status()
     token = registration.json()["token"]
     headers = {"Authorization": "Bearer " + token}
@@ -147,6 +149,7 @@ def battle_test(page, upstream, origin, traffic, folder):
     page.evaluate("t => sessionStorage.setItem('burningchariot.hd.session', t)", token)
     page.goto(origin + "/hd/play/", wait_until="domcontentloaded")
     page.wait_for_selector("#status[hidden]", state="attached", timeout=180000)
+    login(page,name,password)
     page.wait_for_timeout(3200)
     page.mouse.click(210, 355)
     page.wait_for_timeout(400)

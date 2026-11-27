@@ -101,8 +101,8 @@ func _place(key: String, rect: Rect2, u: float) -> void:
 	var label: Label = entry.label
 	label.add_theme_font_size_override("font_size", maxi(10, roundi((18 if key == "fire" else 15)*u)))
 	var icon: TextureRect = entry.icon
-	icon.position = (box.size * .05).round()
-	icon.size = (box.size * .66).round()
+	icon.position = Vector2(2,2)
+	icon.size = box.size-Vector2(4,4)
 
 func set_inventory(values: Array) -> void:
 	if inventory == values:return
@@ -113,6 +113,9 @@ func set_inventory(values: Array) -> void:
 		entry.icon.texture = load("res://assets/icons/ItemIcon/%02d.png" % id) if id > 0 else null
 		entry.label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if id > 0 else HORIZONTAL_ALIGNMENT_CENTER
 		entry.label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM if id > 0 else VERTICAL_ALIGNMENT_CENTER
+		entry.label.z_index=1
+		entry.label.add_theme_color_override("font_outline_color",Color.BLACK)
+		entry.label.add_theme_constant_override("outline_size",3)
 	_paint()
 
 func set_actions(enabled: bool, weapon: int) -> void:

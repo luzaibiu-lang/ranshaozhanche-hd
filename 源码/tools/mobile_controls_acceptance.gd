@@ -45,6 +45,9 @@ func run() -> void:
 			for other: String in controls.keys:
 				if name < other:check(not rect.intersects(controls.keys[other].box.get_rect()), "overlap "+name+"/"+other)
 	controls.size = Vector2(844,390)
+	for slot in range(4):
+		var entry: Dictionary=controls.keys["item%d"%slot]
+		check(entry.icon.size.x>=entry.box.size.x-4 and entry.icon.size.y>=entry.box.size.y-4,"item icon fills button %d"%slot)
 	touch(1,key("right"),true)
 	touch(2,key("up"),true)
 	touch(3,key("fire"),true)

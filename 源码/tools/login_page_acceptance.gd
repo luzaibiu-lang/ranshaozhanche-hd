@@ -64,6 +64,8 @@ func _run() -> void:
 	root.size=Vector2i(1440,900)
 	if not await wait_for(func():return app.catalog_ready and app.scene=="login","normal startup reaches the tile login"):return
 	if not expect(str(app.net.endpoint).begins_with("http://127.0.0.1:"),"isolated local service"):return
+	await create_timer(1.5).timeout
+	if not expect(app.scene=="login" and app.net.token.is_empty() and app.profile.is_empty() and not is_instance_valid(app.channel_gate),"startup waits for manual login even with remembered credentials or a legacy ticket"):return
 	if OS.get_name()=="Windows":
 		if not expect(not load("res://game_platform.gd").mobile_ui(),"Windows uses desktop UI independently of touchscreen capabilities"):return
 		if not expect(not load("res://mobile_battle_controls.gd").touch_device(),"Windows does not create mobile battle controls"):return
@@ -111,5 +113,7 @@ func _run() -> void:
 		if not await wait_channel():return
 	else:
 		if not expect(app.password.text.is_empty() and not app.remember.button_pressed and app.net.token.is_empty(),"restart without remember remains at empty-password login"):return
+	if options.stage=="handoff":
+		if not expect(not FileAccess.file_exists(str(options.profile).path_join("vault/handoff/"+str(options.ticket)+".dat")),"valid legacy ticket is consumed without authenticating startup"):return
 	FileAccess.open(str(options.output).path_join(str(options.stage)+"-flow.json"),FileAccess.WRITE).store_string(JSON.stringify({"passed":true,"stage":options.stage,"checks":checks,"normal_ui":not app.qa}))
 	await app._quit()

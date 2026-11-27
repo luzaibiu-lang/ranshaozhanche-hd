@@ -1,0 +1,290 @@
+{
+  "version": "0.2.7",
+  "manual_login": {
+    "passed": true,
+    "checks": [
+      {
+        "mobile": false,
+        "check": "valid legacy tokens in both stores cannot authenticate startup",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "wrong manual password remains at login",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "manual button accepts correct credentials",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "refresh after successful login still requires manual login",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "manual login after refresh works",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "valid legacy tokens in both stores cannot authenticate startup",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "wrong manual password remains at login",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "manual button accepts correct credentials",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "refresh after successful login still requires manual login",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "manual login after refresh works",
+        "passed": true
+      }
+    ],
+    "engine_errors": [],
+    "real_mobile_hardware_tested": false
+  },
+  "mobile_flow": {
+    "passed": true,
+    "checks": [
+      "touch selects a channel and enters it",
+      "room Start button starts a game through a real touch",
+      "touching outside chat closes keyboard and returns control",
+      "two real touch fingers change the game zoom",
+      "one real touch finger moves the game camera",
+      "movement buttons work after chat and gestures"
+    ],
+    "engine_errors": [],
+    "touch_actions": [
+      [
+        {
+          "action": "start"
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 1,
+          "generation": 1,
+          "move_sequence": 1
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 4,
+          "generation": 1,
+          "move_sequence": 2
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 4,
+          "generation": 1,
+          "move_sequence": 3
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 3,
+          "generation": 1,
+          "move_sequence": 4
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 4,
+          "generation": 1,
+          "move_sequence": 5
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 3,
+          "generation": 1,
+          "move_sequence": 6
+        },
+        200
+      ]
+    ],
+    "device": "Chromium actual touch events; no physical device"
+  },
+  "controls": {
+    "checks": 331,
+    "events": [
+      "start",
+      "release",
+      [
+        "weapon",
+        0
+      ],
+      [
+        "weapon",
+        1
+      ],
+      [
+        "weapon",
+        2
+      ],
+      [
+        "item",
+        0
+      ],
+      [
+        "item",
+        1
+      ],
+      [
+        "item",
+        2
+      ],
+      [
+        "item",
+        3
+      ],
+      "start",
+      "cancel",
+      "start",
+      "cancel",
+      "start",
+      "cancel"
+    ],
+    "failures": []
+  },
+  "windows": {
+    "passed": true,
+    "stages": [
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "startup waits for manual login even with remembered credentials or a legacy ticket",
+          "Windows uses desktop UI independently of touchscreen capabilities",
+          "Windows does not create mobile battle controls",
+          "shared browser profile is included in the exported game pack",
+          "original tile audio variant 0 decodes",
+          "original tile audio variant 1 decodes",
+          "original tile audio variant 2 decodes",
+          "original tile audio variant 3 decodes",
+          "original tile audio variant 4 decodes",
+          "original tile audio variant 5 decodes",
+          "original tile audio variant 6 decodes",
+          "real login hover uses original variant instead of a generic beep",
+          "password mismatch is shown within the form",
+          "login reaches channel transition",
+          "login remains under the closing mechanical doors",
+          "channel selector ready",
+          "covered login is released after the doors close",
+          "selector opens into original lobby",
+          "logout returns to the same login design",
+          "wrong password remains recoverable",
+          "login reaches channel transition",
+          "login remains under the closing mechanical doors",
+          "channel selector ready",
+          "covered login is released after the doors close",
+          "remember account uses actual Windows encrypted helper"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "register"
+      },
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "startup waits for manual login even with remembered credentials or a legacy ticket",
+          "Windows uses desktop UI independently of touchscreen capabilities",
+          "Windows does not create mobile battle controls",
+          "shared browser profile is included in the exported game pack",
+          "original tile audio variant 0 decodes",
+          "original tile audio variant 1 decodes",
+          "original tile audio variant 2 decodes",
+          "original tile audio variant 3 decodes",
+          "original tile audio variant 4 decodes",
+          "original tile audio variant 5 decodes",
+          "original tile audio variant 6 decodes",
+          "real login hover uses original variant instead of a generic beep",
+          "encrypted saved account prefills the new form after restart",
+          "unchecking remember clears the encrypted account",
+          "login reaches channel transition",
+          "channel selector ready",
+          "covered login is released after the doors close"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "remembered"
+      },
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "startup waits for manual login even with remembered credentials or a legacy ticket",
+          "Windows uses desktop UI independently of touchscreen capabilities",
+          "Windows does not create mobile battle controls",
+          "shared browser profile is included in the exported game pack",
+          "original tile audio variant 0 decodes",
+          "original tile audio variant 1 decodes",
+          "original tile audio variant 2 decodes",
+          "original tile audio variant 3 decodes",
+          "original tile audio variant 4 decodes",
+          "original tile audio variant 5 decodes",
+          "original tile audio variant 6 decodes",
+          "real login hover uses original variant instead of a generic beep",
+          "restart without remember remains at empty-password login"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "forgotten"
+      },
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "startup waits for manual login even with remembered credentials or a legacy ticket",
+          "Windows uses desktop UI independently of touchscreen capabilities",
+          "Windows does not create mobile battle controls",
+          "shared browser profile is included in the exported game pack",
+          "original tile audio variant 0 decodes",
+          "original tile audio variant 1 decodes",
+          "original tile audio variant 2 decodes",
+          "original tile audio variant 3 decodes",
+          "original tile audio variant 4 decodes",
+          "original tile audio variant 5 decodes",
+          "original tile audio variant 6 decodes",
+          "real login hover uses original variant instead of a generic beep",
+          "restart without remember remains at empty-password login",
+          "valid legacy ticket is consumed without authenticating startup"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "handoff"
+      }
+    ],
+    "private_desktop": true,
+    "audio": "Dummy"
+  },
+  "physical_mobile_devices_tested": false
+}

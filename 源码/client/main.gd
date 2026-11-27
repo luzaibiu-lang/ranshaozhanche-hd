@@ -168,50 +168,22 @@ func _ready() -> void:
 	if web_resources:web_resources.status_changed.connect(func(message: String,failed: bool):
 		if failed:toast(message,5)
 	)
-	if launcher_ticket.is_empty():_show_login()
-	else:_show_launch_loading()
+	# Remembered credentials only prefill the form. Authentication always
+	# begins with the user submitting it, including after a browser reload.
+	_vault("clear", "")
+	if not launcher_ticket.is_empty():_vault("consume-handoff", launcher_ticket)
+	launcher_ticket = ""
+	_show_login()
 	toast("正在连接高清版服务…", 20)
 	await _ensure_server()
 	await _load_catalog()
-	# Login/session restoration must not expose a room with an empty catalog.
+	# Manual login must not expose a room with an empty catalog.
 	# _process keeps retrying without blocking rendering or keyboard input.
 	while not catalog_ready and not quitting:
 		await get_tree().create_timer(0.2).timeout
 	if quitting:return
 	if qa:
 		await _qa_run()
-	else:
-		var startup_generation := auth_generation
-		var saved_token := ""
-		if not launcher_ticket.is_empty():
-			saved_token = _vault("consume-handoff", launcher_ticket)
-		elif OS.has_feature("web") and not auth_busy and auth_generation == 0:
-			saved_token = GamePlatform.browser_session("read")
-		if not saved_token.is_empty():
-			auth_busy=true
-			_set_login_busy(true)
-			net.token = saved_token
-			var state: Dictionary = await net.request("/api/state")
-			if quitting or startup_generation!=auth_generation:return
-			if state.has("profile"):
-				_accept_state(state)
-				if not launcher_ticket.is_empty() and qa_options.has("proof") and net.endpoint.begins_with("http://127.0.0.1:"):
-					# Launcher QA now verifies the real chooser, not a page
-					# that skipped it on the first successful state reply.
-					while is_instance_valid(channel_gate) and channel_gate.phase != "select" and not quitting:
-						await get_tree().process_frame
-					await RenderingServer.frame_post_draw
-					var proof:=str(qa_options.proof)
-					get_viewport().get_texture().get_image().save_png(proof+".png")
-					var report:=FileAccess.open(proof,FileAccess.WRITE)
-					report.store_string(JSON.stringify({"scene":scene,"username":str(profile.name),"handoff_consumed":true,"viewport":str(get_viewport_rect().size)}))
-			else:
-				net.token = ""
-				if int(state.get("status", 0)) == 401: _vault("clear", "")
-			auth_busy=false
-			_set_login_busy(false)
-		if not launcher_ticket.is_empty() and profile.is_empty(): _show_login()
-		launcher_ticket = ""
 
 func _catalog_valid(data: Dictionary) -> bool:
 	for spec in [["vehicles", 30], ["maps", 19], ["items", 17]]:
@@ -286,6 +258,8 @@ func _show_launch_loading() -> void:
 
 func _show_channel_gate() -> void:
 	if is_instance_valid(channel_gate): return
+	get_viewport().gui_release_focus()
+	DisplayServer.virtual_keyboard_hide()
 	if scene == "login" and is_instance_valid(login_page) and is_instance_valid(skin):
 		login_page.begin_exit()
 		login_transition = skin
@@ -1525,6 +1499,7 @@ func _show_battle() -> void:
 	view.player_id = int(profile.id)
 	view.catalog=catalog
 	view.clock = net
+	view.touch_guard = _map_touch_blocked
 	view.mouse_aim.connect(func(elevation:float,face:int):
 		if _my_turn() and not battle_action_busy:
 			aim=elevation
@@ -1993,6 +1968,8 @@ func _command(command: Dictionary) -> bool:
 		if resources and map_id>0:
 			var before_token: String=net.token
 			var before_room := int(snapshot.get("room",{}).get("id",0))
+			if not resources.is_loaded("map_%d"%map_id) or not resources.is_loaded("battle_fx"):
+				toast("正在准备本局资源，下载完成后继续…",90)
 			command_busy=true
 			var available: bool=await resources.ensure_groups(["map_%d"%map_id,"battle_fx"])
 			command_busy=false
@@ -2134,6 +2111,14 @@ func _poll() -> void:
 
 func _input(event: InputEvent) -> void:
 	if quitting:return
+	var pointer_down: bool = event is InputEventScreenTouch and event.pressed or event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT
+	if pointer_down and scene in ["lobby","room","shop","battle"]:
+		var focused := get_viewport().gui_get_focus_owner()
+		if is_instance_valid(chat_input) and focused==chat_input and not chat_input.get_global_rect().has_point(event.position):
+			chat_input.release_focus()
+			DisplayServer.virtual_keyboard_hide()
+			if OS.has_feature("web"):
+				JavaScriptBridge.eval("if(document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName))document.activeElement.blur();document.getElementById('canvas').focus({preventScroll:true})",true)
 	if not event is InputEventKey:
 		return
 	if event.physical_keycode == KEY_F11 and event.pressed and not event.echo:
@@ -2189,6 +2174,17 @@ func _notification(what: int) -> void:
 func _touch_input_blocked() -> bool:
 	var focus := get_viewport().gui_get_focus_owner()
 	return is_instance_valid(result_layer) or _modal_open() or focus is LineEdit or focus is TextEdit
+
+func _map_touch_blocked(at: Vector2) -> bool:
+	if _touch_input_blocked():return true
+	for control: Control in [chat_input,inventory_row]:
+		if is_instance_valid(control) and control.is_visible_in_tree() and control.get_global_rect().has_point(at):return true
+	for button: Control in hud_buttons.values():
+		if button.is_visible_in_tree() and button.get_global_rect().has_point(at):return true
+	if is_instance_valid(touch_controls):
+		for entry: Dictionary in touch_controls.keys.values():
+			if entry.box.get_global_rect().has_point(at):return true
+	return false
 
 func _modal_open() -> bool:
 	for node in get_tree().get_nodes_in_group("native_modal"):

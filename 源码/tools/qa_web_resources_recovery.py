@@ -4,6 +4,7 @@ from pathlib import Path
 import requests
 from playwright.sync_api import sync_playwright
 from qa_web_streaming import ROOT,EDGE,backend,local_site
+from qa_manual_auth import login
 
 p=argparse.ArgumentParser();p.add_argument('--web',type=Path,required=True);p.add_argument('--report',type=Path,required=True);args=p.parse_args()
 entry=(args.web/'hd/play/index.html').read_text('utf8')
@@ -11,7 +12,8 @@ manifest_url=re.search(r'name="game-stream-manifest" content="([^"]+)"',entry)[1
 manifest=json.loads((args.web/manifest_url.lstrip('/')).read_text('utf8'))
 traffic=[];errors=[];faults={'map_4':0,'map_5':0}
 with backend(ROOT/'.tools/hdserver-current.exe') as upstream,local_site(args.web.resolve(),upstream,traffic) as origin,sync_playwright() as pw:
-    auth=requests.post(upstream+'/api/register',json={'name':'qa_rec'+secrets.token_hex(3),'password':secrets.token_hex(10)},timeout=10).json()
+    name='qa_rec'+secrets.token_hex(3);password=secrets.token_hex(10)
+    auth=requests.post(upstream+'/api/register',json={'name':name,'password':password},timeout=10).json()
     headers={'Authorization':'Bearer '+auth['token']}
     def command(action,**kw):
         r=requests.post(upstream+'/api/command',json={'action':action,**kw},headers=headers,timeout=10);r.raise_for_status();return r.json()
@@ -31,6 +33,7 @@ with backend(ROOT/'.tools/hdserver-current.exe') as upstream,local_site(args.web
     try:
         page.goto(origin+'/hd/play/',wait_until='domcontentloaded')
         page.wait_for_selector('#status[hidden]',state='attached',timeout=120000)
+        login(page,name,password)
         page.wait_for_timeout(2400);page.mouse.click(210,355);page.mouse.click(345,837);page.wait_for_timeout(1500)
         command('create',name='qa_recovery',map=4)
         page.wait_for_function("BurningChariotResourceState.loaded.includes('map_4') && BurningChariotResourceState.loaded.includes('battle_fx')",timeout=120000)

@@ -36,6 +36,7 @@ var manual_until := 0.0
 var dragging := false
 var map_touches: Dictionary = {}
 var touch_navigation := false
+var touch_guard: Callable
 var zoom_locked := false
 var angle := 45.0
 var power := 0.65
@@ -678,12 +679,7 @@ func _bar_background() -> StyleBoxFlat:
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
-		if event.pressed and not event.canceled and not _camera_input_blocked() and map_touches.size()<2:
-			map_touches[event.index]=event.position
-			touch_navigation=true
-			dragging=false
-			aiming_with_mouse=false
-			accept_event()
+		if _begin_map_touch(event):accept_event()
 		return
 	if event is InputEventMouse and event.device==-1:return
 	if event is InputEventMouseButton:
@@ -708,8 +704,11 @@ func _gui_input(event: InputEvent) -> void:
 			if int(unit.player)==player_id and int(unit.seat)==int(battle.active):_update_mouse_aim(event.position,unit)
 
 func _input(event:InputEvent) -> void:
+	if event is InputEventScreenTouch and event.pressed and not event.canceled:
+		if _begin_map_touch(event):get_viewport().set_input_as_handled()
 	if event is InputEventScreenTouch and (not event.pressed or event.canceled):
 		map_touches.erase(event.index)
+		_publish_navigation_state()
 	if event is InputEventScreenDrag and map_touches.has(event.index):
 		if _camera_input_blocked():
 			map_touches.clear()
@@ -722,6 +721,22 @@ func _input(event:InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed:aiming_with_mouse=false
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_RIGHT and not event.pressed:dragging=false
 
+func _begin_map_touch(event: InputEventScreenTouch) -> bool:
+	if not event.pressed or event.canceled or map_touches.has(event.index) or map_touches.size()>=2 or _camera_input_blocked():return false
+	if touch_guard.is_valid() and touch_guard.call(event.position):return false
+	var at: Vector2=get_global_transform_with_canvas().affine_inverse()*event.position
+	if not Rect2(Vector2.ZERO,size).has_point(at):return false
+	map_touches[event.index]=at
+	touch_navigation=true
+	dragging=false
+	aiming_with_mouse=false
+	_publish_navigation_state()
+	return true
+
+func _publish_navigation_state() -> void:
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval("globalThis.BurningChariotCamera="+JSON.stringify({"camera":[camera.x,camera.y],"zoom":zoom,"touches":map_touches.size(),"battle":battle_id}),true)
+
 func _pan_touch(index:int,position:Vector2) -> void:
 	if not map_touches.has(index):return
 	overview=0
@@ -731,6 +746,7 @@ func _pan_touch(index:int,position:Vector2) -> void:
 		camera-=(position-(map_touches[index] as Vector2))/maxf(.1,zoom)
 		target_camera=camera
 		map_touches[index]=position
+		_publish_navigation_state()
 		return
 	var old_a:Vector2=map_touches[ids[0]]
 	var old_b:Vector2=map_touches[ids[1]]
@@ -747,6 +763,7 @@ func _pan_touch(index:int,position:Vector2) -> void:
 		zoom_target=zoom
 	camera=anchor-(center-size/2)/maxf(.1,zoom)
 	target_camera=camera
+	_publish_navigation_state()
 
 func _update_mouse_aim(at:Vector2,unit:Dictionary) -> void:
 	var center:=screen(aim_center(unit))

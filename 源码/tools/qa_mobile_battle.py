@@ -12,6 +12,7 @@ import requests
 from playwright.sync_api import sync_playwright
 
 import qa_catalog_recovery as site
+from qa_manual_auth import login
 
 ROOT = Path(__file__).resolve().parents[2]
 parser = argparse.ArgumentParser()
@@ -35,7 +36,8 @@ with tempfile.TemporaryDirectory() as data:
             except requests.ConnectionError:
                 time.sleep(.1)
         name = "qa_m" + secrets.token_hex(3)
-        token = requests.post(site.UPSTREAM+"/api/register", json={"name":name,"password":secrets.token_hex(9)}, timeout=5).json()["token"]
+        password = secrets.token_hex(9)
+        token = requests.post(site.UPSTREAM+"/api/register", json={"name":name,"password":password}, timeout=5).json()["token"]
         headers = {"Authorization":"Bearer "+token}
         def command(action, **fields):
             response = requests.post(site.UPSTREAM+"/api/command", json={"action":action,**fields},headers=headers,timeout=5)
@@ -71,6 +73,7 @@ with tempfile.TemporaryDirectory() as data:
             try:
                 page.goto(origin+"/hd/play/",wait_until="domcontentloaded")
                 page.wait_for_selector("#status[hidden]",state="attached",timeout=180000)
+                login(page,name,password,True)
                 page.wait_for_timeout(2200)
                 tap(210,355)
                 tap(345,837)
