@@ -20,7 +20,7 @@ profile = (root / '源码/client/device_profile.js').read_text(encoding='utf8')
 shell = shell.replace('<!-- DEVICE_PROFILE -->', '<script>\n' + profile + '\n</script>')
 shell = shell.replace('<!-- BUILD_BASE -->', re.search(r'<base href="[^"]+">', published)[0])
 shell = shell.replace('$GODOT_HEAD_INCLUDE', '').replace('$GODOT_THREADS_ENABLED', 'false')
-shell = shell.replace('$GODOT_URL', 'game.js').replace('$GODOT_CONFIG', re.search(r'new Engine\((\{[^\n]+\})\)', published)[1])
+shell = shell.replace('$GODOT_URL', 'game.js').replace('$GODOT_CONFIG', re.search(r'(?:new Engine\(|const config = )(\{[^\n]+\})', published)[1])
 
 class Handler(SimpleHTTPRequestHandler):
     def log_message(self, *args):

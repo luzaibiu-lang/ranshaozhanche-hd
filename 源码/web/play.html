@@ -123,7 +123,9 @@
         notice("浏览器缺少 " + missing.join("、") + "。请启用硬件加速或使用最新版浏览器。");
         return;
       }
-      const engine = new Engine($GODOT_CONFIG);
+      const config = $GODOT_CONFIG;
+      config.experimentalVK = config.experimentalVK && mobileDevice;
+      const engine = new Engine(config);
       await engine.startGame({
         canvas,
         onProgress(loaded,total) {

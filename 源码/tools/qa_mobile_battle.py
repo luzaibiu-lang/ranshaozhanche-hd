@@ -82,6 +82,9 @@ with tempfile.TemporaryDirectory() as data:
                 page.set_viewport_size({"width":844,"height":390})
                 page.wait_for_timeout(600)
                 initial=command("start")["room"]["battle"]
+                if page.evaluate("typeof BurningChariotResourceState !== 'undefined'"):
+                    page.wait_for_function("BurningChariotResourceState.loaded.includes('map_4') && BurningChariotResourceState.loaded.includes('battle_fx')",timeout=120000)
+                    page.wait_for_timeout(1000)
                 for _ in range(90):
                     page.wait_for_timeout(200)
                     battle=state()["room"]["battle"]

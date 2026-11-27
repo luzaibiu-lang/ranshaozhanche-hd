@@ -6,3 +6,4 @@ pefile>=2024.8
 capstone>=5
 psutil>=6
 playwright>=1.50
+fonttools==4.61.1

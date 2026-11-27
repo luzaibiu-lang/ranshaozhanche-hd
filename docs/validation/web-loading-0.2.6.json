@@ -1,0 +1,169 @@
+{
+  "cold": {
+    "server_bytes": 16713209,
+    "requests": [
+      {
+        "path": "/hd/play/",
+        "bytes": 9931,
+        "gzip": false
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.js",
+        "bytes": 77288,
+        "gzip": true
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/field.webp",
+        "bytes": 179842,
+        "gzip": false
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.icon.png",
+        "bytes": 1916,
+        "gzip": false
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/2962989f97e4b8a51c2f759cbb20145b1a34e6ce0f602bb4ca9ef1ef4c292088.pck",
+        "bytes": 5838220,
+        "gzip": true
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.wasm",
+        "bytes": 9295456,
+        "gzip": true
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.audio.position.worklet.js",
+        "bytes": 1167,
+        "gzip": true
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.audio.worklet.js",
+        "bytes": 2204,
+        "gzip": true
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/75887c19146e336b3ecc57179276ee576193043978e637dcfc836ef35ea74def.pck",
+        "bytes": 1307185,
+        "gzip": true
+      }
+    ],
+    "ready_seconds_local": 5.33,
+    "browser_resources": [
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.js",
+        "body": 77288,
+        "transfer": 77588
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/field.webp",
+        "body": 179842,
+        "transfer": 180142
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.wasm",
+        "body": 9295456,
+        "transfer": 9295756
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/2962989f97e4b8a51c2f759cbb20145b1a34e6ce0f602bb4ca9ef1ef4c292088.pck",
+        "body": 5838220,
+        "transfer": 5838520
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.icon.png",
+        "body": 1916,
+        "transfer": 2216
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/75887c19146e336b3ecc57179276ee576193043978e637dcfc836ef35ea74def.pck",
+        "body": 1307185,
+        "transfer": 1307485
+      }
+    ]
+  },
+  "warm": {
+    "server_bytes": 9931,
+    "requests": [
+      {
+        "path": "/hd/play/",
+        "bytes": 9931,
+        "gzip": false
+      }
+    ],
+    "ready_seconds_local": 3.77,
+    "browser_resources": [
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.js",
+        "body": 77288,
+        "transfer": 0
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.wasm",
+        "body": 9295456,
+        "transfer": 0
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/2962989f97e4b8a51c2f759cbb20145b1a34e6ce0f602bb4ca9ef1ef4c292088.pck",
+        "body": 5838220,
+        "transfer": 0
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/field.webp",
+        "body": 179842,
+        "transfer": 0
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/game.icon.png",
+        "body": 1916,
+        "transfer": 0
+      }
+    ]
+  },
+  "battle": {
+    "selected_map": 4,
+    "battle_units": 2,
+    "requests": [
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/672aad4ad0bbf42395edd40cd4fe61df7fe345a199bbe20ee9f64f8a212eda01.pck",
+        "bytes": 2291194,
+        "gzip": true
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/ddcc0de6f9f0033f8e0b3e77fba8c3f080d87510f9af3ffa9e9b88e9b91c8b05.pck",
+        "bytes": 16488013,
+        "gzip": true
+      },
+      {
+        "path": "/hd/play/builds/be347a9319365be04406/f47a2a62afb3f63da5c979ea7895758a88c71fc5b63554bf00c9754cc2bf6c8e.pck",
+        "bytes": 1767926,
+        "gzip": true
+      }
+    ]
+  },
+  "version": "0.2.6",
+  "baseline_cold_bytes": 137147491,
+  "cold_reduction_percent": 87.81,
+  "physical_mobile_devices_tested": false,
+  "resource_recovery": {
+    "passed": true,
+    "fault_attempts": {
+      "map_4": 3,
+      "map_5": 4
+    },
+    "server_503_recovered": true,
+    "corrupt_200_rejected": true,
+    "all_attempts_failed_then_automatic_recovery": true,
+    "unused_map_12_not_requested": true,
+    "engine_errors": [],
+    "device": "headless Chromium actual WebAssembly and isolated Go"
+  },
+  "mobile_input": {
+    "mobile_touch_login": true,
+    "ime_composition": true,
+    "password_paste": true,
+    "fullscreen_mobile": true,
+    "touch_desktop_login": true,
+    "physical_devices": false
+  }
+}

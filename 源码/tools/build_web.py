@@ -3,6 +3,7 @@ import argparse
 import gzip
 import hashlib
 import html
+import json
 import os
 from pathlib import Path
 import re
@@ -22,6 +23,8 @@ WEB = ROOT / "源码/web"
 def artifact_hash(directory):
     digest = hashlib.sha256()
     for item in sorted(directory.iterdir()):
+        if item.name == "game.pck":
+            continue
         digest.update(item.name.encode("utf-8") + b"\0")
         with item.open("rb") as stream:
             digest.update(hashlib.file_digest(stream, "sha256").digest())
@@ -94,15 +97,63 @@ def build(output, engine, classic_url, hd_url):
         shutil.copyfile(CLIENT / "assets/app_icon.png", stage / "icon.png")
         shutil.copyfile(WEB / "home.css", stage / "home.css")
         exported.unlink()
+        # Engine URLs depend only on engine/static bytes, not on game code or
+        # maps. A new game release can reuse every unchanged browser cache key.
         release_id = artifact_hash(stage)
-        release = releases / release_id
-        if not release.exists():
-            static_gzip(stage)
-            stage.rename(release)
         assets = f"/hd/play/builds/{release_id}"
+        packer = ROOT / ".tools/web-packer"
+        packer.mkdir(parents=True, exist_ok=True)
+        (packer / "project.godot").write_text('config_version=5\n[application]\nconfig/name="Web Pack Builder"\n', encoding="utf8")
+        shutil.copyfile(ROOT / "源码/tools/split_web_pack.gd", packer / "split_web_pack.gd")
+        forced = {"res://assets/maps/17/background.jpg", "res://assets/maps/17/background.jpg.import"}
+        for source in CLIENT.glob("*.gd"):
+            for path in re.findall(r'preload\("(res://assets/[^\"]+)"\)', source.read_text("utf8")):
+                forced.update((path, path + ".import"))
+        settings = stage / "pack-settings.json"
+        settings.write_text(json.dumps({"version":version,"core":sorted(forced)}), encoding="utf8")
+        packs = stage / "packs"
+        core = stage / "core.pck"
+        result = subprocess.run([str(engine), "--headless", "--audio-driver", "Dummy", "--path", str(packer),
+            "--script", str(packer / "split_web_pack.gd"), "--", str(stage / "game.pck"), str(packs), assets, str(core), str(settings)],
+            capture_output=True, text=True, encoding="utf8", errors="replace", creationflags=getattr(subprocess,"CREATE_NO_WINDOW",0), timeout=240)
+        if result.returncode or "ERROR:" in result.stdout + result.stderr:
+            raise RuntimeError("Web pack split failed:\n" + result.stdout + result.stderr)
+        manifest = packs / "stream.json"
+        manifest_name = "stream-" + hashlib.sha256(manifest.read_bytes()).hexdigest()[:20] + ".json"
+        manifest.rename(stage / manifest_name)
+        for item in packs.iterdir():
+            item.rename(stage / item.name)
+        packs.rmdir()
+        settings.unlink()
+        (stage / "game.pck").unlink()
+        core_name = hashlib.sha256(core.read_bytes()).hexdigest() + ".pck"
+        core.rename(stage / core_name)
+        config_match = re.search(r'(?:new Engine\(|const config = )(\{[^\n]+\})', shell)
+        config = json.loads(config_match[1])
+        config["mainPack"] = core_name
+        config["fileSizes"] = {"game.wasm":(stage/"game.wasm").stat().st_size, core_name:(stage/core_name).stat().st_size}
+        shell = shell[:config_match.start(1)] + json.dumps(config,ensure_ascii=False) + shell[config_match.end(1):]
+        shell = shell.replace("<!-- BUILD_BASE -->", f'<base href="{assets}/"><meta name="game-stream-manifest" content="{assets}/{manifest_name}">')
+        release = releases / release_id
+        static_gzip(stage)
+        current_files = {item.name for item in stage.iterdir()}
+        if not release.exists():
+            stage.rename(release)
+        else:
+            for item in stage.iterdir():
+                target = release / item.name
+                if target.exists():
+                    if hashlib.sha256(target.read_bytes()).digest()!=hashlib.sha256(item.read_bytes()).digest():
+                        raise RuntimeError("Immutable Web asset changed: " + item.name)
+                else:item.rename(target)
+            # Local candidates contain only this manifest's files. Production
+            # publication remains additive so already open tabs keep working.
+            for item in release.iterdir():
+                if item.name not in current_files and (re.fullmatch(r"[0-9a-f]{64}\.pck(?:\.gz)?",item.name) or re.fullmatch(r"stream-[0-9a-f]{20}\.json",item.name)):
+                    item.unlink()
         homepage = (WEB / "home.html").read_text("utf-8").replace("@@ASSETS@@", assets)
         homepage = homepage.replace("@@CLASSIC@@", classic_url).replace("@@HD@@", hd_url)
-        publish_index(releases.parent / "index.html", shell.replace("<!-- BUILD_BASE -->", f'<base href="{assets}/">'))
+        publish_index(releases.parent / "index.html", shell)
         publish_index(output / "index.html", homepage)
         print(f"Web {version} ready: {output} ({assets})")
 

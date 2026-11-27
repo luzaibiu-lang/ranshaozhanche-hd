@@ -81,7 +81,18 @@ func set_scene(value: String, map_id := 0) -> void:
 			break
 	if value == "battle" and chosen == tracks[0] and tracks.size() > 2:
 		chosen = tracks[2]
-	music.stream = load(chosen)
+	if OS.has_feature("web") and not ResourceLoader.exists(chosen):
+		_load_web_music(chosen,key)
+		return
+	_start_music(chosen)
+
+func _load_web_music(path: String, requested_scene: String) -> void:
+	var resources := get_tree().root.get_node_or_null("WebResources")
+	if resources and await resources.ensure_group("music_"+path.get_file()):
+		if scene==requested_scene and not shutting_down:_start_music(path)
+
+func _start_music(path: String) -> void:
+	music.stream = load(path)
 	apply_volume()
 	if not silent:
 		music.play()

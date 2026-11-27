@@ -1,6 +1,9 @@
 extends RefCounted
 
 const WEB_SESSION := "burningchariot.hd.session"
+static var web_font: Font
+static var full_font_ready := false
+static var full_font_loading := false
 
 static func mobile_ui() -> bool:
 	if OS.has_feature("web"):
@@ -34,7 +37,22 @@ static func browser_session(mode: String, token := "") -> String:
 
 static func ui_font() -> Font:
 	if OS.has_feature("web"):
-		return load("res://assets/fonts/NotoSansSC-Regular.otf")
+		if web_font==null:web_font=load("res://assets/fonts/NotoSansSC-UI.otf")
+		return web_font
 	var font := SystemFont.new()
 	font.font_names = PackedStringArray(["Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"])
 	return font
+
+static func ensure_text(text: String) -> void:
+	if not OS.has_feature("web") or full_font_ready or full_font_loading:return
+	var font := ui_font()
+	var missing := false
+	for character in text:
+		if not font.has_char(character.unicode_at(0)):missing=true;break
+	if not missing:return
+	full_font_loading=true
+	var resources: Node = Engine.get_main_loop().root.get_node_or_null("WebResources")
+	if resources and await resources.ensure_group("font_full"):
+		font.fallbacks=[load("res://assets/fonts/NotoSansSC-Regular.otf")]
+		full_font_ready=true
+	full_font_loading=false

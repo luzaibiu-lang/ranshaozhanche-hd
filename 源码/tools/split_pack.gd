@@ -20,6 +20,7 @@ func walk(path: String) -> void:
 
 func group_for(path: String) -> String:
 	if path.begins_with("res://assets/app_icon.png"): return "core"
+	if path.begins_with("res://assets/fonts/NotoSansSC-UI.otf"):return "font_ui"
 	var parts := path.trim_prefix("res://assets/").split("/")
 	if not path.begins_with("res://assets/"): return "core"
 	if parts[0] in ["maps","tanks"] and parts.size()>1:

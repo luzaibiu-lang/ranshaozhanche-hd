@@ -6,7 +6,7 @@
 
 **保留经典战车与回合制炮战，用 Godot 与 Go 重建宽屏联机体验。**
 
-![Version 0.2.5](https://img.shields.io/badge/Version-0.2.5-blue)
+![Version 0.2.6](https://img.shields.io/badge/Version-0.2.6-blue)
 ![Godot 4.5.1](https://img.shields.io/badge/Godot-4.5.1-478CBF?logo=godotengine&logoColor=white)
 ![Go 1.26](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go&logoColor=white)
 ![Windows 与 Web](https://img.shields.io/badge/Platform-Windows%20%7C%20Web-0078D4)

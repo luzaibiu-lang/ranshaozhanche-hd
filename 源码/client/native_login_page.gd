@@ -225,6 +225,7 @@ func _entry(id: String, secret: bool) -> LineEdit:
 	var field := LineEdit.new()
 	field.name = id
 	field.secret = secret
+	if secret:field.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_PASSWORD
 	field.add_theme_stylebox_override("normal", _gold_style())
 	field.add_theme_stylebox_override("focus", _gold_style(true))
 	for key in ["font_color", "caret_color"]:field.add_theme_color_override(key, Color("342a10"))

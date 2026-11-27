@@ -111,6 +111,8 @@ var login_transition: Control
 var aim_slider: HSlider
 var battle_hud: Control
 var touch_controls: TouchControls
+var web_map_loading := false
+var web_map_retry_at := 0
 var hud_buttons := {}
 var ui_font: Font
 var shop_gold: Label
@@ -162,6 +164,10 @@ func _ready() -> void:
 	_setup_window()
 	_apply_theme()
 	_build_shell()
+	var web_resources := get_tree().root.get_node_or_null("WebResources")
+	if web_resources:web_resources.status_changed.connect(func(message: String,failed: bool):
+		if failed:toast(message,5)
+	)
 	if launcher_ticket.is_empty():_show_login()
 	else:_show_launch_loading()
 	toast("正在连接高清版服务…", 20)
@@ -1872,6 +1878,7 @@ func _accept_state(state: Dictionary) -> void:
 			return
 	snapshot = state
 	profile = state.get("profile", {})
+	GamePlatform.ensure_text(JSON.stringify(profile)+JSON.stringify(state.get("chat",[]))+JSON.stringify(state.get("room",{})))
 	if not catalog_ready:return
 	if not qa and not channel_accepted:
 		_show_channel_gate()
@@ -1883,6 +1890,13 @@ func _accept_state(state: Dictionary) -> void:
 	var wanted := "lobby"
 	if room is Dictionary:
 		wanted = "battle" if room.get("battle") is Dictionary else "room"
+		if OS.has_feature("web"):
+			var map_id := int(room.battle.map) if wanted=="battle" else int(room.get("map",0))
+			var resources := get_tree().root.get_node_or_null("WebResources")
+			if resources and map_id>0 and (not resources.is_loaded("map_%d"%map_id) or wanted=="battle" and not resources.is_loaded("battle_fx")):
+				if not web_map_loading and Time.get_ticks_msec()>=web_map_retry_at:
+					_load_web_map(map_id,true)
+				if wanted=="battle":return
 	if is_instance_valid(page_transition):
 		if wanted == "battle":
 			_cancel_page_transition()
@@ -1933,6 +1947,19 @@ func _accept_state(state: Dictionary) -> void:
 			last_chat_stamp = stamp
 			chat_label.text = "\n".join(messages.map(func(message): return "%s  ›  %s" % [str(message.name), str(message.text)]))
 
+func _load_web_map(map_id: int, battle_assets: bool) -> void:
+	web_map_loading=true
+	var resources := get_tree().root.get_node("WebResources")
+	var keys: Array=["map_%d"%map_id]
+	if battle_assets:keys.append("battle_fx")
+	if battle_assets:toast("正在加载本局地图与战斗资源…",30)
+	var ok: bool=await resources.ensure_groups(keys)
+	web_map_loading=false
+	web_map_retry_at=0 if ok else Time.get_ticks_msec()+5000
+	if quitting:return
+	if not ok:toast("本局资源暂未下载完整，正在重试",5)
+	elif snapshot.has("profile") and not net.token.is_empty():_accept_state(snapshot)
+
 func _confirm_battle_command() -> void:
 	if command_context.is_empty():return
 	var battle:=_battle_data()
@@ -1960,6 +1987,16 @@ func _confirm_battle_command() -> void:
 func _command(command: Dictionary) -> bool:
 	if command_busy or auth_busy:
 		return false
+	if OS.has_feature("web") and str(command.get("action","")) in ["start","ready"]:
+		var resources := get_tree().root.get_node_or_null("WebResources")
+		var map_id := int(snapshot.get("room",{}).get("map",0))
+		if resources and map_id>0:
+			var before_token: String=net.token
+			var before_room := int(snapshot.get("room",{}).get("id",0))
+			command_busy=true
+			var available: bool=await resources.ensure_groups(["map_%d"%map_id,"battle_fx"])
+			command_busy=false
+			if not available or auth_busy or net.token.is_empty() or net.token!=before_token or int(snapshot.get("room",{}).get("id",0))!=before_room:return false
 	command_busy = true
 	command_serial+=1
 	var requested_serial:=command_serial
@@ -1993,6 +2030,8 @@ func _command(command: Dictionary) -> bool:
 	return false
 
 func _process(delta: float) -> void:
+	if OS.has_feature("web") and not web_map_loading and web_map_retry_at>0 and Time.get_ticks_msec()>=web_map_retry_at and snapshot.has("profile") and not net.token.is_empty():
+		_accept_state(snapshot)
 	if not is_instance_valid(channel_gate): _present_invitation()
 	if quitting:return
 	if not catalog_ready and not catalog_loading and Time.get_ticks_msec() >= catalog_retry_at:
