@@ -1,6 +1,8 @@
 extends RefCounted
 
 signal state_received(state: Dictionary)
+signal session_invalidated(state: Dictionary)
+var rejected_session := ""
 var root: Node
 var endpoint := "http://127.0.0.1:18180"
 var token := ""
@@ -96,6 +98,7 @@ func _decode_stream(reply: Dictionary, sequence: int, began: float) -> Dictionar
  var data: Dictionary = reply.get("data", {})
  data.status = status
  data._request_sequence = sequence
+ if status == 401:_session_error(data)
  if reply.has("etag") and not str(reply.etag).is_empty():etag = str(reply.etag)
  if status == 304:data.unchanged = true
  if status > 0:
@@ -172,7 +175,9 @@ func _pump() -> void:
     socket_ping = now
     _success()
    else:
-    state_received.emit({"status":401,"error":"登录已过期，请重新登录"})
+    var rejection: Dictionary = decoded.get("data", {})
+    rejection.status = int(decoded.get("status",401))
+    _session_error(rejection)
     _drop_stream()
    continue
   if not socket_ready:continue
@@ -272,11 +277,24 @@ func _http_request(path: String, payload: Variant, conditional: bool, sequence: 
  var data: Dictionary = decoder.data
  data._request_sequence = sequence
  data.status = status
+ if status == 401:_session_error(data)
  if status == 200 and conditional:
   for header: String in response[2]:
    if header.to_lower().begins_with("etag:"):etag = header.substr(5).strip_edges()
  if data.has("server_time"):_sync_clock(float(data.server_time), began, Time.get_ticks_usec()/1000000.0)
  return data
+
+func _session_error(data: Dictionary) -> void:
+ if int(data.get("status",0)) != 401 or token.is_empty() or rejected_session == token:return
+ rejected_session = token
+ session_invalidated.emit(data)
+
+func clear_session() -> void:
+ token = ""
+ etag = ""
+ enabled = false
+ _drop_stream()
+ stream_replies.clear()
 
 func _tls() -> TLSOptions:
  if endpoint != tls_endpoint:

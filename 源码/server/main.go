@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-const version = "0.1.19"
+const version = "0.1.20"
 
 //go:embed gm.html
 var gmHTML string
@@ -204,12 +204,21 @@ func (a *api) auth(w http.ResponseWriter, r *http.Request) {
 	}
 	t := token()
 	expires := time.Now().Add(30 * 24 * time.Hour)
+	// The database replacement and cache invalidation share the world lock.
+	// Concurrent logins cannot re-install a credential already superseded.
+	a.world.mu.Lock()
 	if e := a.world.store.createSession(t, p.ID, expires); e != nil {
+		a.world.mu.Unlock()
 		writeError(w, 500, "无法保存登录，请重试")
 		return
 	}
-	a.world.mu.Lock()
+	for old, session := range a.world.sessions {
+		if session.Player == p.ID {
+			delete(a.world.sessions, old)
+		}
+	}
 	a.world.sessions[t] = Session{p.ID, expires}
+	a.world.version++
 	a.world.mu.Unlock()
 	jsonOut(w, 200, map[string]any{"ok": true, "token": t, "profile": p})
 }
@@ -223,6 +232,16 @@ func (a *api) identify(r *http.Request) (int64, bool) {
 		}
 	}
 	return s.Player, ok && time.Now().Before(s.Expires)
+}
+func (a *api) sessionError(r *http.Request) map[string]any {
+	t := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if a.world.store.sessionReplaced(t) {
+		return map[string]any{"ok": false, "code": "session_replaced", "error": "账号已在其他地方登录，请重新登录"}
+	}
+	return map[string]any{"ok": false, "code": "session_expired", "error": "登录已过期，请重新登录"}
+}
+func (a *api) writeSessionError(w http.ResponseWriter, r *http.Request) {
+	jsonOut(w, 401, a.sessionError(r))
 }
 func (a *api) logout(w http.ResponseWriter, r *http.Request) {
 	var in struct{}
@@ -250,7 +269,7 @@ func (a *api) state(w http.ResponseWriter, r *http.Request) {
 	defer a.world.mu.Unlock()
 	id, ok := a.identify(r)
 	if !ok {
-		writeError(w, 401, "登录已过期，请重新登录")
+		a.writeSessionError(w, r)
 		return
 	}
 	if room, m := a.world.roomFor(id); room != nil && m != nil {
@@ -279,7 +298,7 @@ func (a *api) command(w http.ResponseWriter, r *http.Request) {
 	defer a.world.mu.Unlock()
 	id, ok := a.identify(r)
 	if !ok {
-		writeError(w, 401, "登录已过期，请重新登录")
+		a.writeSessionError(w, r)
 		return
 	}
 	if status, message := a.applyCommand(id, c); status != 200 {

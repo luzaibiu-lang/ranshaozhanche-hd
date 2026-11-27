@@ -52,6 +52,22 @@ func openStore(path string) (*Store, error) {
 		db.Close()
 		return nil, e
 	}
+	// Existing installations may contain several active logins per player.
+	// Keep the newest valid credential and preserve revoked hashes for a
+	// specific replacement message; bearer tokens are never persisted.
+	var hasRevoked int
+	if e = db.QueryRow("SELECT count(*) FROM pragma_table_info('sessions') WHERE name='revoked'").Scan(&hasRevoked); e == nil && hasRevoked == 0 {
+		_, e = db.Exec("ALTER TABLE sessions ADD COLUMN revoked INTEGER NOT NULL DEFAULT 0")
+	}
+	if e == nil {
+		_, e = db.Exec(`UPDATE sessions SET revoked=1 WHERE revoked=0 AND rowid IN (
+ SELECT rowid FROM (SELECT rowid,ROW_NUMBER() OVER(PARTITION BY player ORDER BY expires DESC,rowid DESC) AS position FROM sessions WHERE revoked=0) WHERE position>1);
+ CREATE UNIQUE INDEX IF NOT EXISTS sessions_one_active ON sessions(player) WHERE revoked=0;`)
+	}
+	if e != nil {
+		db.Close()
+		return nil, e
+	}
 	return &Store{db}, nil
 }
 func token() string {
@@ -67,13 +83,30 @@ func sessionHash(raw string) string {
 	return hex.EncodeToString(h[:])
 }
 func (s *Store) createSession(raw string, player int64, expires time.Time) error {
-	_, e := s.db.Exec("INSERT INTO sessions(hash,player,expires) VALUES(?,?,?)", sessionHash(raw), player, expires.Unix())
-	return e
+	tx, e := s.db.Begin()
+	if e != nil {
+		return e
+	}
+	defer tx.Rollback()
+	if _, e = tx.Exec("UPDATE sessions SET revoked=1 WHERE player=? AND revoked=0", player); e != nil {
+		return e
+	}
+	if _, e = tx.Exec("INSERT INTO sessions(hash,player,expires,revoked) VALUES(?,?,?,0)", sessionHash(raw), player, expires.Unix()); e != nil {
+		return e
+	}
+	return tx.Commit()
+}
+func (s *Store) sessionReplaced(raw string) bool {
+	if len(raw) != 64 {
+		return false
+	}
+	var count int
+	return s.db.QueryRow("SELECT count(*) FROM sessions WHERE hash=? AND revoked=1 AND expires>?", sessionHash(raw), time.Now().Unix()).Scan(&count) == nil && count > 0
 }
 func (s *Store) session(raw string) (Session, bool) {
 	var result Session
 	var expires int64
-	e := s.db.QueryRow("SELECT player,expires FROM sessions WHERE hash=? AND expires>?", sessionHash(raw), time.Now().Unix()).Scan(&result.Player, &expires)
+	e := s.db.QueryRow("SELECT player,expires FROM sessions WHERE hash=? AND revoked=0 AND expires>?", sessionHash(raw), time.Now().Unix()).Scan(&result.Player, &expires)
 	result.Expires = time.Unix(expires, 0)
 	return result, e == nil
 }

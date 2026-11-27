@@ -173,6 +173,7 @@ func _ready() -> void:
 	net = Network.new(self)
 	net.endpoint = GamePlatform.endpoint(config)
 	net.state_received.connect(_stream_state)
+	net.session_invalidated.connect(_session_invalidated)
 	sound = Sound.new()
 	add_child(sound)
 	sound.silent = qa
@@ -715,6 +716,7 @@ func _login() -> void:
 	var response: Dictionary = await net.request("/api/register" if registering else "/api/login", {"name": submitted_name, "password": submitted_password})
 	if quitting or generation!=auth_generation:return
 	if response.has("token"):
+		if OS.has_feature("web"):JavaScriptBridge.eval("globalThis.BurningChariotSession=null", true)
 		net.token = response.token
 		net.etag=""
 		var state: Dictionary = await net.request("/api/state")
@@ -2549,6 +2551,30 @@ func _vault(mode: String, value: String) -> String:
 	pipe.flush()
 	return pipe.get_line().strip_edges()
 
+func _session_invalidated(state: Dictionary) -> void:
+	if quitting or net.token.is_empty():return
+	_cancel_page_transition()
+	_cancel_channel_gate()
+	auth_generation += 1
+	command_serial += 1
+	battle_action_serial += 1
+	command_context.clear()
+	net.clear_session()
+	snapshot.clear()
+	profile.clear()
+	_vault("clear", "")
+	register_mode = false
+	auth_busy = false
+	command_busy = false
+	room_action = ""
+	start_phase = ""
+	_show_login()
+	account_label.text = "欢迎归队"
+	var message := str(state.get("error", "登录已过期，请重新登录"))
+	toast(message, 30)
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval("globalThis.BurningChariotNetwork=null;globalThis.BurningChariotSession=" + JSON.stringify({"state":"signed_out","reason":state.get("code","session_expired"),"message":message}), true)
+
 func _logout() -> void:
 	if auth_busy or quitting:return
 	_cancel_page_transition()
@@ -2556,11 +2582,12 @@ func _logout() -> void:
 	auth_generation+=1
 	auth_busy=true
 	command_busy=true
-	if not net.token.is_empty():
+	var requested_token: String = net.token
+	var generation := auth_generation
+	if not requested_token.is_empty():
 		await net.request("/api/logout", {})
-	if quitting:return
-	net.token = ""
-	net.etag = ""
+	if quitting or generation != auth_generation or requested_token != net.token:return
+	net.clear_session()
 	snapshot.clear()
 	profile.clear()
 	_vault("clear", "")

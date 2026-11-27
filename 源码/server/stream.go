@@ -117,6 +117,13 @@ func (a *api) stream(w http.ResponseWriter, r *http.Request) {
 		a.world.mu.Unlock()
 		return ok
 	}
+	sessionError := func() map[string]any {
+		req := httptest.NewRequest(http.MethodGet, "/api/state", nil)
+		req.Header.Set("Authorization", "Bearer "+token)
+		a.world.mu.Lock()
+		defer a.world.mu.Unlock()
+		return a.sessionError(req)
+	}
 	send := func(reply streamReply) bool {
 		data, err := json.Marshal(reply)
 		if err != nil {
@@ -127,7 +134,7 @@ func (a *api) stream(w http.ResponseWriter, r *http.Request) {
 		return conn.Write(c, websocket.MessageText, data) == nil
 	}
 	if !authenticated() {
-		send(streamReply{ID: auth.ID, Status: 401, Data: map[string]any{"error": "登录已过期，请重新登录"}})
+		send(streamReply{ID: auth.ID, Status: 401, Data: sessionError()})
 		return
 	}
 	if !send(streamReply{ID: auth.ID, Type: "hello", Status: 200, Data: map[string]any{"ok": true, "protocol": 1, "receipts": true, "shot_cache": true}}) {
@@ -221,7 +228,7 @@ func (a *api) stream(w http.ResponseWriter, r *http.Request) {
 			}
 			if in.Type == "ping" {
 				if !authenticated() {
-					send(streamReply{Status: 401, Data: map[string]any{"error": "登录已过期，请重新登录"}})
+					send(streamReply{Status: 401, Data: sessionError()})
 					return
 				}
 				if !send(streamReply{ID: in.ID, Type: "pong", Status: 200, Data: map[string]any{"server_time": nowSeconds()}}) {

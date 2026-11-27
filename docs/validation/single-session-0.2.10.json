@@ -1,0 +1,44 @@
+{
+  "version": "0.2.10",
+  "server": "0.1.20",
+  "browser": {
+    "passed": true,
+    "checks": [
+      "Incorrect password does not evict the existing desktop login",
+      "A new mobile login returns desktop to login, shows replacement reason and clears the old local session without logging out the new player",
+      "The new mobile session resumes the same room with one player entry",
+      "A stale desktop logout cannot remove the mobile player from the room",
+      "Logging in on desktop again evicts the mobile login in the reverse direction",
+      "The latest login retains room state and can continue sending commands"
+    ],
+    "engine_errors": [],
+    "forced_logout_sent_http_logout": false,
+    "mode": "Headless Chromium desktop and mobile UI, manual login",
+    "physical_phone_tested": false
+  },
+  "windows_and_browser": {
+    "actual_windows_release": true,
+    "audio": "Dummy",
+    "cleared_session": true,
+    "forced_login_scene": true,
+    "passed": true,
+    "private_desktop": true,
+    "replacement_notice": true,
+    "new_browser_session_kept_room_after_old_windows_exit": true
+  },
+  "go_tests": {
+    "all_passed": true,
+    "vet_passed": true,
+    "coverage": [
+      "legacy duplicate session migration",
+      "transaction rollback",
+      "persisted revocation after restart",
+      "concurrent login single winner",
+      "incorrect password retains active login",
+      "old REST and WebSocket rejected",
+      "stale logout cannot leave latest room"
+    ]
+  },
+  "movement_code_changed": false,
+  "physical_phone_tested": false
+}
