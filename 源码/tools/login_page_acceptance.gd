@@ -64,6 +64,10 @@ func _run() -> void:
 	root.size=Vector2i(1440,900)
 	if not await wait_for(func():return app.catalog_ready and app.scene=="login","normal startup reaches the tile login"):return
 	if not expect(str(app.net.endpoint).begins_with("http://127.0.0.1:"),"isolated local service"):return
+	if OS.get_name()=="Windows":
+		if not expect(not load("res://game_platform.gd").mobile_ui(),"Windows uses desktop UI independently of touchscreen capabilities"):return
+		if not expect(not load("res://mobile_battle_controls.gd").touch_device(),"Windows does not create mobile battle controls"):return
+	if not expect(FileAccess.file_exists("res://device_profile.js"),"shared browser profile is included in the exported game pack"):return
 	for variant in range(7):
 		var path := "res://assets/audio/sound/ui_screentile_00@%d.wav" % variant
 		if not expect(ResourceLoader.exists(path) and load(path).get_length()>0,"original tile audio variant %d decodes" % variant):return

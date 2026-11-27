@@ -43,7 +43,8 @@ with tempfile.TemporaryDirectory() as data:
             return response.json()
         with site.test_site(args.web.resolve(), {"catalog_requests":3,"actions":[]}) as origin, sync_playwright() as pw:
             browser = pw.chromium.launch(executable_path=str(site.EDGE), headless=True, args=["--mute-audio","--enable-unsafe-swiftshader"])
-            page = browser.new_page(viewport={"width":1440,"height":900},is_mobile=True,has_touch=True,device_scale_factor=1)
+            page = browser.new_page(viewport={"width":1440,"height":900},is_mobile=True,has_touch=True,device_scale_factor=1,
+                                    user_agent=pw.devices['Pixel 7']['user_agent'])
             page.add_init_script("sessionStorage.setItem('burningchariot.hd.session',"+json.dumps(token)+")")
             errors, actions = [], []
             page.on("pageerror", lambda e:errors.append(str(e)))

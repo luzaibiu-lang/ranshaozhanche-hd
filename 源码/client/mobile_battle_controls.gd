@@ -1,5 +1,7 @@
 extends Control
 
+const Platform = preload("res://game_platform.gd")
+
 signal weapon_selected(index: int)
 signal item_selected(slot: int)
 signal fire_started
@@ -19,9 +21,7 @@ var browser_cancel: JavaScriptObject
 var browser_canvas: JavaScriptObject
 
 static func touch_device() -> bool:
-	if OS.has_feature("web"):
-		return bool(JavaScriptBridge.eval("navigator.maxTouchPoints > 0 && (matchMedia('(pointer: coarse)').matches || matchMedia('(hover: none)').matches)"))
-	return OS.has_feature("mobile") or DisplayServer.is_touchscreen_available()
+	return Platform.mobile_ui()
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE

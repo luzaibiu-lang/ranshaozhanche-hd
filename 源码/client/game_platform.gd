@@ -2,6 +2,13 @@ extends RefCounted
 
 const WEB_SESSION := "burningchariot.hd.session"
 
+static func mobile_ui() -> bool:
+	if OS.has_feature("web"):
+		if not bool(JavaScriptBridge.eval("typeof globalThis.BurningChariotDevice === 'object'", true)):
+			JavaScriptBridge.eval(FileAccess.get_file_as_string("res://device_profile.js"), true)
+		return bool(JavaScriptBridge.eval("globalThis.BurningChariotDevice.mobile === true", true))
+	return OS.get_name() in ["Android", "iOS"]
+
 static func endpoint(config: Dictionary) -> String:
 	if OS.has_feature("web"):
 		var origin: String = JavaScriptBridge.get_interface("window").location.origin

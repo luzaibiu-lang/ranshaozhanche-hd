@@ -16,6 +16,8 @@ out = root / '.tools/qa/release-0.2.3/mobile-shell'
 out.mkdir(parents=True, exist_ok=True)
 published = (web / 'hd/play/index.html').read_text(encoding='utf8')
 shell = (root / '源码/web/play.html').read_text(encoding='utf8')
+profile = (root / '源码/client/device_profile.js').read_text(encoding='utf8')
+shell = shell.replace('<!-- DEVICE_PROFILE -->', '<script>\n' + profile + '\n</script>')
 shell = shell.replace('<!-- BUILD_BASE -->', re.search(r'<base href="[^"]+">', published)[0])
 shell = shell.replace('$GODOT_HEAD_INCLUDE', '').replace('$GODOT_THREADS_ENABLED', 'false')
 shell = shell.replace('$GODOT_URL', 'game.js').replace('$GODOT_CONFIG', re.search(r'new Engine\((\{[^\n]+\})\)', published)[1])
@@ -39,7 +41,8 @@ try:
         browser = pw.chromium.launch(executable_path=edge, headless=True, args=['--mute-audio','--enable-unsafe-swiftshader'])
         for scenario in ('mobile','fallback','denied','desktop'):
             desktop = scenario == 'desktop'
-            page = browser.new_page(viewport={'width':1280 if desktop else 390,'height':720 if desktop else 844}, is_mobile=not desktop, has_touch=not desktop)
+            page = browser.new_page(viewport={'width':1280 if desktop else 390,'height':720 if desktop else 844}, is_mobile=not desktop, has_touch=not desktop,
+                                    **({} if desktop else {'user_agent':pw.devices['Pixel 7']['user_agent']}))
             page.on('pageerror',lambda e: errors.append(str(e)))
             page.route('**/hd/play/',lambda route: route.fulfill(body=shell, content_type='text/html;charset=UTF-8'))
             if scenario == 'fallback':

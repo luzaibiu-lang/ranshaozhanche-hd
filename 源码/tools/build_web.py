@@ -72,6 +72,10 @@ def build(output, engine, classic_url, hd_url):
         shell = exported.read_text("utf-8")
         if "<!-- BUILD_BASE -->" not in shell or "$GODOT_" in shell:
             raise RuntimeError("Check the Web preset's custom HTML shell (../web/play.html)")
+        if "<!-- DEVICE_PROFILE -->" not in shell:
+            raise RuntimeError("Web shell must include the shared device profile")
+        profile = (CLIENT / "device_profile.js").read_text("utf-8")
+        shell = shell.replace("<!-- DEVICE_PROFILE -->", "<script>\n" + profile + "\n</script>")
         for filename in ("game.wasm", "game.pck", "game.js"):
             if not (stage / filename).stat().st_size:
                 raise RuntimeError(f"Missing Web export file: {filename}")

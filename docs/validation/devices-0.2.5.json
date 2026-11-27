@@ -1,0 +1,302 @@
+{
+  "devices": {
+    "environment": "Edge touch emulation; exported HTML with simulated loading",
+    "profiles": [
+      {
+        "profile": "Windows mouse",
+        "mobile": false,
+        "passed": true
+      },
+      {
+        "profile": "Windows touch and mouse",
+        "mobile": false,
+        "passed": true
+      },
+      {
+        "profile": "Windows tablet touch",
+        "mobile": false,
+        "passed": true
+      },
+      {
+        "profile": "Windows narrow",
+        "mobile": false,
+        "passed": true
+      },
+      {
+        "profile": "Linux touch",
+        "mobile": false,
+        "passed": true
+      },
+      {
+        "profile": "ChromeOS convertible",
+        "mobile": false,
+        "passed": true
+      },
+      {
+        "profile": "macOS",
+        "mobile": false,
+        "passed": true
+      },
+      {
+        "profile": "Android phone",
+        "mobile": true,
+        "passed": true
+      },
+      {
+        "profile": "Android tablet",
+        "mobile": true,
+        "passed": true
+      },
+      {
+        "profile": "Android desktop site",
+        "mobile": true,
+        "passed": true
+      },
+      {
+        "profile": "iPhone",
+        "mobile": true,
+        "passed": true
+      },
+      {
+        "profile": "iPad desktop user agent",
+        "mobile": true,
+        "passed": true
+      },
+      {
+        "profile": "HarmonyOS phone",
+        "mobile": true,
+        "passed": true
+      }
+    ],
+    "fullscreen_reentry_cycles": 2
+  },
+  "windows": {
+    "passed": true,
+    "stages": [
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "Windows uses desktop UI independently of touchscreen capabilities",
+          "Windows does not create mobile battle controls",
+          "shared browser profile is included in the exported game pack",
+          "original tile audio variant 0 decodes",
+          "original tile audio variant 1 decodes",
+          "original tile audio variant 2 decodes",
+          "original tile audio variant 3 decodes",
+          "original tile audio variant 4 decodes",
+          "original tile audio variant 5 decodes",
+          "original tile audio variant 6 decodes",
+          "real login hover uses original variant instead of a generic beep",
+          "password mismatch is shown within the form",
+          "login reaches channel transition",
+          "login remains under the closing mechanical doors",
+          "channel selector ready",
+          "covered login is released after the doors close",
+          "selector opens into original lobby",
+          "logout returns to the same login design",
+          "wrong password remains recoverable",
+          "login reaches channel transition",
+          "login remains under the closing mechanical doors",
+          "channel selector ready",
+          "covered login is released after the doors close",
+          "remember account uses actual Windows encrypted helper"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "register"
+      },
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "Windows uses desktop UI independently of touchscreen capabilities",
+          "Windows does not create mobile battle controls",
+          "shared browser profile is included in the exported game pack",
+          "original tile audio variant 0 decodes",
+          "original tile audio variant 1 decodes",
+          "original tile audio variant 2 decodes",
+          "original tile audio variant 3 decodes",
+          "original tile audio variant 4 decodes",
+          "original tile audio variant 5 decodes",
+          "original tile audio variant 6 decodes",
+          "real login hover uses original variant instead of a generic beep",
+          "encrypted saved account prefills the new form after restart",
+          "unchecking remember clears the encrypted account",
+          "login reaches channel transition",
+          "channel selector ready",
+          "covered login is released after the doors close"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "remembered"
+      },
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "Windows uses desktop UI independently of touchscreen capabilities",
+          "Windows does not create mobile battle controls",
+          "shared browser profile is included in the exported game pack",
+          "original tile audio variant 0 decodes",
+          "original tile audio variant 1 decodes",
+          "original tile audio variant 2 decodes",
+          "original tile audio variant 3 decodes",
+          "original tile audio variant 4 decodes",
+          "original tile audio variant 5 decodes",
+          "original tile audio variant 6 decodes",
+          "real login hover uses original variant instead of a generic beep",
+          "restart without remember remains at empty-password login"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "forgotten"
+      }
+    ],
+    "private_desktop": true,
+    "audio": "Dummy"
+  },
+  "mobile_game": {
+    "passed": true,
+    "viewport": [
+      844,
+      390
+    ],
+    "device": "headless Chromium touch emulation",
+    "actions": [
+      [
+        {
+          "action": "move",
+          "distance": 1,
+          "generation": 1,
+          "move_sequence": 1
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 6,
+          "generation": 1,
+          "move_sequence": 2
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 6,
+          "generation": 1,
+          "move_sequence": 3
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 6,
+          "generation": 1,
+          "move_sequence": 4
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 3,
+          "generation": 1,
+          "move_sequence": 5
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -1,
+          "generation": 1,
+          "move_sequence": 6
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -4,
+          "generation": 1,
+          "move_sequence": 7
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -3,
+          "generation": 1,
+          "move_sequence": 8
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -3,
+          "generation": 1,
+          "move_sequence": 9
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -4,
+          "generation": 1,
+          "move_sequence": 10
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -1,
+          "generation": 1,
+          "move_sequence": 11
+        },
+        200
+      ],
+      [
+        {
+          "action": "item",
+          "generation": 1,
+          "slot": 0
+        },
+        200
+      ],
+      [
+        {
+          "action": "fire",
+          "aim_face": -1,
+          "aim_mode": "native",
+          "angle": 34.0,
+          "generation": 1,
+          "power": 0.346666666666666,
+          "weapon": 1
+        },
+        200
+      ]
+    ]
+  },
+  "fullscreen": {
+    "checks": [
+      "Trusted loading-page touch enters native document fullscreen in Chromium mobile emulation",
+      "Real Godot WebAssembly starts and displays canvas after fullscreen entry",
+      "Exiting fullscreen restores the button; canvas touch preserves it and repeated trusted taps re-enter fullscreen",
+      "Missing fullscreen/orientation APIs show physical-rotation fallback which clears on rotation",
+      "Denied fullscreen leaves an enabled retry button in portrait and landscape",
+      "Desktop does not display the mobile overlay"
+    ],
+    "page_errors": [],
+    "web": "web-025-final"
+  },
+  "version": "0.2.5",
+  "real_mobile_hardware_tested": false
+}
