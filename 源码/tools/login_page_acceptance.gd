@@ -64,6 +64,14 @@ func _run() -> void:
 	root.size=Vector2i(1440,900)
 	if not await wait_for(func():return app.catalog_ready and app.scene=="login","normal startup reaches the tile login"):return
 	if not expect(str(app.net.endpoint).begins_with("http://127.0.0.1:"),"isolated local service"):return
+	for variant in range(7):
+		var path := "res://assets/audio/sound/ui_screentile_00@%d.wav" % variant
+		if not expect(ResourceLoader.exists(path) and load(path).get_length()>0,"original tile audio variant %d decodes" % variant):return
+	app.sound.played_cues.clear()
+	app.login_page._reset_pointer()
+	app.login_page._track_pointer(Vector2(20,220))
+	app.login_page._track_pointer(Vector2(250,220))
+	if not expect(app.sound.played_cues.size()==1 and str(app.sound.played_cues[0]).begins_with("ui_screentile_00@"),"real login hover uses original variant instead of a generic beep"):return
 	var secret := "qa-联机-895432"
 	if options.stage=="register":
 		await picture("login")

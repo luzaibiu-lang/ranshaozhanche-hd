@@ -34,6 +34,8 @@ var zoom_target := 1.0
 var overview := 0.0
 var manual_until := 0.0
 var dragging := false
+var map_touches: Dictionary = {}
+var touch_navigation := false
 var zoom_locked := false
 var angle := 45.0
 var power := 0.65
@@ -127,6 +129,9 @@ func _ready() -> void:
 	call_deferred("_resize_camera")
 
 func _resize_camera() -> void:
+	map_touches.clear()
+	dragging=false
+	aiming_with_mouse=false
 	if battle.is_empty() or size.x <= 0 or size.y <= 0:
 		return
 	zoom_target = maxf(0.6, size.y / 560.0)
@@ -327,16 +332,22 @@ func _stop_movement() -> void:
 func _edge_direction(at:Vector2,extent:Vector2=Vector2.ZERO) -> Vector2:
 	if extent==Vector2.ZERO:extent=size
 	if not Rect2(Vector2.ZERO,extent).has_point(at):return Vector2.ZERO
+	var band := clampf(minf(extent.x,extent.y)*.055,28.0,72.0)
 	var direction:=Vector2.ZERO
-	if at.x<=3:direction.x=-1
-	elif at.x>=extent.x-4:direction.x=1
-	if at.y<=3:direction.y=-1
-	elif at.y>=extent.y-4:direction.y=1
+	if at.x<band:direction.x=-1
+	elif at.x>extent.x-band:direction.x=1
+	if at.y<band:direction.y=-1
+	elif at.y>extent.y-band:direction.y=1
 	return direction
 
 func _process_edge_pan(delta:float) -> void:
-	if dragging or aiming_with_mouse or not get_window().has_focus():return
+	if dragging or aiming_with_mouse or touch_navigation or not get_window().has_focus():return
 	if _camera_input_blocked():return
+	var hovered := get_viewport().gui_get_hovered_control()
+	var control: Node = hovered
+	while control and control!=self:
+		if control is BaseButton or control is LineEdit or control is TextEdit:return
+		control=control.get_parent()
 	var outer:Vector2=get_viewport().get_visible_rect().size
 	var pointer:Vector2=get_viewport().get_mouse_position()
 	# The original also scrolls at the outer window edge above/below its HUD.
@@ -344,6 +355,8 @@ func _process_edge_pan(delta:float) -> void:
 	elif get_viewport().gui_get_hovered_control()==self:_pan_at_edge(delta,get_local_mouse_position())
 
 func _camera_input_blocked() -> bool:
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus is LineEdit or focus is TextEdit:return true
 	# The battle view lives inside a content panel, below the application node.
 	var ancestor:Node=get_parent()
 	while ancestor:
@@ -356,14 +369,20 @@ func _pan_at_edge(delta:float,at:Vector2,extent:Vector2=Vector2.ZERO) -> void:
 	if direction==Vector2.ZERO:return
 	overview=0
 	manual_until=INF
-	target_camera+=direction*600*delta/maxf(.1,zoom)
+	if extent==Vector2.ZERO:extent=size
+	var band := clampf(minf(extent.x,extent.y)*.055,28.0,72.0)
+	var nearest := minf(minf(at.x,extent.x-at.x),minf(at.y,extent.y-at.y))
+	var speed := lerpf(420.0,960.0,clampf(1-nearest/band,0,1))
+	target_camera+=direction.limit_length(1)*speed*delta/maxf(.1,zoom)
 
 func _notification(what:int) -> void:
 	if what==NOTIFICATION_APPLICATION_FOCUS_OUT:
 		dragging=false
 		aiming_with_mouse=false
+		map_touches.clear()
 
 func _exit_tree() -> void:
+	map_touches.clear()
 	_stop_movement()
 
 func _sync_visual_timeline() -> void:
@@ -658,6 +677,15 @@ func _bar_background() -> StyleBoxFlat:
 	return style
 
 func _gui_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed and not event.canceled and not _camera_input_blocked() and map_touches.size()<2:
+			map_touches[event.index]=event.position
+			touch_navigation=true
+			dragging=false
+			aiming_with_mouse=false
+			accept_event()
+		return
+	if event is InputEventMouse and event.device==-1:return
 	if event is InputEventMouseButton:
 		if event.button_index==MOUSE_BUTTON_LEFT:
 			if not event.pressed:aiming_with_mouse=false
@@ -680,7 +708,45 @@ func _gui_input(event: InputEvent) -> void:
 			if int(unit.player)==player_id and int(unit.seat)==int(battle.active):_update_mouse_aim(event.position,unit)
 
 func _input(event:InputEvent) -> void:
+	if event is InputEventScreenTouch and (not event.pressed or event.canceled):
+		map_touches.erase(event.index)
+	if event is InputEventScreenDrag and map_touches.has(event.index):
+		if _camera_input_blocked():
+			map_touches.clear()
+			return
+		var local: Vector2 = get_global_transform_with_canvas().affine_inverse()*event.position
+		_pan_touch(event.index,local)
+		get_viewport().set_input_as_handled()
+		return
+	if event is InputEventMouseMotion and event.device!=-1:touch_navigation=false
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed:aiming_with_mouse=false
+	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_RIGHT and not event.pressed:dragging=false
+
+func _pan_touch(index:int,position:Vector2) -> void:
+	if not map_touches.has(index):return
+	overview=0
+	manual_until=INF
+	var ids := map_touches.keys()
+	if ids.size()==1:
+		camera-=(position-(map_touches[index] as Vector2))/maxf(.1,zoom)
+		target_camera=camera
+		map_touches[index]=position
+		return
+	var old_a:Vector2=map_touches[ids[0]]
+	var old_b:Vector2=map_touches[ids[1]]
+	var old_center := (old_a+old_b)/2
+	var distance := old_a.distance_to(old_b)
+	map_touches[index]=position
+	var new_a:Vector2=map_touches[ids[0]]
+	var new_b:Vector2=map_touches[ids[1]]
+	var center := (new_a+new_b)/2
+	var anchor := camera+(old_center-size/2)/maxf(.1,zoom)
+	if not zoom_locked and distance>8:
+		var minimum := minf(size.x/maxf(1,float(battle.get("width",1920))),size.y/maxf(1,float(battle.get("height",1200))))
+		zoom=clampf(zoom*new_a.distance_to(new_b)/distance,minimum,4.0)
+		zoom_target=zoom
+	camera=anchor-(center-size/2)/maxf(.1,zoom)
+	target_camera=camera
 
 func _update_mouse_aim(at:Vector2,unit:Dictionary) -> void:
 	var center:=screen(aim_center(unit))

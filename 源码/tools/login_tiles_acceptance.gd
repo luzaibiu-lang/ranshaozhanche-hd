@@ -3,6 +3,12 @@ var options := {}
 var screen: Control
 var checks: Array[String] = []
 var motion_frames: Array[Dictionary] = []
+var cues: Array[int] = []
+
+func move_pointer(point: Vector2) -> void:
+	var motion := InputEventMouseMotion.new()
+	motion.position = point
+	root.push_input(motion)
 func _initialize() -> void:
 	AudioServer.set_bus_mute(0, true)
 	for arg in OS.get_cmdline_user_args():
@@ -47,25 +53,41 @@ func _run() -> void:
 			cell = candidate
 			break
 	if not expect(not cell.is_empty(), "visible background tile selected"):return
-	var before: Vector2 = cell.node.position
-	var motion := InputEventMouseMotion.new()
-	motion.position = cell.center
-	root.push_input(motion)
+	cell.node.rotate_solid(Vector3.UP, PI / 2)
+	await picture("login-edge-on")
+	var image := root.get_texture().get_image()
+	var middle := Vector2i(cell.center)
+	var core := image.get_pixelv(middle)
+	if not expect(core.r > 0.45 and absf(core.r-core.g) < 0.03 and absf(core.g-core.b) < 0.03, "edge-on tile shows neutral core in actual rendered frame"):return
+	var thickness := 0
+	for dx in range(-roundi(screen.tile_size/4),roundi(screen.tile_size/4)):
+		var pixel := image.get_pixelv(middle + Vector2i(dx,0))
+		if maxf(pixel.r,maxf(pixel.g,pixel.b)) > 0.08:thickness += 1
+	if not expect(absf(thickness - screen.tile_size*20/128) <= 2, "edge-on rendered silhouette has original 20/128 thickness"):return
+	cell.node.rotate_solid(Vector3.UP, PI * 0.35)
+	await picture("login-solid")
+	cell.node.rotate_solid(Vector3.UP, 0)
+	screen.cue_requested.connect(func(id: int):cues.append(id))
+	move_pointer(cell.center + Vector2(screen.tile_size, 0))
+	move_pointer(cell.center)
+	if not expect(cues.count(2) == 1, "crossing a tile starts one hover sound"):return
+	await create_timer(.1).timeout
+	if not expect(absf(cell.angle) > .35 and cell.node.polygon != cell.base, "crossing drives a visible 3D swing"):return
+	var started: float = cell.started
+	move_pointer(cell.center + Vector2(3,0))
+	if not expect(cues.count(2) == 1 and cell.started == started, "motion within a tile does not retrigger"):return
 	for index in range(8):await motion_picture(index, cell.center)
-	if not expect(float(cell.amount) > .9, "hover activates the pointed tile"):return
-	if not expect(cell.node.position.distance_to(before) > 4, "pointed tile visibly lifts"):return
 	if not expect(screen.username.get_global_rect() == field_rect, "background never moves the input field"):return
-	if not expect(screen.tiles.any(func(t):return t != cell and float(t.amount) > .01), "neighboring tiles respond"):return
+	if not expect(screen.tiles.all(func(t):return t == cell or is_zero_approx(t.angle)), "unvisited neighbors stay still"):return
 	await picture("login-hover")
-	motion = InputEventMouseMotion.new()
-	motion.position = cell.center + Vector2(screen.tile_size,0)
-	root.push_input(motion)
-	for index in range(8):await motion_picture(index+8, motion.position)
-	motion = InputEventMouseMotion.new()
-	motion.position = Vector2(-100, -100)
-	root.push_input(motion)
+	move_pointer(cell.center)
+	var next_point: Vector2 = cell.center + Vector2(screen.tile_size,0)
+	move_pointer(next_point)
+	if not expect(cues.count(2) == 2, "crossing another tile produces its own sound"):return
+	for index in range(8):await motion_picture(index+8, next_point)
+	move_pointer(Vector2(-100, -100))
 	for index in range(10):await motion_picture(index+16, Vector2(-100,-100))
-	if not expect(float(cell.amount) < .002, "pointer exit smoothly resets hover"):return
+	if not expect(is_zero_approx(cell.angle) and cell.node.polygon == cell.base, "completed swing restores the tile"):return
 	for dimensions in [Vector2i(1000,650), Vector2i(1920,1080), Vector2i(2560,1440), Vector2i(430,900)]:
 		root.size = dimensions
 		await create_timer(.2).timeout
@@ -85,6 +107,6 @@ func _run() -> void:
 	screen.begin_exit()
 	await create_timer(.5).timeout
 	if not expect(screen.form.modulate.a < .01 and screen.submit.disabled, "leaving screen fades only the form and stops input"):return
-	FileAccess.open(str(options.output).path_join("tiles-report.json"),FileAccess.WRITE).store_string(JSON.stringify({"passed":true,"checks":checks,"hover":true,"neighbor_response":true,"input_stable":true}))
+	FileAccess.open(str(options.output).path_join("tiles-report.json"),FileAccess.WRITE).store_string(JSON.stringify({"passed":true,"checks":checks,"hover_cues":cues,"input_stable":true}))
 	FileAccess.open(str(options.output).path_join("motion-frames.json"),FileAccess.WRITE).store_string(JSON.stringify(motion_frames))
 	quit()

@@ -4,7 +4,7 @@ import argparse,json
 from private_desktop import run
 ROOT=Path(__file__).resolve().parents[2]
 p=argparse.ArgumentParser();p.add_argument('--client',type=Path);args=p.parse_args()
-out=ROOT/'.tools/qa/login-022';out.mkdir(parents=True,exist_ok=True)
+out=ROOT/'.tools/qa/login-023';out.mkdir(parents=True,exist_ok=True)
 if args.client:
  command=[args.client.resolve()/'Game.exe','--audio-driver','Dummy']
 else:

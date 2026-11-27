@@ -24,3 +24,9 @@ python 源码/tools/qa_login_web.py --web .tools/web-login-final
 ![游戏内登录](images/login-0.2.2/login.png)
 
 [查看鼠标划过动效](images/login-0.2.2/hover.gif)
+
+## 0.2.4 实体方块与划过音效
+
+按参照模型的宽 128、厚 20 比例补齐前后盖、侧壁和灰色中芯，并随各面朝向计算明暗。[侧转图](images/login-0.2.4/login-solid.png)与[90° 侧面图](images/login-0.2.4/login-edge-on.png)来自实际 Windows 渲染，像素检查验证了厚度。
+
+参照 `ui_screentile_00.xml` 指向七段 WAV，运行时随机选择。原 PCM 采样保持一致，仅清理 WAV 编辑器元数据以兼容 Godot 导入；原文件、分发文件与 PCM 哈希见 [音频来源](validation/login-audio-0.2.4.json)。登录流程检查覆盖实际主界面音效绑定，未在用户桌面播放声音。

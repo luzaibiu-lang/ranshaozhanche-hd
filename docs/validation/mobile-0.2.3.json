@@ -1,0 +1,246 @@
+{
+  "version": "0.2.3",
+  "baseline_git_backup_verified": "0.2.2 complete Git bundle",
+  "camera": {
+    "checks": [
+      "map pans within 30 pixels of the left edge",
+      "map pans within 30 pixels of the right edge",
+      "map pans within 30 pixels of the top edge",
+      "map pans within 30 pixels of the bottom edge",
+      "central play area never edge-pans",
+      "speed increases towards edge without pixel hunting",
+      "one map finger captured",
+      "one-finger drag pans camera at matching world scale",
+      "spreading two fingers zooms in immediately",
+      "pinch keeps world point beneath finger centroid",
+      "pinching fingers together zooms out",
+      "zoom lock retains magnification during pinch",
+      "lifting one finger resumes drag without a jump",
+      "finger release stops map movement",
+      "focus loss cancels every map touch",
+      "rotation or viewport resize clears map fingers"
+    ],
+    "passed": true
+  },
+  "controls": {
+    "checks": 327,
+    "events": [
+      "start",
+      "release",
+      [
+        "weapon",
+        0
+      ],
+      [
+        "weapon",
+        1
+      ],
+      [
+        "weapon",
+        2
+      ],
+      [
+        "item",
+        0
+      ],
+      [
+        "item",
+        1
+      ],
+      [
+        "item",
+        2
+      ],
+      [
+        "item",
+        3
+      ],
+      "start",
+      "cancel",
+      "start",
+      "cancel",
+      "start",
+      "cancel"
+    ],
+    "failures": []
+  },
+  "browser_mobile": {
+    "passed": true,
+    "viewport": [
+      844,
+      390
+    ],
+    "device": "headless Chromium touch emulation",
+    "actions": [
+      [
+        {
+          "action": "move",
+          "distance": 1,
+          "generation": 1,
+          "move_sequence": 1
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 5,
+          "generation": 1,
+          "move_sequence": 2
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 3,
+          "generation": 1,
+          "move_sequence": 3
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 3,
+          "generation": 1,
+          "move_sequence": 4
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": 2,
+          "generation": 1,
+          "move_sequence": 5
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -1,
+          "generation": 1,
+          "move_sequence": 6
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -6,
+          "generation": 1,
+          "move_sequence": 7
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -5,
+          "generation": 1,
+          "move_sequence": 8
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -4,
+          "generation": 1,
+          "move_sequence": 9
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -4,
+          "generation": 1,
+          "move_sequence": 10
+        },
+        200
+      ],
+      [
+        {
+          "action": "move",
+          "distance": -1,
+          "generation": 1,
+          "move_sequence": 11
+        },
+        200
+      ],
+      [
+        {
+          "action": "item",
+          "generation": 1,
+          "slot": 0
+        },
+        200
+      ],
+      [
+        {
+          "action": "fire",
+          "aim_face": -1,
+          "aim_mode": "native",
+          "angle": 34.0,
+          "generation": 1,
+          "power": 0.346666666666666,
+          "weapon": 1
+        },
+        200
+      ]
+    ]
+  },
+  "mobile_shell": {
+    "checks": [
+      "Trusted loading-page touch enters native document fullscreen in Chromium mobile emulation",
+      "Real Godot WebAssembly starts and displays canvas after fullscreen entry",
+      "Exiting fullscreen restores the button; canvas touch preserves it and repeated trusted taps re-enter fullscreen",
+      "Missing fullscreen/orientation APIs show physical-rotation fallback which clears on rotation",
+      "Denied fullscreen leaves an enabled retry button in portrait and landscape",
+      "Desktop does not display the mobile overlay"
+    ],
+    "page_errors": [],
+    "web": "web-023-final"
+  },
+  "hover": {
+    "checks": [
+      "full-screen original background split into tiles",
+      "visible background tile selected",
+      "crossing a tile starts one hover sound",
+      "crossing drives a visible 3D swing",
+      "motion within a tile does not retrigger",
+      "background never moves the input field",
+      "unvisited neighbors stay still",
+      "crossing another tile produces its own sound",
+      "completed swing restores the tile",
+      "form stays in viewport at (1000, 650)",
+      "form stays in viewport at (1000, 650)",
+      "form stays in viewport at (1000, 650)",
+      "form stays in viewport at (1000, 650)",
+      "form stays in viewport at (1920, 1080)",
+      "form stays in viewport at (1920, 1080)",
+      "form stays in viewport at (1920, 1080)",
+      "form stays in viewport at (1920, 1080)",
+      "form stays in viewport at (2560, 1440)",
+      "form stays in viewport at (2560, 1440)",
+      "form stays in viewport at (2560, 1440)",
+      "form stays in viewport at (2560, 1440)",
+      "form stays in viewport at (430, 900)",
+      "form stays in viewport at (430, 900)",
+      "form stays in viewport at (430, 900)",
+      "form stays in viewport at (430, 900)",
+      "registration uses the same layout with password confirmation",
+      "leaving screen fades only the form and stops input"
+    ],
+    "hover_cues": [
+      2,
+      2
+    ],
+    "input_stable": true,
+    "passed": true
+  },
+  "real_mobile_hardware_tested": false
+}

@@ -1,0 +1,143 @@
+{
+  "checks": [
+    "full-screen original background split into tiles",
+    "visible background tile selected",
+    "edge-on tile shows neutral core in actual rendered frame",
+    "edge-on rendered silhouette has original 20/128 thickness",
+    "crossing a tile starts one hover sound",
+    "crossing drives a visible 3D swing",
+    "motion within a tile does not retrigger",
+    "background never moves the input field",
+    "unvisited neighbors stay still",
+    "crossing another tile produces its own sound",
+    "completed swing restores the tile",
+    "form stays in viewport at (1000, 650)",
+    "form stays in viewport at (1000, 650)",
+    "form stays in viewport at (1000, 650)",
+    "form stays in viewport at (1000, 650)",
+    "form stays in viewport at (1920, 1080)",
+    "form stays in viewport at (1920, 1080)",
+    "form stays in viewport at (1920, 1080)",
+    "form stays in viewport at (1920, 1080)",
+    "form stays in viewport at (2560, 1440)",
+    "form stays in viewport at (2560, 1440)",
+    "form stays in viewport at (2560, 1440)",
+    "form stays in viewport at (2560, 1440)",
+    "form stays in viewport at (430, 900)",
+    "form stays in viewport at (430, 900)",
+    "form stays in viewport at (430, 900)",
+    "form stays in viewport at (430, 900)",
+    "registration uses the same layout with password confirmation",
+    "leaving screen fades only the form and stops input"
+  ],
+  "hover_cues": [
+    2,
+    2
+  ],
+  "input_stable": true,
+  "passed": true,
+  "version": "0.2.4",
+  "audio_provenance": "login-audio-0.2.4.json",
+  "source_model": {
+    "width": 128,
+    "depth": 20,
+    "core_range": [
+      -4,
+      4
+    ],
+    "caps": [
+      -10,
+      10
+    ],
+    "ambient": 0.15
+  },
+  "login_flow": {
+    "passed": true,
+    "stages": [
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "original tile audio variant 0 decodes",
+          "original tile audio variant 1 decodes",
+          "original tile audio variant 2 decodes",
+          "original tile audio variant 3 decodes",
+          "original tile audio variant 4 decodes",
+          "original tile audio variant 5 decodes",
+          "original tile audio variant 6 decodes",
+          "real login hover uses original variant instead of a generic beep",
+          "password mismatch is shown within the form",
+          "login reaches channel transition",
+          "login remains under the closing mechanical doors",
+          "channel selector ready",
+          "covered login is released after the doors close",
+          "selector opens into original lobby",
+          "logout returns to the same login design",
+          "wrong password remains recoverable",
+          "login reaches channel transition",
+          "login remains under the closing mechanical doors",
+          "channel selector ready",
+          "covered login is released after the doors close",
+          "remember account uses actual Windows encrypted helper"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "register"
+      },
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "original tile audio variant 0 decodes",
+          "original tile audio variant 1 decodes",
+          "original tile audio variant 2 decodes",
+          "original tile audio variant 3 decodes",
+          "original tile audio variant 4 decodes",
+          "original tile audio variant 5 decodes",
+          "original tile audio variant 6 decodes",
+          "real login hover uses original variant instead of a generic beep",
+          "encrypted saved account prefills the new form after restart",
+          "unchecking remember clears the encrypted account",
+          "login reaches channel transition",
+          "channel selector ready",
+          "covered login is released after the doors close"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "remembered"
+      },
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "original tile audio variant 0 decodes",
+          "original tile audio variant 1 decodes",
+          "original tile audio variant 2 decodes",
+          "original tile audio variant 3 decodes",
+          "original tile audio variant 4 decodes",
+          "original tile audio variant 5 decodes",
+          "original tile audio variant 6 decodes",
+          "real login hover uses original variant instead of a generic beep",
+          "restart without remember remains at empty-password login"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "forgotten"
+      }
+    ],
+    "private_desktop": true,
+    "audio": "Dummy"
+  },
+  "mobile_shell": {
+    "checks": [
+      "Trusted loading-page touch enters native document fullscreen in Chromium mobile emulation",
+      "Real Godot WebAssembly starts and displays canvas after fullscreen entry",
+      "Exiting fullscreen restores the button; canvas touch preserves it and repeated trusted taps re-enter fullscreen",
+      "Missing fullscreen/orientation APIs show physical-rotation fallback which clears on rotation",
+      "Denied fullscreen leaves an enabled retry button in portrait and landscape",
+      "Desktop does not display the mobile overlay"
+    ],
+    "page_errors": [],
+    "web": "web-024-final"
+  }
+}

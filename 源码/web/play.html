@@ -11,6 +11,7 @@
     [hidden] { display:none !important }
     html, body, main { margin:0; width:100%; height:100%; overflow:hidden; background:#101315; color:#fff; font-family:"Microsoft YaHei",system-ui,sans-serif }
     main { position:relative }
+    @supports (height:100dvh) { main { height:100dvh } }
     canvas { display:block; width:100%; height:100%; outline:0; touch-action:none; user-select:none; -webkit-touch-callout:none }
     #status { position:absolute; inset:0; display:grid; align-content:center; justify-items:start; padding:8%; background:#151a1d url("field.webp") center / cover; isolation:isolate }
     #status::before { content:""; position:absolute; inset:0; z-index:-1; background:rgba(10,15,17,.78) }
@@ -20,6 +21,10 @@
     #recovery { margin-top:1rem; display:flex; align-items:center; gap:1.25rem }
     button { padding:.55rem 1rem; font:inherit; font-weight:bold; border:1px solid #e2a14c; background:#ffc065; color:#171712; cursor:pointer }
     a { color:#fff; text-underline-offset:3px }
+    #mobile-display { position:absolute; z-index:2; top:max(.65rem,env(safe-area-inset-top)); right:max(.65rem,env(safe-area-inset-right)); left:max(.65rem,env(safe-area-inset-left)); display:flex; align-items:end; flex-direction:column; pointer-events:none }
+    #landscape { pointer-events:auto; min-height:44px; background:#261e15; color:#ffe5ae; border-radius:3px; touch-action:manipulation }
+    #display-hint { margin:0; max-width:24rem; padding:.55rem .8rem; background:#201c16; color:#ffe5ae; line-height:1.4 }
+    #display-hint:empty { display:none }
   </style>
 </head>
 <body>
@@ -32,8 +37,12 @@
     <div id="recovery" hidden><button id="retry" type="button">重新打开游戏</button><a href="/">返回官网</a></div>
     <noscript>请启用 JavaScript 后刷新页面，或返回官网下载客户端。</noscript>
   </section>
+  <aside id="mobile-display" hidden>
+    <button id="landscape" type="button">旋转至全屏获得更佳体验</button>
+    <p id="display-hint" role="status"></p>
+  </aside>
 </main>
-<script src="$GODOT_URL"></script>
+<script defer src="$GODOT_URL"></script>
 <script>
   (() => {
     const canvas = document.getElementById("canvas");
@@ -41,14 +50,66 @@
     const message = document.getElementById("message");
     const progress = document.getElementById("progress");
     const recovery = document.getElementById("recovery");
+    const mobileDisplay = document.getElementById("mobile-display");
+    const landscapeButton = document.getElementById("landscape");
+    const displayHint = document.getElementById("display-hint");
+    const landscape = matchMedia("(orientation:landscape)");
+    const coarsePointer = matchMedia("(any-pointer:coarse)");
+    const fullscreenMode = matchMedia("(display-mode:fullscreen)");
+    const fullscreen = () => Boolean(document.fullscreenElement || document.webkitFullscreenElement || fullscreenMode.matches);
+    const canFullscreen = Boolean(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+    let displayAttempted = false;
+    let hintDismissed = false;
+    function syncMobileDisplay() {
+      const full = fullscreen();
+      landscapeButton.hidden = full || (!canFullscreen && displayAttempted);
+      displayHint.textContent = !hintDismissed && !landscape.matches && (full || displayAttempted)
+        ? "请将手机横过来，可直接继续游戏。" : "";
+      mobileDisplay.hidden = !coarsePointer.matches || (landscapeButton.hidden && !displayHint.textContent);
+    }
+    syncMobileDisplay();
+
+    landscapeButton.addEventListener("click", async () => {
+      const root = document.documentElement;
+      const enter = root.requestFullscreen || root.webkitRequestFullscreen;
+      displayAttempted = true;
+      hintDismissed = false;
+      landscapeButton.disabled = true;
+      let entered = fullscreen();
+      if (!entered && enter) {
+        try {
+          await enter.call(root);
+          entered = fullscreen();
+        } catch { /* Browsers can deny fullscreen in an embedded view. */ }
+      }
+      if (screen.orientation && screen.orientation.lock) {
+        try {
+          await screen.orientation.lock("landscape");
+        } catch { /* Some mobile browsers require physical rotation. */ }
+      }
+      landscapeButton.disabled = false;
+      syncMobileDisplay();
+    });
+    document.addEventListener("fullscreenchange", syncMobileDisplay);
+    document.addEventListener("webkitfullscreenchange", syncMobileDisplay);
+    document.addEventListener("visibilitychange", syncMobileDisplay);
+    window.addEventListener("pageshow", syncMobileDisplay);
+    landscape.addEventListener("change", syncMobileDisplay);
+    coarsePointer.addEventListener("change", syncMobileDisplay);
+    fullscreenMode.addEventListener("change", syncMobileDisplay);
     document.getElementById("retry").addEventListener("click", () => location.reload());
     canvas.addEventListener("contextmenu", event => event.preventDefault());
-    canvas.addEventListener("pointerdown", () => canvas.focus({preventScroll:true}));
+    canvas.addEventListener("pointerdown", () => {
+      hintDismissed = true;
+      syncMobileDisplay();
+      canvas.focus({preventScroll:true});
+    });
     const gameKeys = new Set(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Space","PageUp","PageDown","Home","End"]);
     canvas.addEventListener("keydown", event => {
       if (!event.ctrlKey && !event.metaKey && !event.altKey && gameKeys.has(event.code)) event.preventDefault();
     });
     function notice(text) {
+      mobileDisplay.hidden = true;
       overlay.hidden = false;
       progress.hidden = true;
       recovery.hidden = false;
@@ -79,10 +140,10 @@
       overlay.hidden = true;
       canvas.focus({preventScroll:true});
     }
-    start().catch(error => {
+    document.addEventListener("DOMContentLoaded", () => start().catch(error => {
       console.error("Game startup failed", error);
       notice("游戏资源加载失败。请检查网络后重试。");
-    });
+    }));
   })();
 </script>
 </body>

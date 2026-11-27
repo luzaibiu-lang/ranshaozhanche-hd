@@ -1,0 +1,85 @@
+{
+  "source": "RayCity Data/sound/fx.jmd",
+  "cue": "ui_screentile_00",
+  "xml": "<?xml version='1.0' encoding='UTF-16'?>\r\n<effect count='1'>\r\n\t<s0>\r\n\t\t<source>\r\n\t\t\t<file name='ui_screentile_00@0.wav'/>\r\n\t\t\t<file name='ui_screentile_00@1.wav'/>\r\n\t\t\t<file name='ui_screentile_00@2.wav'/>\r\n\t\t\t<file name='ui_screentile_00@3.wav'/>\r\n\t\t\t<file name='ui_screentile_00@4.wav'/>\r\n\t\t\t<file name='ui_screentile_00@5.wav'/>\r\n\t\t\t<file name='ui_screentile_00@6.wav'/>\r\n\t\t</source>\r\n\t</s0>\r\n</effect>",
+  "files": [
+    {
+      "entry": "ui/ui_screentile_00@0.wav",
+      "name": "ui_screentile_00@0.wav",
+      "bytes": 15604,
+      "sha256": "e0c668e594cd5e145285b5df559ec53c4ee704c96c4eb594554ccda60afae6b7",
+      "duration": 0.1742403628117914,
+      "sample_rate": 22050,
+      "distributed_sha256": "e9a7071229dc72ac0be96a286e451993b0fc5146db5840986e69f22ac1c5f231",
+      "pcm_sha256": "615fece13969083d6cab7e2706f03b65a2919762a07dc1a5ce073520e52e72e5",
+      "pcm_identical": true
+    },
+    {
+      "entry": "ui/ui_screentile_00@1.wav",
+      "name": "ui_screentile_00@1.wav",
+      "bytes": 13580,
+      "sha256": "9d218cdfa228c505b943bc4bb682926d36c7eeb4734fa46beee18537b00a0fe8",
+      "duration": 0.1512925170068027,
+      "sample_rate": 22050,
+      "distributed_sha256": "d668203b567ca7c1ed23814ab3937c818088e971d6b632fb8f08d925972ce3d4",
+      "pcm_sha256": "14e8b39943e4e63711684e9c52b4b6b20ec1b34e743276de3bf793b071e24e5b",
+      "pcm_identical": true
+    },
+    {
+      "entry": "ui/ui_screentile_00@2.wav",
+      "name": "ui_screentile_00@2.wav",
+      "bytes": 12816,
+      "sha256": "b8c977043a30bfa3f822a84a1b7d746e163907b61ffd8fb9a5a82056b9f22228",
+      "duration": 0.14263038548752835,
+      "sample_rate": 22050,
+      "distributed_sha256": "aa102608b485f1fbe331e783e0eb83dfcc7e6cf48026c97b8c9e1d70f91ecd16",
+      "pcm_sha256": "a1811dca37bfa625e61ca27bc90cc01c35cbec2a1e55171219ebb7a00db11966",
+      "pcm_identical": true
+    },
+    {
+      "entry": "ui/ui_screentile_00@3.wav",
+      "name": "ui_screentile_00@3.wav",
+      "bytes": 6968,
+      "sha256": "91502e3256d2fa8542fc2638cda55a0ec4d04ffa49e5705f4e49b50ba686b36e",
+      "duration": 0.0763265306122449,
+      "sample_rate": 22050,
+      "distributed_sha256": "ea59a87ef078408ea060fbb6f94e557944b1910218605e2a562d1afb2e2cbf3a",
+      "pcm_sha256": "cd9c8b7b0ba3acd1b22764e7a56c44a6cbb44682cd371037277820bf10a0f47a",
+      "pcm_identical": true
+    },
+    {
+      "entry": "ui/ui_screentile_00@4.wav",
+      "name": "ui_screentile_00@4.wav",
+      "bytes": 9648,
+      "sha256": "d7044f0203d388f3293429743418d960f190d4557d6ba8111257c774fb6d18d6",
+      "duration": 0.10671201814058957,
+      "sample_rate": 22050,
+      "distributed_sha256": "24c5a0914e865539328e8dbf5c32af2ea54e8f7146c5d5b21d7cdafbf1d7204b",
+      "pcm_sha256": "451efa9ffa8e5e73330ae5c137285948a025fc46f53e611f2478636d76d0362d",
+      "pcm_identical": true
+    },
+    {
+      "entry": "ui/ui_screentile_00@5.wav",
+      "name": "ui_screentile_00@5.wav",
+      "bytes": 12520,
+      "sha256": "6e79e8c117cfd87950f0799b7ef288da2929c70b0f25775d140e8292eb56287c",
+      "duration": 0.13927437641723356,
+      "sample_rate": 22050,
+      "distributed_sha256": "36e468e37a95bd32e6965488764638ccd98d8a6de7b64a1c4a323cc97de72f07",
+      "pcm_sha256": "37b19f59773f1b086eb466daac3078ef5d42602caece22b0c1d33b09b719fd0d",
+      "pcm_identical": true
+    },
+    {
+      "entry": "ui/ui_screentile_00@6.wav",
+      "name": "ui_screentile_00@6.wav",
+      "bytes": 12704,
+      "sha256": "63a246be491584eb18229bf9daea7b2ba291ab5fd44ee8619eb8f0a88c0b431a",
+      "duration": 0.14136054421768707,
+      "sample_rate": 22050,
+      "distributed_sha256": "3810aef98dc0ed1abdca2e4a088019ffe6d3e6e8d0155d8e13eeedeaf7811f47",
+      "pcm_sha256": "147ba787613d880727e3ab329a303e5f02571db3a143195822d45e1150f17a43",
+      "pcm_identical": true
+    }
+  ],
+  "import_normalization": "WAV metadata removed; original PCM, stereo, 22050 Hz and 16-bit samples unchanged"
+}

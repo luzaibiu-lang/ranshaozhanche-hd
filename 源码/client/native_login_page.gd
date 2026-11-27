@@ -6,6 +6,69 @@ signal remember_toggled(enabled: bool)
 signal cue_requested(id: int)
 
 const BACKGROUND = preload("res://assets/maps/17/background.jpg")
+
+# Orthographic projection of the original 128-wide, 20-deep octagonal tile.
+class SolidTile extends Polygon2D:
+	var outline: PackedVector2Array
+	var front_uv: PackedVector2Array
+	var back_uv: PackedVector2Array
+	var depth_unit: float
+	var orientation := Basis.IDENTITY
+	var moving := false
+
+	func configure(points: PackedVector2Array, coords: PackedVector2Array, scale_unit: float) -> void:
+		outline = points
+		front_uv = coords
+		depth_unit = scale_unit
+		var center_u := (coords[0].x + coords[1].x) * 0.5
+		for coord in coords:
+			back_uv.append(Vector2(2 * center_u - coord.x, coord.y))
+		polygon = points
+		uv = coords
+
+	func rotate_solid(axis: Vector3, angle: float) -> void:
+		moving = not is_zero_approx(angle)
+		orientation = Basis(axis, angle)
+		var front := orientation.z.z >= 0
+		var depth := 10.0 if front else -10.0
+		var projected := PackedVector2Array()
+		for point in outline:
+			projected.append(project(point, depth))
+		polygon = projected if absf(orientation.z.z) > 0.00001 else PackedVector2Array()
+		uv = front_uv if front else back_uv
+		var light := minf(1.0, 0.15 + absf(orientation.z.z))
+		color = Color(light, light, light)
+		z_index = int(moving)
+		queue_redraw()
+
+	func project(point: Vector2, depth: float) -> Vector2:
+		var p := orientation * Vector3(point.x, point.y, depth * depth_unit)
+		return Vector2(p.x, p.y)
+
+	func _draw() -> void:
+		if not moving:return
+		# The three strips share both endpoints with the caps, so the slab stays
+		# closed at oblique angles. Cull their back-facing normals.
+		var tex_size := texture.get_size()
+		for edge in range(outline.size()):
+			var next := (edge + 1) % outline.size()
+			var a := outline[edge]
+			var b := outline[next]
+			var normal := Vector3(b.y-a.y, a.x-b.x, 0).normalized()
+			var incidence := (orientation * normal).z
+			if incidence <= 0.0001:continue
+			var light := minf(1.0, 0.15 + incidence)
+			var shade := Color(light,light,light)
+			var front_a := front_uv[edge] / tex_size
+			var front_b := front_uv[next] / tex_size
+			var back_a := back_uv[edge] / tex_size
+			var back_b := back_uv[next] / tex_size
+			var upper := PackedVector2Array([project(a,10),project(b,10),project(b,4),project(a,4)])
+			var lower := PackedVector2Array([project(a,-4),project(b,-4),project(b,-10),project(a,-10)])
+			draw_colored_polygon(upper, shade, PackedVector2Array([front_a,front_b,front_b,front_a]), texture)
+			draw_colored_polygon(PackedVector2Array([upper[3],upper[2],lower[1],lower[0]]),Color("cccccc").srgb_to_linear() * shade)
+			draw_colored_polygon(lower, shade, PackedVector2Array([back_a,back_b,back_b,back_a]), texture)
+
 var registering := false
 var initial_username := ""
 var remembered := false
@@ -23,8 +86,10 @@ var hint: Label
 var tile_layer: Node2D
 var tiles: Array[Dictionary] = []
 var placements: Array[Dictionary] = []
-var pointer := Vector2(-10000, -10000)
-var pointer_active := false
+var pointer_samples: Array[Vector3] = []
+var last_cell := -1
+var columns := 0
+var grid_left := 0.0
 var elapsed := 0.0
 var notice_time := 0.0
 var unit := 1.0
@@ -39,7 +104,7 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	clip_contents = true
 	var dark := ColorRect.new()
-	dark.color = Color("080d13")
+	dark.color = Color("0f0f0f")
 	dark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(dark)
 	dark.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -120,7 +185,7 @@ func _ready() -> void:
 	add_child(hint)
 	resized.connect(_layout)
 	if get_window().has_signal("mouse_exited"):
-		get_window().connect("mouse_exited", func():pointer_active = false)
+		get_window().connect("mouse_exited", _reset_pointer)
 	_layout()
 	username.grab_focus()
 
@@ -219,68 +284,80 @@ func _build_tiles() -> void:
 	var texture_size := BACKGROUND.get_size()
 	var cover := maxf(size.x / texture_size.x, size.y / texture_size.y)
 	var offset := (size - texture_size * cover) / 2
-	var gap := clampf(tile_size / 60, 1.5, 3)
-	var columns := ceili(size.x / tile_size) + 1
+	var gap := tile_size * 2 / 128
+	columns = ceili(size.x / tile_size) + 1
 	var rows := ceili(size.y / tile_size)
 	var start := (size.x - columns * tile_size) / 2
+	grid_left = start
+	_reset_pointer()
 	for row in range(rows):
 		for column in range(columns):
 			var center := Vector2(start + (column + 0.5) * tile_size, (row + 0.5) * tile_size)
 			var half := (tile_size - gap) / 2
-			var cut := 3.0 * tile_size / 120
+			var cut := 4.0 * tile_size / 128
 			var base := PackedVector2Array([Vector2(-half+cut,-half),Vector2(half-cut,-half),Vector2(half,-half+cut),Vector2(half,half-cut),Vector2(half-cut,half),Vector2(-half+cut,half),Vector2(-half,half-cut),Vector2(-half,-half+cut)])
-			var shadow := Polygon2D.new()
-			shadow.color = Color(0, 0, 0, 0)
-			tile_layer.add_child(shadow)
-			var tile := Polygon2D.new()
+			var tile := SolidTile.new()
 			tile.texture = BACKGROUND
 			tile.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-			tile.polygon = base
 			var uv := PackedVector2Array()
 			for point in base:uv.append((center + point - offset) / cover)
-			tile.uv = uv
+			tile.configure(base, uv, tile_size / 128)
 			tile.position = center
 			tile_layer.add_child(tile)
-			tiles.append({"node":tile,"shadow":shadow,"center":center,"base":base,"amount":0.0,"tilt":Vector2.ZERO,"seed":float(row*17+column*11)})
+			tiles.append({"node":tile,"center":center,"base":base,"started":-2.0,"duration":0.0,"amplitude":0.0,"axis":Vector3.UP,"angle":0.0})
+
+func _reset_pointer() -> void:
+	pointer_samples.clear()
+	last_cell = -1
+
+func _track_pointer(point: Vector2) -> void:
+	if not Rect2(Vector2.ZERO, size).has_point(point):
+		_reset_pointer()
+		return
+	var cell := floori(point.y / tile_size) * columns + floori((point.x - grid_left) / tile_size)
+	while not pointer_samples.is_empty() and (elapsed - pointer_samples[0].z >= 0.5 or pointer_samples.size() >= 10):
+		pointer_samples.pop_front()
+	pointer_samples.append(Vector3(point.x, point.y, elapsed))
+	if cell == last_cell or cell < 0 or cell >= tiles.size():return
+	last_cell = cell
+	var sample := pointer_samples[0]
+	var travel := (point - Vector2(sample.x, sample.y)) * (128.0 / tile_size)
+	if travel.is_zero_approx():return
+	var strength := clampf(travel.length() / 70.0, 0.6, 1.0)
+	var tile := tiles[cell]
+	tile.started = elapsed
+	tile.duration = roundf(1200.0 * strength) / 1000.0
+	tile.amplitude = 1.7 * (1.0 - cos(strength * PI / 2.0))
+	tile.axis = Vector3(-travel.y, travel.x, 0).normalized()
+	cue_requested.emit(2)
 
 func _input(event: InputEvent) -> void:
 	if leaving:return
-	if event is InputEventMouseMotion:
-		pointer = event.position
-		pointer_active = Rect2(Vector2.ZERO, size).has_point(pointer)
+	if event is InputEventMouseMotion and event.device != InputEvent.DEVICE_ID_EMULATION:
+		_track_pointer(event.position)
 	elif event is InputEventScreenTouch:
-		pointer = event.position
-		pointer_active = event.pressed
+		_reset_pointer()
+		if event.pressed:_track_pointer(event.position)
 	elif event is InputEventScreenDrag:
-		pointer = event.position
-		pointer_active = true
+		_track_pointer(event.position)
 
 func _process(delta: float) -> void:
 	elapsed += delta
 	if notice_time > 0:
 		notice_time -= delta
 		if notice_time <= 0:notice.text = ""
-	var response := 1.0 - exp(-delta * 9)
 	for tile in tiles:
-		var relative: Vector2 = (pointer - tile.center) / tile_size
-		var target := pow(maxf(0, 1 - relative.length() / 1.65), 2) if pointer_active and not leaving else 0.0
-		tile.amount = lerpf(float(tile.amount), target, response)
-		var wanted := Vector2(clampf(relative.y, -1, 1), -clampf(relative.x, -1, 1)) * 0.18 * target
-		tile.tilt = (tile.tilt as Vector2).lerp(wanted, response)
-		var points := PackedVector2Array()
-		for point: Vector2 in tile.base:
-			var vertex := Vector3(point.x, point.y, 0).rotated(Vector3.RIGHT, tile.tilt.x).rotated(Vector3.UP, tile.tilt.y)
-			points.append(Vector2(vertex.x, vertex.y) * (1 + tile.amount * 0.035) / (1 - vertex.z / (tile_size * 3)))
-		var idle := sin(elapsed * 0.65 + tile.seed) * 0.6
-		tile.node.polygon = points
-		tile.node.position = tile.center + Vector2(0, idle - tile.amount * 8 * unit)
-		tile.node.z_index = roundi(tile.amount * 20)
-		var light: float = 0.88 + tile.amount * 0.12 + 0.018 * sin(tile.seed)
-		tile.node.modulate = Color(light, light, light, 1)
-		tile.shadow.polygon = points
-		tile.shadow.position = tile.node.position + Vector2(4, 9) * tile.amount * unit
-		tile.shadow.color = Color(0, 0, 0, tile.amount * 0.6)
-		tile.shadow.z_index = tile.node.z_index - 1
+		if tile.duration <= 0.0:continue
+		var progress := clampf((elapsed - float(tile.started)) / float(tile.duration), 0, 1)
+		if progress >= 1.0:
+			tile.angle = 0.0
+			tile.duration = 0.0
+			tile.node.rotate_solid(Vector3.UP, 0)
+			continue
+		var phase := sin(progress * PI / 2.0)
+		var angle := sin(3.0 * PI * phase) * float(tile.amplitude) * cos(phase * PI / 2.0)
+		tile.angle = angle
+		tile.node.rotate_solid(tile.axis, angle)
 
 func set_busy(busy: bool) -> void:
 	for field in [username, password, confirmation]:field.editable = not busy
@@ -296,7 +373,7 @@ func show_notice(message: String, seconds := 4.0) -> void:
 func begin_exit() -> void:
 	if leaving:return
 	leaving = true
-	pointer_active = false
+	_reset_pointer()
 	set_busy(true)
 	exit_tween = create_tween().set_parallel(true)
 	exit_tween.tween_property(form, "modulate:a", 0.0, 0.35)

@@ -7,6 +7,7 @@ const GamePlatform = preload("res://game_platform.gd")
 const Network = preload("res://net.gd")
 const Sound = preload("res://sound.gd")
 const WorldView = preload("res://world_view.gd")
+const TouchControls = preload("res://mobile_battle_controls.gd")
 const BG := Color("0c1420")
 const PAPER := Color("101018")
 const MUTED := Color("363645")
@@ -109,6 +110,7 @@ var login_page: Control
 var login_transition: Control
 var aim_slider: HSlider
 var battle_hud: Control
+var touch_controls: TouchControls
 var hud_buttons := {}
 var ui_font: Font
 var shop_gold: Label
@@ -585,6 +587,7 @@ func _clear() -> void:
 	chat_input = null
 	sending_chat = null
 	battle_chat = null
+	touch_controls = null
 	view = null
 	native_shop = null
 	vehicle_picker = null
@@ -656,7 +659,10 @@ func _show_login() -> void:
 	confirmation = page.confirmation
 	remember = page.remember
 	page.submit_requested.connect(_login)
-	page.cue_requested.connect(func(id: int):sound.play_event(id))
+	page.cue_requested.connect(func(id: int):
+		if id==2:sound.play_login_hover()
+		else:sound.play_event(id)
+	)
 	page.registration_toggled.connect(func():
 		if auth_busy:return
 		register_mode = not register_mode
@@ -1443,6 +1449,8 @@ func _update_inventory() -> void:
 	for child in inventory_row.get_children():
 		child.queue_free()
 	var inventory: Array = profile.get("inventory", [0, 0, 0, 0])
+	if is_instance_valid(touch_controls):
+		touch_controls.set_inventory(inventory)
 	for i in range(4):
 		var slot := i
 		var id := int(inventory[i])
@@ -1561,6 +1569,18 @@ func _show_battle() -> void:
 	content.add_child(inventory_row)
 	inventory_row.add_theme_constant_override("separation",0)
 	_build_battle_chat()
+	if TouchControls.touch_device():
+		touch_controls = TouchControls.new()
+		touch_controls.name = "MobileBattleControls"
+		touch_controls.blocked = _touch_input_blocked
+		touch_controls.weapon_selected.connect(_select_weapon)
+		touch_controls.item_selected.connect(func(slot: int): _battle_command({"action":"item","slot":slot}))
+		touch_controls.fire_started.connect(_start_charging)
+		touch_controls.fire_released.connect(_fire)
+		touch_controls.fire_canceled.connect(func(): charging = false)
+		content.add_child(touch_controls)
+		_fill(touch_controls)
+		fire_button.hide()
 	_update_inventory()
 	_update_battle()
 
@@ -1642,6 +1662,8 @@ func _reflow_hud() -> void:
 	_layout_toast()
 	var s: float = battle_hud.scale_factor
 	battle_chat.position = Vector2(8*s, size.y-208*s)
+	if is_instance_valid(touch_controls):
+		battle_chat.position = touch_controls.chat_anchor
 	battle_chat.scale = Vector2.ONE*s
 	for key: String in hud_buttons:
 		var button: Button = hud_buttons[key]
@@ -1733,6 +1755,7 @@ func _update_battle() -> void:
 	if walker:walker.accept(battle)
 	var next_stamp:="%s:%s"%[battle.get("id",""),battle.get("generation",0)]
 	if next_stamp!=battle_input_stamp:
+		if is_instance_valid(touch_controls):touch_controls.reset_touches()
 		battle_input_stamp=next_stamp
 		battle_action_serial+=1
 		battle_action_busy=false
@@ -1813,6 +1836,9 @@ func _fire() -> void:
 	await _battle_command({"action": "fire", "aim_mode": "native" if bool(_battle_data().get("native_aim", false)) else "world", "aim_face":aim_face, "angle": aim, "power": clampf(charge, 0.0, 1), "weapon": selected_weapon})
 
 func _show_result(battle: Dictionary) -> void:
+	if is_instance_valid(touch_controls):
+		touch_controls.reset_touches()
+		touch_controls.hide()
 	if is_instance_valid(battle_chat):
 		battle_chat.hide()
 	for node in get_tree().get_nodes_in_group("native_modal"):
@@ -1989,6 +2015,9 @@ func _process(delta: float) -> void:
 	if battle.is_empty() or active.is_empty():
 		return
 	var is_turn := _my_turn()
+	var touch_active := is_instance_valid(touch_controls)
+	if touch_active:
+		touch_controls.set_actions(is_turn and not battle_action_busy and not command_busy and not _touch_input_blocked(), selected_weapon)
 	var turn_key := str(battle.get("id",""))+":"+str(battle.get("generation",0))
 	if is_turn and turn_key!=sound_turn_stamp:
 		sound_turn_stamp=turn_key
@@ -2034,14 +2063,14 @@ func _process(delta: float) -> void:
 	var focus := get_viewport().gui_get_focus_owner()
 	var typing := focus is LineEdit or focus is TextEdit or _modal_open()
 	if is_turn and not typing:
-		if Input.is_physical_key_pressed(KEY_UP):
-			aim = minf(aim_max, aim + delta * 30)
-		if Input.is_physical_key_pressed(KEY_DOWN):
-			aim = maxf(aim_min, aim - delta * 30)
+		var angle_direction := int(Input.is_physical_key_pressed(KEY_UP)) - int(Input.is_physical_key_pressed(KEY_DOWN))
+		if touch_active:angle_direction += touch_controls.direction("up", "down")
+		aim = clampf(aim + signi(angle_direction) * delta * 30, aim_min, aim_max)
 		aim_slider.set_value_no_signal(aim)
 	var walk_direction:=0
 	if is_turn and not typing and not charging and not command_busy and not battle_action_busy:
 		walk_direction=int(Input.is_physical_key_pressed(KEY_RIGHT))-int(Input.is_physical_key_pressed(KEY_LEFT))
+		if touch_active:walk_direction = signi(walk_direction + touch_controls.direction("right", "left"))
 	if walker:walker.process(delta,walk_direction)
 	if walker and walker.direction!=0 and not walker.unit.is_empty():aim_face=int(walker.unit.face)
 	view.preview_face=aim_face
@@ -2113,9 +2142,14 @@ func _input(event: InputEvent) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		charging = false
+		if is_instance_valid(touch_controls):touch_controls.reset_touches()
 	elif what == NOTIFICATION_APPLICATION_FOCUS_IN and OS.has_feature("web") and net:
 		net.etag = ""
 		poll_elapsed = 0.3
+
+func _touch_input_blocked() -> bool:
+	var focus := get_viewport().gui_get_focus_owner()
+	return is_instance_valid(result_layer) or _modal_open() or focus is LineEdit or focus is TextEdit
 
 func _modal_open() -> bool:
 	for node in get_tree().get_nodes_in_group("native_modal"):

@@ -121,6 +121,10 @@ func play_cue(filename: String, priority:=false) -> void:
 func play_event(id: int) -> void:
 	play_cue(str(native_audio.get("sounds",{}).get(str(id),"")),id in [54,55,63])
 
+func play_login_hover() -> void:
+	# RayCity's ui_screentile_00 effect randomly chooses one of seven sources.
+	play_cue("ui_screentile_00@%d.wav" % randi_range(0,6))
+
 func play_effect(kind: String, detail := 0) -> void:
 	if kind=="native":play_event(detail);return
 	if kind=="move_stop":stop_movement();return

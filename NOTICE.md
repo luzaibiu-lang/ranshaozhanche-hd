@@ -7,6 +7,7 @@
 | 新编写的 Go、GDScript、C#、Python 代码及项目文档 | 除另有标注外，使用根目录 MIT License |
 | `源码/client/assets/` 中的原游戏衍生素材 | 图像、音乐、音效、动画与地图保留原权利人的权利；不纳入 MIT 授权 |
 | `源码/docs/` 中提取的原版数据与索引 | 记录兼容性核对依据；不代表对原游戏内容的所有权或再许可 |
+| `assets/audio/sound/ui_screentile_00@*.wav` | 来自用户提供的光线飞车参照包 `Data/sound/fx.jmd`，保留原权利人的权利；不纳入 MIT 授权。来源及文件哈希见 `docs/validation/login-audio-0.2.4.json` |
 | Noto Sans SC 字体 | 使用 SIL Open Font License 1.1，见随字体附带的 [OFL.txt](源码/client/assets/fonts/OFL.txt) |
 | 第三方引擎、库和工具 | 遵循各自许可证，见 [THIRD_PARTY.md](docs/THIRD_PARTY.md) |
 
