@@ -108,36 +108,48 @@ type Result struct {
 	Rewards map[string]int `json:"rewards"`
 }
 type Battle struct {
-	ID          string      `json:"id"`
-	Map         int         `json:"map"`
-	Width       int         `json:"width"`
-	Height      int         `json:"height"`
-	Units       []*Unit     `json:"units"`
-	Holes       []Hole      `json:"holes"`
-	Round       int         `json:"round"`
-	Active      int         `json:"active"`
-	Wind        int         `json:"wind"`
-	Deadline    float64     `json:"deadline"`
-	Shot        *Shot       `json:"shot"`
-	Result      *Result     `json:"result"`
-	Generation  uint64      `json:"generation"`
-	NativeAim   bool        `json:"native_aim"`
-	Supplies    []SupplyCue `json:"supplies,omitempty"`
-	Terrain     *Terrain    `json:"-"`
-	acted       map[int]bool
-	pending     *Battle
-	busyUntil   time.Time
-	aiAt        time.Time
-	aiAction    *aiTurnAction
-	shotID      int
-	planning    bool
-	planScore   float64
-	shotState   int
-	supplyID    uint64
-	moveBlocked bool
+	ID              string      `json:"id"`
+	Map             int         `json:"map"`
+	Width           int         `json:"width"`
+	Height          int         `json:"height"`
+	Units           []*Unit     `json:"units"`
+	Holes           []Hole      `json:"holes"`
+	Round           int         `json:"round"`
+	Active          int         `json:"active"`
+	Wind            int         `json:"wind"`
+	Deadline        float64     `json:"deadline"`
+	Loading         bool        `json:"loading,omitempty"`
+	LoadingSeats    []int       `json:"loading_seats,omitempty"`
+	LoadingDeadline float64     `json:"loading_deadline,omitempty"`
+	Shot            *Shot       `json:"shot"`
+	Result          *Result     `json:"result"`
+	Generation      uint64      `json:"generation"`
+	NativeAim       bool        `json:"native_aim"`
+	Supplies        []SupplyCue `json:"supplies,omitempty"`
+	Terrain         *Terrain    `json:"-"`
+	acted           map[int]bool
+	pending         *Battle
+	busyUntil       time.Time
+	aiAt            time.Time
+	aiAction        *aiTurnAction
+	shotID          int
+	planning        bool
+	planScore       float64
+	shotState       int
+	supplyID        uint64
+	moveBlocked     bool
 }
 
 func nowSeconds() float64 { return float64(time.Now().UnixMilli()) / 1000 }
+
+func (b *Battle) startFirstTurn(now time.Time) {
+	b.Loading = false
+	b.LoadingSeats = nil
+	b.LoadingDeadline = 0
+	b.Deadline = float64(now.UnixMilli())/1000 + 35
+	b.aiAt = now.Add(time.Second)
+}
+
 func (b *Battle) active() *Unit {
 	for _, u := range b.Units {
 		if u.Seat == b.Active {

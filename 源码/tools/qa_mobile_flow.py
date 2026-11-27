@@ -6,9 +6,9 @@ from playwright.sync_api import sync_playwright
 from qa_web_streaming import ROOT,EDGE,backend,local_site
 from qa_manual_auth import login
 
-parser=argparse.ArgumentParser();parser.add_argument('--web',type=Path,required=True);parser.add_argument('--report',type=Path,required=True);args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--web',type=Path,required=True);parser.add_argument('--report',type=Path,required=True);parser.add_argument('--server',type=Path,default=ROOT/'.tools/hdserver-current.exe');args=parser.parse_args()
 errors=[];traffic=[];actions=[];checks=[]
-with backend(ROOT/'.tools/hdserver-current.exe') as upstream,local_site(args.web.resolve(),upstream,traffic) as origin,sync_playwright() as pw:
+with backend(args.server.resolve()) as upstream,local_site(args.web.resolve(),upstream,traffic) as origin,sync_playwright() as pw:
     name='qa_touch'+secrets.token_hex(3);password=secrets.token_hex(10)
     auth=requests.post(upstream+'/api/register',json={'name':name,'password':password},timeout=10).json()
     headers={'Authorization':'Bearer '+auth['token']}
@@ -27,7 +27,8 @@ with backend(ROOT/'.tools/hdserver-current.exe') as upstream,local_site(args.web
         page.wait_for_timeout(1800)
         page.locator('#landscape').tap()
         page.wait_for_function('Boolean(document.fullscreenElement)')
-        login(page,name,password,True);page.wait_for_timeout(1600)
+        with page.expect_response(lambda r:r.url.endswith('/api/state') and r.ok):login(page,name,password,True)
+        page.wait_for_timeout(2000)
         page.touchscreen.tap(150,154);page.wait_for_timeout(180)
         with page.expect_response(lambda r:r.url.endswith('/api/state') and r.ok,timeout=20000):page.touchscreen.tap(235,363)
         page.wait_for_timeout(1500);checks.append('touch selects a channel and enters it')
@@ -39,7 +40,7 @@ with backend(ROOT/'.tools/hdserver-current.exe') as upstream,local_site(args.web
         with page.expect_response(lambda r:r.url.endswith('/api/command') and r.request.post_data_json.get('action')=='start',timeout=20000) as started:
             page.touchscreen.tap(215,20)
         assert started.value.ok,'Touch start was rejected'
-        page.wait_for_timeout(2000);checks.append('room Start button starts a game through a real touch')
+        page.wait_for_function("globalThis.BurningChariotBattleReady && BurningChariotBattleReady.prepared && !BurningChariotBattleReady.loading",timeout=120000);checks.append('room Start button starts a game through a real touch')
         page.touchscreen.tap(238,297)
         page.wait_for_function("document.activeElement.matches('input:enabled')",timeout=5000)
         page.keyboard.insert_text('保留聊天草稿')

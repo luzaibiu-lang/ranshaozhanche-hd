@@ -4,6 +4,8 @@ extends RefCounted
 const TILE := 256
 var image:Image
 var overview:ImageTexture
+var overview_image:Image
+var overview_dirty:Array[Rect2i]=[]
 var tiles:Array[Dictionary]=[]
 var masks:Array[Dictionary]=[]
 var circle_masks:Dictionary={}
@@ -24,14 +26,15 @@ func reset(source:Image) -> void:
 	image.convert(Image.FORMAT_RGBA8)
 	tiles.clear()
 	dirty.clear()
+	overview_dirty.clear()
 	for y in range(0,image.get_height(),TILE):
 		for x in range(0,image.get_width(),TILE):
 			var area:=Rect2i(x,y,mini(TILE,image.get_width()-x),mini(TILE,image.get_height()-y))
 			var section:=image.get_region(area)
 			tiles.append({"area":area,"image":section,"texture":ImageTexture.create_from_image(section)})
-	var small:=_overview_image()
-	if overview and overview.get_size()==Vector2(small.get_size()):overview.update(small)
-	else:overview=ImageTexture.create_from_image(small)
+	overview_image=_overview_image()
+	if overview and overview.get_size()==Vector2(overview_image.get_size()):overview.update(overview_image)
+	else:overview=ImageTexture.create_from_image(overview_image)
 	last_upload_bytes=0
 
 func _overview_image() -> Image:
@@ -151,7 +154,10 @@ func carve(hole:Dictionary) -> void:
 	var mask:Image=patch.mask
 	var empty:Image=patch.clear
 	var area:=Rect2i(at,mask.get_size())
+	var clipped:=area.intersection(Rect2i(Vector2i.ZERO,image.get_size()))
+	if not clipped.has_area():return
 	image.blit_rect_mask(empty,mask,Rect2i(Vector2i.ZERO,mask.get_size()),at)
+	overview_dirty.append(clipped)
 	for index in range(tiles.size()):
 		var tile:Dictionary=tiles[index]
 		var overlap:=area.intersection(tile.area)
@@ -166,7 +172,20 @@ func flush() -> void:
 		var tile:Dictionary=tiles[index]
 		(tile.texture as ImageTexture).update(tile.image)
 		last_upload_bytes+=(tile.image as Image).get_width()*(tile.image as Image).get_height()*4
-	overview.update(_overview_image())
+	var image_size:=image.get_size()
+	var small_size:=overview_image.get_size()
+	for area:Rect2i in overview_dirty:
+		# Godot's nearest resize samples each destination pixel's center.
+		# Use integer arithmetic to retain exact boundaries on every map size.
+		var start:Vector2i=(area.position*small_size*2+image_size-Vector2i.ONE)/(image_size*2)
+		var end:Vector2i=(area.end*small_size*2+image_size-Vector2i.ONE)/(image_size*2)
+		for y in range(start.y,end.y):
+			var source_y: int=(2*y+1)*image_size.y/(2*small_size.y)
+			for x in range(start.x,end.x):
+				var source_x: int=(2*x+1)*image_size.x/(2*small_size.x)
+				overview_image.set_pixel(x,y,image.get_pixel(source_x,source_y))
+	overview.update(overview_image)
+	overview_dirty.clear()
 	dirty.clear()
 
 func draw_in(canvas:Control,origin:Vector2,factor:float) -> void:

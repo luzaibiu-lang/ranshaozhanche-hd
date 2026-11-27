@@ -124,6 +124,18 @@ var channel_accepted := false
 var channel_refreshing := false
 var page_transition: Control
 var page_transition_applying := false
+var battle_preparing := false
+var battle_prepared_id := ""
+var battle_ready_sending := false
+var battle_ready_retry := 0
+var battle_loading_panel: Control
+var battle_loading_label: Label
+var mobile_chat: JavaScriptObject
+var mobile_chat_callbacks: Array = []
+var mobile_chat_active := false
+var mobile_chat_rect := Rect2()
+var font_text_stamp := ""
+var ready_diagnostic_stamp := ""
 
 func _ready() -> void:
 	get_tree().auto_accept_quit = false
@@ -164,6 +176,7 @@ func _ready() -> void:
 	_setup_window()
 	_apply_theme()
 	_build_shell()
+	_setup_mobile_chat()
 	var web_resources := get_tree().root.get_node_or_null("WebResources")
 	if web_resources:web_resources.status_changed.connect(func(message: String,failed: bool):
 		if failed:toast(message,5)
@@ -545,6 +558,14 @@ func _fill(control: Control) -> void:
 	control.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 func _clear() -> void:
+	if mobile_chat:
+		mobile_chat.close()
+		mobile_chat.clearTrigger()
+	mobile_chat_active = false
+	mobile_chat_rect = Rect2()
+	battle_prepared_id = ""
+	if is_instance_valid(battle_loading_panel):battle_loading_panel.queue_free()
+	battle_loading_panel = null
 	if is_instance_valid(toast_label):toast_label.hide()
 	toast_timer = 0.0
 	if sound:sound.stop_movement()
@@ -912,7 +933,7 @@ func _chat(parent: Node, height: int) -> void:
 	chat_input.text_submitted.connect(func(_text): _send_chat())
 	_button("发送", row, _send_chat)
 
-func _send_chat() -> void:
+func _send_chat(ticket := -1) -> void:
 	var field := chat_input
 	if not is_instance_valid(field) or field == sending_chat:
 		return
@@ -936,8 +957,51 @@ func _send_chat() -> void:
 			if scene == "battle":
 				field.release_focus()
 		_accept_state(reply)
+		if ticket >= 0 and mobile_chat:mobile_chat.resolve(true, "", ticket)
 	else:
 		toast(str(reply.get("error", "消息发送失败")))
+		if ticket >= 0 and mobile_chat:mobile_chat.resolve(false, str(reply.get("error", "消息发送失败，请重试")), ticket)
+
+func _setup_mobile_chat() -> void:
+	if not OS.has_feature("web") or not GamePlatform.mobile_ui():return
+	mobile_chat = JavaScriptBridge.get_interface("BurningChariotChat")
+	if not mobile_chat:return
+	mobile_chat_callbacks = [JavaScriptBridge.create_callback(_open_mobile_chat), JavaScriptBridge.create_callback(_submit_mobile_chat), JavaScriptBridge.create_callback(_close_mobile_chat)]
+
+func _open_mobile_chat(_args: Array) -> void:
+	if not is_instance_valid(chat_input) or _modal_open():return
+	charging = false
+	if is_instance_valid(touch_controls):touch_controls.reset_touches()
+	chat_input.release_focus()
+	mobile_chat_active = true
+	mobile_chat.open(chat_input.text, mobile_chat_callbacks[1], mobile_chat_callbacks[2])
+
+func _submit_mobile_chat(args: Array) -> void:
+	if args.size() < 2 or not is_instance_valid(chat_input):return
+	if sending_chat == chat_input:
+		mobile_chat.resolve(false, "上一条消息正在发送，请稍候", int(args[1]))
+		return
+	chat_input.text = str(args[0])
+	_send_chat(int(args[1]))
+
+func _close_mobile_chat(args: Array) -> void:
+	if is_instance_valid(chat_input) and not args.is_empty():chat_input.text = str(args[0])
+	mobile_chat_active = false
+	if is_instance_valid(chat_input):chat_input.release_focus()
+	DisplayServer.virtual_keyboard_hide()
+
+func _update_mobile_chat() -> void:
+	if not mobile_chat:return
+	if not is_instance_valid(chat_input) or not chat_input.is_visible_in_tree() or _modal_open() or is_instance_valid(page_transition) or is_instance_valid(channel_gate):
+		mobile_chat.clearTrigger()
+		mobile_chat_rect = Rect2()
+		return
+	chat_input.virtual_keyboard_enabled = false
+	var rect := chat_input.get_global_rect()
+	if rect == mobile_chat_rect:return
+	mobile_chat_rect = rect
+	var viewport_size := get_viewport_rect().size
+	mobile_chat.setTrigger(rect.position.x, rect.position.y, rect.size.x, maxf(30, rect.size.y), viewport_size.x, viewport_size.y, mobile_chat_callbacks[0])
 
 func _show_room() -> void:
 	_original_page("GameBack")
@@ -1706,7 +1770,7 @@ func _my_turn() -> bool:
 	var active := _active()
 	if active.is_empty() or int(active.get("hp", 0)) <= 0 or int(active.get("player", 0)) != int(profile.get("id", -1)):
 		return false
-	return battle.get("result") == null and float(battle.get("deadline", 0)) > net.server_now()
+	return not bool(battle.get("loading", false)) and battle_prepared_id == str(battle.get("id", "")) and battle.get("result") == null and float(battle.get("deadline", 0)) > net.server_now()
 
 func _own_battle_unit() -> Dictionary:
 	for unit: Dictionary in _battle_data().get("units", []):
@@ -1733,6 +1797,9 @@ func _update_battle() -> void:
 	if battle.is_empty() or not is_instance_valid(view):
 		return
 	view.set_battle(battle)
+	if battle_prepared_id != str(battle.id) and not battle_preparing:
+		_prepare_battle()
+	_update_loading_notice()
 	if walker:walker.accept(battle)
 	var next_stamp:="%s:%s"%[battle.get("id",""),battle.get("generation",0)]
 	if next_stamp!=battle_input_stamp:
@@ -1746,6 +1813,59 @@ func _update_battle() -> void:
 	_update_inventory()
 	if battle.get("result") is Dictionary and not is_instance_valid(result_layer):
 		_show_result(battle)
+
+func _prepare_battle() -> void:
+	battle_preparing = true
+	var preparing_view := view
+	var preparing_id := str(_battle_data().get("id", ""))
+	await preparing_view.prepare_for_play()
+	# The resources must have reached the rendered scene, not just the cache.
+	await RenderingServer.frame_post_draw
+	battle_preparing = false
+	if quitting or not is_instance_valid(preparing_view) or view != preparing_view or str(_battle_data().get("id", "")) != preparing_id:return
+	battle_prepared_id = preparing_id
+	battle_ready_retry = 0
+	_ack_battle_ready()
+
+func _ack_battle_ready() -> void:
+	var battle := _battle_data()
+	if battle_ready_sending or not bool(battle.get("loading", false)) or battle_prepared_id != str(battle.get("id", "")):return
+	var own_seat := int(_own_battle_unit().get("seat", -1))
+	# JSON array numbers are floats; Array.has(int) uses strict type matching.
+	if not battle.get("loading_seats", []).any(func(seat): return int(seat) == own_seat):return
+	battle_ready_sending = true
+	var session: String = net.token
+	var response: Dictionary = await net.request("/api/command", {"action":"battle_loaded", "battle_id":battle_prepared_id})
+	battle_ready_sending = false
+	battle_ready_retry = Time.get_ticks_msec() + 1000
+	if not quitting and net.token == session and response.has("profile"):_accept_state(response)
+
+func _update_loading_notice() -> void:
+	var battle := _battle_data()
+	var loading := bool(battle.get("loading", false)) or battle_prepared_id != str(battle.get("id", ""))
+	if OS.has_feature("web"):
+		var diagnostic := JSON.stringify({"id":battle.get("id", ""),"prepared":battle_prepared_id == str(battle.get("id", "")),"loading":bool(battle.get("loading",false)),"waiting":battle.get("loading_seats", [])})
+		if diagnostic != ready_diagnostic_stamp:
+			ready_diagnostic_stamp = diagnostic
+			JavaScriptBridge.eval("globalThis.BurningChariotBattleReady=" + diagnostic, true)
+	if not loading:
+		if is_instance_valid(battle_loading_panel):battle_loading_panel.hide()
+		return
+	if not is_instance_valid(battle_loading_panel):
+		battle_loading_panel = PanelContainer.new()
+		battle_loading_panel.name = "BattleLoading"
+		battle_loading_panel.z_index = 20
+		battle_loading_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		battle_loading_panel.add_theme_stylebox_override("panel", _style(Color("182126"), Color("d2b371"), 16))
+		battle_loading_label = Label.new()
+		battle_loading_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		battle_loading_label.add_theme_color_override("font_color", Color.WHITE)
+		battle_loading_panel.add_child(battle_loading_label)
+		add_child(battle_loading_panel)
+	battle_loading_label.text = "正在准备本局画面与特效…" if battle_prepared_id != str(battle.get("id", "")) else "等待其他玩家加载（%d 人）…" % battle.get("loading_seats", []).size()
+	battle_loading_panel.reset_size()
+	battle_loading_panel.position = Vector2((size.x-battle_loading_panel.size.x)/2, maxf(10, size.y*.16))
+	battle_loading_panel.show()
 
 func _battle_command(command: Dictionary) -> void:
 	if not _my_turn() or command_busy or battle_action_busy:
@@ -1853,7 +1973,16 @@ func _accept_state(state: Dictionary) -> void:
 			return
 	snapshot = state
 	profile = state.get("profile", {})
-	GamePlatform.ensure_text(JSON.stringify(profile)+JSON.stringify(state.get("chat",[]))+JSON.stringify(state.get("room",{})))
+	# Trajectory coordinates contain no display text. Scanning the whole room
+	# used to serialize every flight point again on the rendering thread.
+	var displayed_text := str(profile.get("name", "")) + str(state.get("chat", [])) + str(state.get("whispers", []))
+	var text_room: Variant = state.get("room")
+	if text_room is Dictionary:
+		displayed_text += str(text_room.get("name", "")) + str(text_room.get("chat", []))
+		for member: Dictionary in text_room.get("members", []):displayed_text += str(member.get("name", ""))
+	if displayed_text != font_text_stamp:
+		font_text_stamp = displayed_text
+		GamePlatform.ensure_text(displayed_text)
 	if not catalog_ready:return
 	if not qa and not channel_accepted:
 		_show_channel_gate()
@@ -1965,13 +2094,15 @@ func _command(command: Dictionary) -> bool:
 	if OS.has_feature("web") and str(command.get("action","")) in ["start","ready"]:
 		var resources := get_tree().root.get_node_or_null("WebResources")
 		var map_id := int(snapshot.get("room",{}).get("map",0))
-		if resources and map_id>0:
+		if resources:
 			var before_token: String=net.token
 			var before_room := int(snapshot.get("room",{}).get("id",0))
-			if not resources.is_loaded("map_%d"%map_id) or not resources.is_loaded("battle_fx"):
+			if map_id>0 and not resources.is_loaded("map_%d"%map_id) or not resources.is_loaded("battle_fx"):
 				toast("正在准备本局资源，下载完成后继续…",90)
 			command_busy=true
-			var available: bool=await resources.ensure_groups(["map_%d"%map_id,"battle_fx"])
+			var groups: Array = ["battle_fx"]
+			if map_id>0:groups.append("map_%d"%map_id)
+			var available: bool=await resources.ensure_groups(groups)
 			command_busy=false
 			if not available or auth_busy or net.token.is_empty() or net.token!=before_token or int(snapshot.get("room",{}).get("id",0))!=before_room:return false
 	command_busy = true
@@ -2007,6 +2138,7 @@ func _command(command: Dictionary) -> bool:
 	return false
 
 func _process(delta: float) -> void:
+	_update_mobile_chat()
 	if OS.has_feature("web") and not web_map_loading and web_map_retry_at>0 and Time.get_ticks_msec()>=web_map_retry_at and snapshot.has("profile") and not net.token.is_empty():
 		_accept_state(snapshot)
 	if not is_instance_valid(channel_gate): _present_invitation()
@@ -2025,6 +2157,9 @@ func _process(delta: float) -> void:
 		_poll()
 	if scene != "battle":
 		return
+	if battle_prepared_id != str(_battle_data().get("id", "")) and not battle_preparing:_prepare_battle()
+	if Time.get_ticks_msec() >= battle_ready_retry:_ack_battle_ready()
+	_update_loading_notice()
 	_reflow_hud()
 	var battle:Dictionary = view.battle
 	var active := _active()
@@ -2077,7 +2212,7 @@ func _process(delta: float) -> void:
 				charge=minf(1,charge+2.0/300)
 			if charge>=1:_fire()
 	var focus := get_viewport().gui_get_focus_owner()
-	var typing := focus is LineEdit or focus is TextEdit or _modal_open()
+	var typing := mobile_chat_active or focus is LineEdit or focus is TextEdit or _modal_open()
 	if is_turn and not typing:
 		var angle_direction := int(Input.is_physical_key_pressed(KEY_UP)) - int(Input.is_physical_key_pressed(KEY_DOWN))
 		if touch_active:angle_direction += touch_controls.direction("up", "down")
@@ -2111,6 +2246,7 @@ func _poll() -> void:
 
 func _input(event: InputEvent) -> void:
 	if quitting:return
+	if mobile_chat_active:return
 	var pointer_down: bool = event is InputEventScreenTouch and event.pressed or event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT
 	if pointer_down and scene in ["lobby","room","shop","battle"]:
 		var focused := get_viewport().gui_get_focus_owner()
@@ -2173,7 +2309,7 @@ func _notification(what: int) -> void:
 
 func _touch_input_blocked() -> bool:
 	var focus := get_viewport().gui_get_focus_owner()
-	return is_instance_valid(result_layer) or _modal_open() or focus is LineEdit or focus is TextEdit
+	return mobile_chat_active or is_instance_valid(result_layer) or _modal_open() or focus is LineEdit or focus is TextEdit
 
 func _map_touch_blocked(at: Vector2) -> bool:
 	if _touch_input_blocked():return true

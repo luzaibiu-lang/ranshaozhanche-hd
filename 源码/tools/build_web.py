@@ -79,6 +79,8 @@ def build(output, engine, classic_url, hd_url):
             raise RuntimeError("Web shell must include the shared device profile")
         profile = (CLIENT / "device_profile.js").read_text("utf-8")
         shell = shell.replace("<!-- DEVICE_PROFILE -->", "<script>\n" + profile + "\n</script>")
+        chat = (CLIENT / "mobile_chat.js").read_text("utf-8")
+        shell = shell.replace("<!-- MOBILE_CHAT -->", "<script>\n" + chat + "\n</script>")
         for filename in ("game.wasm", "game.pck", "game.js"):
             if not (stage / filename).stat().st_size:
                 raise RuntimeError(f"Missing Web export file: {filename}")

@@ -42,6 +42,9 @@ func request(path: String, payload: Variant = null, conditional := false) -> Dic
 	var body := ""
 	var method := HTTPClient.METHOD_GET
 	if payload != null:
+		if path == "/api/command" and payload is Dictionary:
+			payload = payload.duplicate()
+			payload.loading_barrier = true
 		method = HTTPClient.METHOD_POST
 		body = JSON.stringify(payload)
 		headers.append("Content-Type: application/json; charset=utf-8")

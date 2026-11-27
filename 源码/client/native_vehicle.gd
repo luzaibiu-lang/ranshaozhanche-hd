@@ -8,6 +8,7 @@ const MOUNTS := [Vector2(-1, -22), Vector2(-2, -20), Vector2(5, -18), Vector2(4,
 # Isolated original runtime: 59.10 / 59.76 ticks per second, sampled at 25 ms.
 const TICK_SECONDS := 1.0 / 60.0
 const NATIVE_RADIANS_PER_DEGREE := 0.017453288659453392
+const STATE_NAMES := ["StateShield", "StateEShock", "StateStealth"]
 static var frame_cache := {}
 static var texture_cache := {}
 var vehicle := 0
@@ -23,20 +24,28 @@ var mirrored := false
 var additive: CanvasItemMaterial
 var states := {}
 static var state_frames := {}
-static var warmed_ids:Dictionary={}
 
-static func prewarm(id:int) -> void:
-	if warmed_ids.has(id):return
-	if not frame_cache.has(id):frame_cache[id]=JSON.parse_string(FileAccess.get_file_as_string("res://assets/tanks/%d/frames.json"%id))
-	for frame:Dictionary in frame_cache[id]:
-		var key:="%d/%s"%[id,str(frame.file)]
-		if not texture_cache.has(key):texture_cache[key]=load("res://assets/tanks/"+key)
-	for name:String in ["StateShield","StateEShock","StateStealth"]:
-		if not state_frames.has(name):state_frames[name]=JSON.parse_string(FileAccess.get_file_as_string("res://assets/effects/%s/frames.json"%name))
-		for frame:Dictionary in state_frames[name]:
-			var key:="%s/%s"%[name,str(frame.file)]
-			if not texture_cache.has(key):texture_cache[key]=load("res://assets/effects/"+key)
-	warmed_ids[id]=true
+static func warmup_paths(ids: Dictionary) -> Dictionary:
+	var paths := {}
+	for id: int in ids:
+		for frame: Dictionary in _vehicle_frames(id):
+			var key := "%d/%s" % [id, str(frame.file)]
+			if not texture_cache.has(key):paths[key] = "res://assets/tanks/" + key
+	for name: String in STATE_NAMES:
+		for frame: Dictionary in _state_frames(name):
+			var key := "%s/%s" % [name, str(frame.file)]
+			if not texture_cache.has(key):paths[key] = "res://assets/effects/" + key
+	return paths
+
+static func _vehicle_frames(id: int) -> Array:
+	if not frame_cache.has(id):
+		frame_cache[id] = JSON.parse_string(FileAccess.get_file_as_string("res://assets/tanks/%d/frames.json" % id))
+	return frame_cache[id]
+
+static func _state_frames(name: String) -> Array:
+	if not state_frames.has(name):
+		state_frames[name] = JSON.parse_string(FileAccess.get_file_as_string("res://assets/effects/%s/frames.json" % name))
+	return state_frames[name]
 
 static func mount_offset(id: int, face: int, slope: float) -> Vector2:
 	# 005343c0 -> 00534c40 -> 00534180: the aiming ring and barrel
@@ -56,7 +65,7 @@ func _init() -> void:
 		layer.centered = false
 		add_child(layer)
 		layers.append(layer)
-	for name in ["StateShield", "StateEShock", "StateStealth"]:
+	for name in STATE_NAMES:
 		var layer := Sprite2D.new()
 		layer.centered = false
 		layer.material = additive
@@ -68,9 +77,7 @@ func set_vehicle(id: int) -> void:
 		return
 	vehicle = clampi(id, 1, 30)
 	family = (vehicle - 1) % 10 + 1
-	if not frame_cache.has(vehicle):
-		frame_cache[vehicle] = JSON.parse_string(FileAccess.get_file_as_string("res://assets/tanks/%d/frames.json" % vehicle))
-	frames = frame_cache[vehicle]
+	frames = _vehicle_frames(vehicle)
 	tick = 0
 	phase = 0
 	idle_phase = 0
@@ -172,9 +179,7 @@ func _state(name: String, enabled: bool, angle: float) -> void:
 	var layer: Sprite2D = states[name]
 	layer.visible = enabled
 	if not enabled:return
-	if not state_frames.has(name):
-		state_frames[name] = JSON.parse_string(FileAccess.get_file_as_string("res://assets/effects/%s/frames.json" % name))
-	var sequence: Array = state_frames[name]
+	var sequence := _state_frames(name)
 	if sequence.is_empty():return
 	var frame: Dictionary = sequence[(tick / 4) % sequence.size()]
 	var key := "%s/%s" % [name, str(frame.file)]

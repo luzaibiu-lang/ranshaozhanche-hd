@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand/v2"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -13,14 +14,15 @@ import (
 )
 
 type Member struct {
-	ID       int64     `json:"id"`
-	Name     string    `json:"name"`
-	Seat     int       `json:"seat"`
-	Vehicle  int       `json:"vehicle"`
-	AI       int       `json:"ai"`
-	Ready    bool      `json:"ready"`
-	Returned bool      `json:"returned"`
-	Seen     time.Time `json:"-"`
+	ID             int64     `json:"id"`
+	Name           string    `json:"name"`
+	Seat           int       `json:"seat"`
+	Vehicle        int       `json:"vehicle"`
+	AI             int       `json:"ai"`
+	Ready          bool      `json:"ready"`
+	Returned       bool      `json:"returned"`
+	Seen           time.Time `json:"-"`
+	LoadingBarrier bool      `json:"-"`
 }
 type Chat struct {
 	Name string  `json:"name"`
@@ -82,32 +84,34 @@ type Snapshot struct {
 	Whispers   []Chat           `json:"whispers"`
 }
 type Command struct {
-	Action        string      `json:"action"`
-	Room          int         `json:"room"`
-	Name          string      `json:"name"`
-	Map           int         `json:"map"`
-	Capacity      int         `json:"capacity"`
-	Seat          int         `json:"seat"`
-	Vehicle       int         `json:"vehicle"`
-	Ready         bool        `json:"ready"`
-	Bots          []BotChoice `json:"bots"`
-	Text          string      `json:"text"`
-	Distance      float64     `json:"distance"`
-	MoveSequence  uint64      `json:"move_sequence"`
-	Angle         float64     `json:"angle"`
-	AimMode       string      `json:"aim_mode"`
-	AimFace       int         `json:"aim_face"`
-	Power         float64     `json:"power"`
-	Weapon        int         `json:"weapon"`
-	Item          int         `json:"item"`
-	Slot          int         `json:"slot"`
-	Outfit        int         `json:"outfit"`
-	Generation    uint64      `json:"generation"`
-	Password      string      `json:"password"`
-	Private       bool        `json:"private"`
-	Player        int64       `json:"player"`
-	RejectPrivate bool        `json:"reject_private"`
-	RejectInvites bool        `json:"reject_invites"`
+	Action         string      `json:"action"`
+	Room           int         `json:"room"`
+	Name           string      `json:"name"`
+	Map            int         `json:"map"`
+	Capacity       int         `json:"capacity"`
+	Seat           int         `json:"seat"`
+	Vehicle        int         `json:"vehicle"`
+	Ready          bool        `json:"ready"`
+	Bots           []BotChoice `json:"bots"`
+	Text           string      `json:"text"`
+	Distance       float64     `json:"distance"`
+	MoveSequence   uint64      `json:"move_sequence"`
+	Angle          float64     `json:"angle"`
+	AimMode        string      `json:"aim_mode"`
+	AimFace        int         `json:"aim_face"`
+	Power          float64     `json:"power"`
+	Weapon         int         `json:"weapon"`
+	Item           int         `json:"item"`
+	Slot           int         `json:"slot"`
+	Outfit         int         `json:"outfit"`
+	Generation     uint64      `json:"generation"`
+	LoadingBarrier bool        `json:"loading_barrier"`
+	BattleID       string      `json:"battle_id"`
+	Password       string      `json:"password"`
+	Private        bool        `json:"private"`
+	Player         int64       `json:"player"`
+	RejectPrivate  bool        `json:"reject_private"`
+	RejectInvites  bool        `json:"reject_invites"`
 }
 type BotChoice struct {
 	Seat    int `json:"seat"`
@@ -218,6 +222,9 @@ func (w *World) leave(id int64) {
 			break
 		}
 	}
+	if r.Battle != nil && r.Battle.Loading {
+		r.cancelLoading("有玩家离开，已取消本次开局。")
+	}
 	if r.Battle != nil && r.Battle.Result == nil {
 		for _, u := range r.Battle.Units {
 			if u.Player == id {
@@ -279,11 +286,21 @@ func (r *Room) finishReturning() {
 		member.Returned = false
 	}
 }
+
+func (r *Room) cancelLoading(reason string) {
+	r.Battle = nil
+	r.Chat = append(r.Chat, Chat{Name: "系统", Text: reason, Time: nowSeconds()})
+	if len(r.Chat) > 60 {
+		r.Chat = r.Chat[len(r.Chat)-60:]
+	}
+}
+
 func (w *World) command(id int64, c Command) error {
 	w.touchPresence(id)
 	r, m := w.roomFor(id)
 	if m != nil {
 		m.Seen = time.Now()
+		m.LoadingBarrier = m.LoadingBarrier || c.LoadingBarrier
 	}
 	switch c.Action {
 	case "create":
@@ -308,7 +325,7 @@ func (w *World) command(id int64, c Command) error {
 		if len([]rune(c.Password)) > 16 || c.Private && c.Password == "" {
 			return errors.New("私人房间需设置 1～16 字密码")
 		}
-		r = &Room{ID: w.nextRoom, Name: name, Owner: id, Map: c.Map, Capacity: capacity, Members: []*Member{{ID: id, Name: w.mustProfile(id).Name, Seat: 0, Vehicle: 1, Ready: true, Seen: time.Now()}}, Chat: []Chat{}, Locked: c.Private || c.Password != ""}
+		r = &Room{ID: w.nextRoom, Name: name, Owner: id, Map: c.Map, Capacity: capacity, Members: []*Member{{ID: id, Name: w.mustProfile(id).Name, Seat: 0, Vehicle: 1, Ready: true, Seen: time.Now(), LoadingBarrier: c.LoadingBarrier}}, Chat: []Chat{}, Locked: c.Private || c.Password != ""}
 		if r.Locked {
 			r.PasswordHash = sha256.Sum256([]byte(c.Password))
 		}
@@ -349,7 +366,7 @@ func (w *World) command(id int64, c Command) error {
 				break
 			}
 		}
-		r.Members = append(r.Members, &Member{ID: id, Name: w.mustProfile(id).Name, Seat: seat, Vehicle: 1, Ready: true, Seen: time.Now()})
+		r.Members = append(r.Members, &Member{ID: id, Name: w.mustProfile(id).Name, Seat: seat, Vehicle: 1, Ready: true, Seen: time.Now(), LoadingBarrier: c.LoadingBarrier})
 		delete(w.invites, id)
 	case "decline_invite":
 		delete(w.invites, id)
@@ -539,7 +556,7 @@ func (w *World) command(id int64, c Command) error {
 			if e != nil {
 				return e
 			}
-			battle := &Battle{ID: token(), Map: mapID, Width: terrain.W, Height: terrain.H, Terrain: terrain, Units: []*Unit{}, Holes: []Hole{}, Round: 1, Wind: rand.IntN(101) - 50, Generation: 1, acted: map[int]bool{}, aiAt: time.Now().Add(time.Second), Deadline: nowSeconds() + 35}
+			battle := &Battle{ID: token(), Map: mapID, Width: terrain.W, Height: terrain.H, Terrain: terrain, Units: []*Unit{}, Holes: []Hole{}, Round: 1, Wind: rand.IntN(101) - 50, Generation: 1, acted: map[int]bool{}}
 			for i, p := range r.Members {
 				unitID := p.Vehicle
 				if unitID == 0 {
@@ -556,10 +573,36 @@ func (w *World) command(id int64, c Command) error {
 				u.updateSlope(terrain)
 				battle.Units = append(battle.Units, u)
 				p.Returned = false
+				if p.AI == 0 && p.LoadingBarrier {
+					battle.LoadingSeats = append(battle.LoadingSeats, p.Seat)
+				}
 			}
 			battle.Active = battle.Units[0].Seat
 			battle.NativeAim = true
+			if len(battle.LoadingSeats) > 0 {
+				battle.Loading = true
+				battle.LoadingDeadline = nowSeconds() + 180
+			} else {
+				battle.startFirstTurn(time.Now())
+			}
 			r.Battle = battle
+		case "battle_loaded":
+			b := r.Battle
+			if b == nil || b.ID != c.BattleID {
+				return errors.New("开局状态已更新")
+			}
+			index := slices.Index(b.LoadingSeats, m.Seat)
+			if index < 0 {
+				return nil
+			}
+			if nowSeconds() >= b.LoadingDeadline {
+				r.cancelLoading("战场加载超时，已取消本次开局。")
+				break
+			}
+			b.LoadingSeats = slices.Delete(b.LoadingSeats, index, index+1)
+			if len(b.LoadingSeats) == 0 {
+				b.startFirstTurn(time.Now())
+			}
 		case "return":
 			if r.Battle == nil || r.Battle.Result == nil {
 				return errors.New("对局尚未结束")
@@ -573,6 +616,9 @@ func (w *World) command(id int64, c Command) error {
 			b := r.Battle
 			if b == nil || b.Result != nil || b.pending != nil {
 				return errors.New("当前不能行动")
+			}
+			if b.Loading {
+				return errors.New("战场正在加载")
 			}
 			if b.Deadline <= nowSeconds() {
 				return errors.New("本次行动时间已结束")
@@ -648,6 +694,10 @@ func (w *World) finish(r *Room, team int, reason string) {
 	if b == nil || b.Result != nil {
 		return
 	}
+	if b.Loading {
+		r.cancelLoading(reason)
+		return
+	}
 	rewards := map[string]int{}
 	for _, m := range r.Members {
 		if m.AI != 0 {
@@ -680,7 +730,12 @@ func (w *World) tick() {
 	now := time.Now()
 	for _, r := range w.rooms {
 		b := r.Battle
-		if b != nil && b.Result == nil {
+		if b != nil && b.Loading && float64(now.UnixMilli())/1000 >= b.LoadingDeadline {
+			r.cancelLoading("战场加载超时，已取消本次开局。")
+			b = nil
+			changed = true
+		}
+		if b != nil && b.Result == nil && !b.Loading {
 			if b.advanceShot(float64(now.UnixMilli()) / 1000) {
 				changed = true
 			}

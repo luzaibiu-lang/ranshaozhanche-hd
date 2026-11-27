@@ -4,6 +4,11 @@ signal effect(kind: String, detail: int)
 signal mouse_aim(elevation:float,face:int)
 
 const NativeVehicle = preload("res://native_vehicle.gd")
+const WARMUP_FRAME_BUDGET_US := 4000
+# Item projectiles can replace any equipped weapon. The other extra IDs are
+# children or returns spawned by native split, healing and absorption shots.
+const ITEM_PROJECTILES := [100, 101, 102, 103, 104, 105, 106]
+const CHILD_PROJECTILES := {3: 4, 42: 4, 43: 4, 72: 71, 20: 22, 21: 22, 58: 60}
 var vehicles := {}
 var overlay: Node2D
 var reticle:Node2D
@@ -20,12 +25,12 @@ var applied_holes := 0
 var terrain_masks: Array = []
 var map_id := 0
 var texture_cache := {}
-var tank_frames := {}
 var render_positions := {}
 var render_slopes := {}
 var walking := {}
 var projectile_frames := {}
 var projectile_rules: Dictionary = {}
+var projectile_layer: Node2D
 var movement_active:=false
 var camera := Vector2.ZERO
 var target_camera := Vector2.ZERO
@@ -103,6 +108,7 @@ func _ready() -> void:
 		projectiles.additive = additive
 		projectiles.z_index = 2 if additive else 3
 		add_child(projectiles)
+		if additive:projectile_layer = projectiles
 	var flames:=preload("res://native_flame_layer.gd").new()
 	flames.world=self
 	flames.z_index=2
@@ -143,6 +149,47 @@ func texture(path: String) -> Texture2D:
 	if not texture_cache.has(path):
 		texture_cache[path] = load(path) if ResourceLoader.exists(path) else null
 	return texture_cache[path]
+
+func prepare_for_play() -> void:
+	var preparing_id := battle_id
+	var vehicles_in_play := {}
+	for unit: Dictionary in battle.get("units", []):
+		vehicles_in_play[int(unit.vehicle)] = true
+	var projectile_ids := {}
+	for id: int in ITEM_PROJECTILES:
+		projectile_ids[id] = true
+	for vehicle: Dictionary in catalog.get("vehicles", []):
+		if not vehicles_in_play.has(int(vehicle.id)):continue
+		for weapon: Dictionary in vehicle.weapons:
+			var id := int(weapon.projectile)
+			projectile_ids[id] = true
+			if CHILD_PROJECTILES.has(id):projectile_ids[CHILD_PROJECTILES[id]] = true
+	var paths := PackedStringArray()
+	for id: int in projectile_ids:
+		paths.append_array(projectile_layer.texture_paths(id))
+	for index in range(5):
+		paths.append("res://assets/icons/Interface/%02d.png" % index)
+	var vehicle_paths := NativeVehicle.warmup_paths(vehicles_in_play)
+	await get_tree().process_frame
+	var frame_started := Time.get_ticks_usec()
+	for path: String in paths:
+		if not _preparation_current(preparing_id):return
+		texture(path)
+		if Time.get_ticks_usec() - frame_started >= WARMUP_FRAME_BUDGET_US:
+			await get_tree().process_frame
+			frame_started = Time.get_ticks_usec()
+	for key: String in vehicle_paths:
+		if not _preparation_current(preparing_id):return
+		if not NativeVehicle.texture_cache.has(key):
+			NativeVehicle.texture_cache[key] = load(vehicle_paths[key])
+		if Time.get_ticks_usec() - frame_started >= WARMUP_FRAME_BUDGET_US:
+			await get_tree().process_frame
+			frame_started = Time.get_ticks_usec()
+	# Run one battlefield frame before acknowledging readiness to the server.
+	if _preparation_current(preparing_id):await get_tree().process_frame
+
+func _preparation_current(id: String) -> bool:
+	return is_inside_tree() and not is_queued_for_deletion() and battle_id == id
 
 func set_battle(value: Dictionary) -> void:
 	source_battle=value
@@ -193,21 +240,17 @@ func set_battle(value: Dictionary) -> void:
 		var key := str(int(unit.seat))
 		if not render_positions.has(key):
 			render_positions[key] = Vector2(float(unit.x), float(unit.y))
-		var id := int(unit.vehicle)
-		NativeVehicle.prewarm(id)
-		if not tank_frames.has(id):
-			tank_frames[id] = JSON.parse_string(FileAccess.get_file_as_string("res://assets/tanks/%d/frames.json" % id))
 	if value.get("shot") is Dictionary and int(value.shot.id) != shot_id:
 		shot_id = int(value.shot.id)
 		fired_impacts.clear()
 		fired_sounds.clear()
 		fired_numbers.clear()
-		for trail: Dictionary in value.shot.get("trails",[]):
-			var projectile := int(trail.get("projectile",0))
-			var asset := str(projectile_rules.get(str(projectile),{}).get("sprite",str(projectile)))
-			var metadata := "res://assets/projectiles/%s/frames.json" % asset
-			if not projectile_frames.has(projectile) and FileAccess.file_exists(metadata):
-				projectile_frames[projectile]=JSON.parse_string(FileAccess.get_file_as_string(metadata))
+		# Older servers, resumed battles and unknown projectiles can enter
+		# without warmup. Resolve their actual assets once, before drawing.
+		for part: Array in [value.shot.get("trails", []), value.shot.get("impacts", [])]:
+			for entry: Dictionary in part:
+				for path: String in projectile_layer.texture_paths(int(entry.get("projectile", 0))):
+					texture(path)
 
 func _process(delta: float) -> void:
 	elapsed += delta

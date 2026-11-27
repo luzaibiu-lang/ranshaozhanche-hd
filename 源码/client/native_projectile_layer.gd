@@ -11,30 +11,31 @@ func _ready() -> void:
 		var blend := CanvasItemMaterial.new()
 		blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 		material = blend
-		# Load the small weapon atlases before battle playback. A first burst
-		# must not synchronously import a new PNG on every animation frame.
-		_prewarm_visuals()
 
-func _prewarm_visuals() -> void:
-	for key: String in rules:
-		var rule: Dictionary = rules[key]
-		var asset := str(rule.get("sprite",key))
-		var metadata := "res://assets/projectiles/%s/frames.json" % asset
-		if FileAccess.file_exists(metadata):
-			var frames: Array = JSON.parse_string(FileAccess.get_file_as_string(metadata))
-			world.projectile_frames[int(key)] = frames
-			for frame: Dictionary in frames:
-				world.texture("res://assets/projectiles/%s/%s" % [asset,str(frame.file)])
-		for effect: Dictionary in rule.get("effects",[]):_prewarm_effect(str(effect.effect))
-		for sequence: Array in rule.get("variant_effects",{}).values():
-			for effect: Dictionary in sequence:_prewarm_effect(str(effect.effect))
+func texture_paths(id: int) -> PackedStringArray:
+	var paths := PackedStringArray()
+	if world.projectile_frames.has(id):return paths
+	var rule: Dictionary = rules.get(str(id),{})
+	var asset := str(rule.get("sprite", id))
+	var directory := "res://assets/projectiles/%s/" % asset
+	world.projectile_frames[id] = _read_frames(directory)
+	for frame: Dictionary in world.projectile_frames[id]:
+		paths.append(directory + str(frame.file))
+	var sequences: Array = [rule.get("effects", [])]
+	sequences.append_array(rule.get("variant_effects", {}).values())
+	for sequence: Array in sequences:
+		for effect: Dictionary in sequence:
+			var name := str(effect.effect)
+			if effect_frames.has(name):continue
+			directory = "res://assets/effects/%s/" % name
+			effect_frames[name] = _read_frames(directory)
+			for frame: Dictionary in effect_frames[name]:
+				paths.append(directory + str(frame.file))
+	return paths
 
-func _prewarm_effect(name: String) -> void:
-	if effect_frames.has(name):return
-	var path := "res://assets/effects/%s/frames.json" % name
-	var frames: Array = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else []
-	effect_frames[name] = frames
-	for frame: Dictionary in frames:world.texture("res://assets/effects/%s/%s" % [name,str(frame.file)])
+func _read_frames(directory: String) -> Array:
+	var path := directory + "frames.json"
+	return JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else []
 
 func _process(_delta: float) -> void:
 	queue_redraw()
@@ -87,8 +88,7 @@ func _draw() -> void:
 		for effect: Dictionary in effects:
 			if str(effect.get("renderer",""))=="orbital_column":continue
 			var name := str(effect.effect)
-			if not effect_frames.has(name):_prewarm_effect(name)
-			var frames: Array = effect_frames[name]
+			var frames: Array = effect_frames.get(name, [])
 			if effect.get("draw", "") == "sky_column":
 				_draw_sky_column(explosion, name, frames)
 				continue

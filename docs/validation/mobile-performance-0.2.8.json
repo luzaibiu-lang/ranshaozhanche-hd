@@ -1,0 +1,116 @@
+{
+  "version": "0.2.8",
+  "server": "0.1.18",
+  "device": "Chromium touch emulation; Windows inactive desktop Dummy audio",
+  "physical_phone_tested": false,
+  "mobile_chat": {
+    "passed": true,
+    "checks": [
+      "Random-map battle waits for both rendered clients; delayed map and dropped ready ACK preserve full first turn",
+      "Trusted touch focuses native field and bar follows reduced visual viewport",
+      "Enter during composition finishes without sending",
+      "Rejected send displays error and preserves draft for retry",
+      "Draft survives orientation changes and closing/reopening chat",
+      "Tap Send puts one confirmed Chinese message in the other player's live snapshot",
+      "Confirmed send clears draft and outside tap releases the editor"
+    ],
+    "engine_errors": []
+  },
+  "loading": {
+    "samples": 320,
+    "all_waiting_deadlines_zero": true,
+    "first_turn_seconds": 34.983,
+    "delayed_map_and_lost_ack": true
+  },
+  "native_render": {
+    "passed": true,
+    "after": 142,
+    "before": 87,
+    "checks": 144,
+    "elapsed_us": 299013,
+    "minimap_comparisons": 115
+  },
+  "manual_login": {
+    "passed": true,
+    "checks": [
+      {
+        "mobile": false,
+        "check": "valid legacy tokens in both stores cannot authenticate startup",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "wrong manual password remains at login",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "manual button accepts correct credentials",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "refresh after successful login still requires manual login",
+        "passed": true
+      },
+      {
+        "mobile": false,
+        "check": "manual login after refresh works",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "valid legacy tokens in both stores cannot authenticate startup",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "wrong manual password remains at login",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "manual button accepts correct credentials",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "refresh after successful login still requires manual login",
+        "passed": true
+      },
+      {
+        "mobile": true,
+        "check": "manual login after refresh works",
+        "passed": true
+      }
+    ],
+    "engine_errors": [],
+    "real_mobile_hardware_tested": false
+  },
+  "go_tests": {
+    "all_passed": true,
+    "vet_passed": true
+  },
+  "limits": [
+    "No physical Android/iOS device benchmark; mobile hardware and input methods still need field coverage."
+  ],
+  "mobile_flow": {
+    "passed": true,
+    "checks": [
+      "touch selects a channel and enters it",
+      "room Start button starts a game through a real touch",
+      "touching outside chat closes keyboard and returns control",
+      "two real touch fingers change the game zoom",
+      "one real touch finger moves the game camera",
+      "movement buttons work after chat and gestures"
+    ],
+    "engine_errors": []
+  },
+  "windows_release_flow": {
+    "passed": true,
+    "private_desktop": true,
+    "audio": "Dummy",
+    "real_start_and_shot": true,
+    "window_layout_checked": true
+  }
+}
