@@ -1,0 +1,109 @@
+{
+  "native_tiles": {
+    "checks": [
+      "full-screen original background split into tiles",
+      "visible background tile selected",
+      "hover activates the pointed tile",
+      "pointed tile visibly lifts",
+      "background never moves the input field",
+      "neighboring tiles respond",
+      "pointer exit smoothly resets hover",
+      "form stays in viewport at (1000, 650)",
+      "form stays in viewport at (1000, 650)",
+      "form stays in viewport at (1000, 650)",
+      "form stays in viewport at (1000, 650)",
+      "form stays in viewport at (1920, 1080)",
+      "form stays in viewport at (1920, 1080)",
+      "form stays in viewport at (1920, 1080)",
+      "form stays in viewport at (1920, 1080)",
+      "form stays in viewport at (2560, 1440)",
+      "form stays in viewport at (2560, 1440)",
+      "form stays in viewport at (2560, 1440)",
+      "form stays in viewport at (2560, 1440)",
+      "form stays in viewport at (430, 900)",
+      "form stays in viewport at (430, 900)",
+      "form stays in viewport at (430, 900)",
+      "form stays in viewport at (430, 900)",
+      "registration uses the same layout with password confirmation",
+      "leaving screen fades only the form and stops input"
+    ],
+    "hover": true,
+    "input_stable": true,
+    "neighbor_response": true,
+    "passed": true
+  },
+  "windows_auth": {
+    "passed": true,
+    "stages": [
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "password mismatch is shown within the form",
+          "login reaches channel transition",
+          "login remains under the closing mechanical doors",
+          "channel selector ready",
+          "covered login is released after the doors close",
+          "selector opens into original lobby",
+          "logout returns to the same login design",
+          "wrong password remains recoverable",
+          "login reaches channel transition",
+          "login remains under the closing mechanical doors",
+          "channel selector ready",
+          "covered login is released after the doors close",
+          "remember account uses actual Windows encrypted helper"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "register"
+      },
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "encrypted saved account prefills the new form after restart",
+          "unchecking remember clears the encrypted account",
+          "login reaches channel transition",
+          "channel selector ready",
+          "covered login is released after the doors close"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "remembered"
+      },
+      {
+        "checks": [
+          "normal startup reaches the tile login",
+          "isolated local service",
+          "restart without remember remains at empty-password login"
+        ],
+        "normal_ui": true,
+        "passed": true,
+        "stage": "forgotten"
+      }
+    ],
+    "private_desktop": true,
+    "audio": "Dummy"
+  },
+  "web_auth": {
+    "passed": true,
+    "checks": [
+      "directory automatically recovers before authentication",
+      "background interaction keeps browser context menu disabled",
+      "real game form registers through the shared API",
+      "channel chooser enters lobby with the registered account",
+      "returning account signs in with the same form",
+      "remembered Web session stores a token",
+      "browser stores no plaintext password",
+      "no JavaScript exceptions or Godot errors"
+    ],
+    "page_errors": [],
+    "engine_errors": [],
+    "catalog_requests": 4,
+    "muted": true,
+    "headless": true
+  },
+  "web_hover_mean_pixel_delta": 25.798,
+  "candidate_only": true,
+  "production_changed": false
+}

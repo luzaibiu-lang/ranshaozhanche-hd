@@ -8,6 +8,7 @@ signal fullscreen_requested
 signal exit_requested
 signal cue_requested(id: int)
 signal opened
+signal closed_latched
 
 const OriginalSkin = preload("res://original_skin.gd")
 const CLOSE_TIME := 0.75
@@ -254,6 +255,7 @@ func _process(delta: float) -> void:
 func _door_closed() -> void:
 	_change_phase("select")
 	_update_controls()
+	closed_latched.emit()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_ENTER, KEY_KP_ENTER]:

@@ -1,7 +1,7 @@
 extends Control
 
 const OriginalSkin = preload("res://original_skin.gd")
-const LoginArt = preload("res://login_art.gd")
+const LoginPage = preload("res://native_login_page.gd")
 const GamePlatform = preload("res://game_platform.gd")
 
 const Network = preload("res://net.gd")
@@ -105,6 +105,8 @@ var qa := false
 var qa_options := {}
 var network_failures := 0
 var skin: Control
+var login_page: Control
+var login_transition: Control
 var aim_slider: HSlider
 var battle_hud: Control
 var hud_buttons := {}
@@ -276,12 +278,26 @@ func _show_launch_loading() -> void:
 
 func _show_channel_gate() -> void:
 	if is_instance_valid(channel_gate): return
+	if scene == "login" and is_instance_valid(login_page) and is_instance_valid(skin):
+		login_page.begin_exit()
+		login_transition = skin
+		content.remove_child(login_transition)
+		add_child(login_transition)
+		move_child(login_transition, content.get_index() + 1)
 	_clear()
 	skin = null
 	scene = "channel"
 	sound.set_scene("lobby")
 	channel_gate = preload("res://native_channel_gate.gd").new()
+	channel_gate.z_index = 100
+	channel_gate.opaque_backdrop = not is_instance_valid(login_transition)
 	add_child(channel_gate)
+	channel_gate.closed_latched.connect(func():
+		_release_login_transition()
+		if is_instance_valid(channel_gate):
+			channel_gate.opaque_backdrop = true
+			channel_gate.queue_redraw()
+	)
 	move_child(channel_gate, toast_label.get_index())
 	channel_gate.cue_requested.connect(func(id: int): sound.play_event(id))
 	channel_gate.enter_requested.connect(_enter_channel)
@@ -295,7 +311,14 @@ func _show_channel_gate() -> void:
 		channel_gate = null
 	)
 
+func _release_login_transition() -> void:
+	if is_instance_valid(login_transition):
+		login_transition.hide()
+		login_transition.queue_free()
+	login_transition = null
+
 func _cancel_channel_gate() -> void:
+	_release_login_transition()
 	if is_instance_valid(channel_gate):
 		channel_gate.hide()
 		channel_gate.queue_free()
@@ -557,6 +580,7 @@ func _clear() -> void:
 		# handler. It must survive until Godot finishes dispatching that event.
 		if child is CanvasItem:child.hide()
 		child.queue_free()
+	login_page = null
 	chat_label = null
 	chat_input = null
 	sending_chat = null
@@ -572,6 +596,11 @@ func _clear() -> void:
 	last_inventory_stamp = ""
 
 func toast(message: String, seconds := 4.0) -> void:
+	if scene == "login" and is_instance_valid(login_page):
+		toast_label.text = message
+		toast_label.hide()
+		login_page.show_notice(message, seconds)
+		return
 	if is_instance_valid(channel_gate):
 		channel_gate.show_notice(message)
 		return
@@ -609,80 +638,44 @@ func _layout_toast() -> void:
 		toast_label.add_theme_constant_override("outline_size", 0)
 
 func _show_login() -> void:
+	var saved_name := username.text if scene == "login" and is_instance_valid(username) else str(config.get("username", ""))
 	_cancel_page_transition()
 	_cancel_channel_gate()
 	_original_page()
 	scene = "login"
 	skin.page = "login"
 	sound.set_scene("lobby")
-	skin.design_size = Vector2(760, 525 if register_mode else 510)
-	var fill := ColorRect.new()
-	fill.color = Color("121821")
-	skin.place(fill, Rect2(0, 0, 760, 525 if register_mode else 510))
-	var art := LoginArt.new()
-	skin.place(art, Rect2(0, 0, 345, 510))
-	var paper := Color("e2e7ed")
-	var muted := Color("8f9cab")
-	skin.label("炮火就绪，等你归队", Rect2(48, 365, 287, 37), 22, paper)
-	skin.label("原生战车 · 回合对战 · 好友联机", Rect2(49, 410, 285, 25), 13, muted)
-	skin.label("燃烧战车", Rect2(390, 43, 310, 44), 33, paper)
-	skin.label("集结好友，下一发由你决定。", Rect2(393, 96, 315, 25), 13, muted)
-	skin.label("账号", Rect2(395, 151, 300, 24), 13, paper)
-	username = skin.entry(Rect2(395, 181, 300, 30))
-	username.name = "Username"
-	username.text = str(config.get("username", ""))
-	username.max_length = 16
-	skin.label("密码", Rect2(395, 226, 300, 24), 13, paper)
-	password = skin.entry(Rect2(395, 256, 300, 30), true)
-	password.name = "Password"
-	for field in [username, password]:
-		field.add_theme_stylebox_override("normal", OriginalSkin.box(Color("1e2733"), Color("344457")))
-		field.add_theme_stylebox_override("focus", OriginalSkin.box(Color("1e2733"), Color("607080")))
-		field.add_theme_color_override("font_color", paper)
-	if register_mode:
-		skin.label("确认密码", Rect2(395, 300, 300, 24), 13, paper)
-		confirmation = skin.entry(Rect2(395, 329, 300, 30), true)
-		confirmation.name="Confirmation"
-		confirmation.add_theme_stylebox_override("normal", OriginalSkin.box(Color("1e2733"), Color("344457")))
-	remember = CheckBox.new()
-	remember.text = "记住登录（仅本机）"
-	remember.button_pressed = bool(config.get("remember", false))
-	remember.add_theme_color_override("font_color", muted)
-	remember.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
-	remember.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
-	remember.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
-	skin.place(remember, Rect2(395, 299, 300, 25), 13)
-	remember.visible = not register_mode
+	var page := LoginPage.new()
+	page.registering = register_mode
+	page.initial_username = saved_name
+	page.remembered = bool(config.get("remember", false))
+	login_page = page
+	skin.add_child(page)
+	username = page.username
+	password = page.password
+	confirmation = page.confirmation
+	remember = page.remember
+	page.submit_requested.connect(_login)
+	page.cue_requested.connect(func(id: int):sound.play_event(id))
+	page.registration_toggled.connect(func():
+		if auth_busy:return
+		register_mode = not register_mode
+		_show_login()
+	)
 	if not register_mode and remember.button_pressed and OS.has_feature("windows") and not qa:
 		var record := _vault("read-account", "")
 		if not record.is_empty():
 			var account: Variant = JSON.parse_string(record)
 			if account is Dictionary and account.get("username") == username.text and account.get("origin") == net.endpoint:
 				password.text = str(account.get("password", ""))
-				username.text_changed.connect(func(_name): password.clear(), CONNECT_ONE_SHOT)
-	remember.toggled.connect(func(enabled: bool):
+				username.text_changed.connect(func(_name):password.clear(), CONNECT_ONE_SHOT)
+	page.remember_toggled.connect(func(enabled: bool):
 		if not enabled:
 			_vault("clear", "")
 			_vault("clear-account", "")
 			config.remember = false
 			_save_config()
 	)
-	var submit: Button = skin.text_button("创 建 账 号" if register_mode else "登 录 游 戏", Rect2(395, 380 if register_mode else 337, 300, 43), _login)
-	submit.name = "Login"
-	submit.add_theme_stylebox_override("normal", OriginalSkin.box(Color("f6ae3f"), Color("f6ae3f")))
-	submit.add_theme_stylebox_override("hover", OriginalSkin.box(Color("ffc16c"), Color("ffc16c")))
-	var toggle: Button = skin.text_button("已有账号，返回登录" if register_mode else "还没有账号？立即注册", Rect2(395, 430 if register_mode else 389, 300, 32), func():
-		if auth_busy:return
-		register_mode = not register_mode
-		_show_login()
-	)
-	toggle.name="ToggleRegistration"
-	toggle.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
-	toggle.add_theme_color_override("font_color", muted)
-	password.text_submitted.connect(func(_value): _login())
-	if register_mode:
-		confirmation.text_submitted.connect(func(_value): _login())
-	username.grab_focus()
 
 func _login() -> void:
 	if command_busy or auth_busy or quitting:
@@ -736,13 +729,8 @@ func _login() -> void:
 	_set_login_busy(false)
 
 func _set_login_busy(busy: bool) -> void:
-	if scene!="login":return
-	for node in [username,password,confirmation]:
-		if is_instance_valid(node):node.editable=not busy
-	if is_instance_valid(remember):remember.disabled=busy
-	for node_name in ["Login","ToggleRegistration"]:
-		var button := skin.find_child(node_name,true,false) as Button
-		if button:button.disabled=busy
+	if scene == "login" and is_instance_valid(login_page):
+		login_page.set_busy(busy)
 
 func _show_lobby() -> void:
 	_original_page("LobyBack")
